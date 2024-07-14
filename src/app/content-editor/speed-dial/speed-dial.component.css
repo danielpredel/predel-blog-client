@@ -1,0 +1,45 @@
+.button-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+  margin-left: 25px;
+}
+
+.main-button {
+  width: 35px;
+  height: 35px;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-color: white;
+  color: black;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle-button {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #4CAF50;
+  border-radius: 50%;
+  background-color: white;
+  color: #4CAF50;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* transition: background-color 0.3s; */
+}
+
+/* .circle-button:hover {
+  background-color: #45a049;
+} */
