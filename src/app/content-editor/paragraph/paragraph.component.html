@@ -1,0 +1,15 @@
+<div class="editable-element-container">
+  <p
+    [contentEditable]="true"
+    (keydown)="onKeyDown($event)"
+    (keyup)="onKeyUp($event)"
+    #editableParagraph
+    (focus)="onFocus()"
+  ></p>
+  <div class="speed-dial-container" *ngIf="showSpeedDial">
+    <app-speed-dial
+      [open]="showSpeedDialOptions"
+      (statusChage)="onSpeedStatusChange($event)"
+    ></app-speed-dial>
+  </div>
+</div>

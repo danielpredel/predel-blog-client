@@ -1,0 +1,61 @@
+/* p:empty:not(:focus)::before {
+  content: attr(data-placeholder);
+} */
+
+p {
+  border: none;
+  outline: none;
+}
+
+/* Related to speed dial */
+.editable-element-container {
+  position: relative;
+}
+
+.speed-dial-container {
+  position: absolute;
+  top: -5px;
+  /* top: 0; */
+  left: -70px; /* adjust to your margin size */
+  z-index: 1;
+}
+
+.speed-dial-button {
+  background-color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.speed-dial-button:hover {
+  background-color: #eee;
+}
+
+.speed-dial-button:focus {
+  box-shadow: 0 0 0 2px #337ab7;
+}
+
+.speed-dial-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-left: 30px; /* adjust to your button width */
+}
+
+.speed-dial-option {
+  background-color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.speed-dial-option:hover {
+  background-color: #eee;
+}
+
+.speed-dial-option:focus {
+  box-shadow: 0 0 0 2px #337ab7;
+}
