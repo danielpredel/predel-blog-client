@@ -11,8 +11,10 @@ import { SpeedDialComponent } from '../speed-dial/speed-dial.component';
   styleUrl: './paragraph.component.css'
 })
 export class ParagraphComponent implements AfterViewInit, Editable {
-  @Output() enterPressed = new EventEmitter<ParagraphComponent>();
-  @Output() backspacePressed = new EventEmitter<ParagraphComponent>();
+  @Output() newComponent = new EventEmitter();
+  @Output() deleteMe = new EventEmitter();
+  @Output() changeElement = new EventEmitter<string>();
+
   @ViewChild('editableParagraph', { read: ElementRef }) editableElement: ElementRef | undefined;
   @ViewChild('editableParagraph', { read: ElementRef }) cursorElement: ElementRef<HTMLParagraphElement> | undefined;
   showSpeedDial: boolean = true;
@@ -26,13 +28,13 @@ export class ParagraphComponent implements AfterViewInit, Editable {
     if (event.key === 'Enter') {
       event.preventDefault();
       this.showSpeedDial = false;
-      this.enterPressed.emit();
+      this.newComponent.emit();
     }
     else if (event.key === 'Backspace') {
       if (this.editableElement) {
         const text = this.editableElement.nativeElement.textContent.trim();
         if (!text) {
-          this.backspacePressed.emit();
+          this.deleteMe.emit();
         }
         if (text.length == 1) {
           this.showSpeedDial = true;
@@ -50,10 +52,12 @@ export class ParagraphComponent implements AfterViewInit, Editable {
       }
       if (text.length == 1) {
         if (text == '*' && event.code == 'Space') {
-          console.log('UL')
+          // console.log('UL')
+          this.changeElement.emit('UL');
         }
         if (text == '+' && event.code == 'Space') {
           console.log('OL')
+          this.changeElement.emit('OL');
         }
       }
     }
@@ -62,6 +66,13 @@ export class ParagraphComponent implements AfterViewInit, Editable {
   focus(): void {
     if (this.editableElement) {
       this.editableElement.nativeElement.focus();
+    }
+  }
+
+  blur(): void {
+    if (this.editableElement) {
+      this.showSpeedDial = false;
+      this.editableElement.nativeElement.blur();
     }
   }
 

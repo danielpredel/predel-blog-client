@@ -1,8 +1,8 @@
 import { ElementRef, EventEmitter } from "@angular/core";
 
 export interface Editable {
-    enterPressed: EventEmitter<any>;
-    backspacePressed: EventEmitter<any>;
+    newComponent: EventEmitter<any>;
+    deleteMe: EventEmitter<any>;
     editableElement: ElementRef | undefined;
     cursorElement: ElementRef<any> | undefined;
     onKeyDown(event: KeyboardEvent): void;
