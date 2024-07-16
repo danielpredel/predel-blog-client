@@ -1,0 +1,8 @@
+ul.o-list {
+  list-style: decimal;
+}
+
+ul{
+  border: none;
+  outline: none;
+}

@@ -8,5 +8,6 @@ import { Component } from '@angular/core';
   styleUrl: './list.component.css'
 })
 export class ListComponent {
+  ordered: boolean = false;
 
 }
