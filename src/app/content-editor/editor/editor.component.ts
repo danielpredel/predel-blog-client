@@ -13,50 +13,55 @@ export class EditorComponent {
   private components: ComponentRef<any>[] = [];
 
   ngOnInit() {
-    // this.addParagraph();  // Agrega un párrafo inicial
-    this.addComponent();
+    this.addComponent('P');
   }
 
-  addComponent() {
+  addComponent(type: string) {
     const componentRef = this.container.createComponent(ParagraphComponent);
     this.components.push(componentRef);
-    const index = this.components.indexOf(componentRef);
-    componentRef.instance.enterPressed.subscribe((event) => {
-      // console.log(`Component at index ${index} emitted an enter event`);
-      this.addComponentAtIndex(index + 1);
-    });
-    componentRef.instance.backspacePressed.subscribe((event) => {
-      // console.log(`Component at index ${index} emitted a backspace event`);
-      this.removeComponentAtIndex(index);
-    });
-    setTimeout(() => componentRef.instance.focus(), 0);
-  }
 
-  addComponentAtIndex(index: number) {
-    const componentRef = this.container.createComponent(ParagraphComponent);
-    this.container.insert(componentRef.hostView, index);
-    this.components.splice(index, 0, componentRef);
-    componentRef.instance.enterPressed.subscribe((event) => {
-      const componentIndex = this.components.indexOf(componentRef);
-      // console.log(`Component at index ${componentIndex} emitted an enter event`);
-      this.addComponentAtIndex(componentIndex + 1);
+    const componentIndex = this.components.indexOf(componentRef);
+    componentRef.instance.newComponent.subscribe(() => {
+      this.addComponentAtIndex(componentIndex + 1, 'P');
     });
-    componentRef.instance.backspacePressed.subscribe((event) => {
-      const componentIndex = this.components.indexOf(componentRef);
-      // console.log(`Component at index ${componentIndex} emitted a backspace event`);
+    componentRef.instance.deleteMe.subscribe(() => {
       this.removeComponentAtIndex(componentIndex);
     });
-    setTimeout(() => componentRef.instance.focus(), 0);
+    setTimeout(() => {
+      this.components[componentIndex].instance.blur();
+      componentRef.instance.focus()
+    }, 0);
+  }
+
+  addComponentAtIndex(index: number, type: string) {
+    const componentRef = this.container.createComponent(ParagraphComponent, { index });
+    this.components.splice(index, 0, componentRef);
+
+    componentRef.instance.newComponent.subscribe(() => {
+      const componentIndex = this.components.indexOf(componentRef);
+      this.addComponentAtIndex(componentIndex + 1, 'P');
+    });
+    componentRef.instance.deleteMe.subscribe(() => {
+      const componentIndex = this.components.indexOf(componentRef);
+      this.removeComponentAtIndex(componentIndex);
+    });
+
+    setTimeout(() => {
+      this.components[index - 1].instance.blur();
+      componentRef.instance.focus()
+    }, 0);
   }
 
   removeComponentAtIndex(index: number) {
     if (index > 0) {
       const component = this.components.splice(index, 1)[0];
-      component.instance.backspacePressed.unsubscribe();
-      component.instance.enterPressed.unsubscribe();
+      component.instance.deleteMe.unsubscribe();
+      component.instance.newComponent.unsubscribe();
       this.container.remove(index);
-      setTimeout(() => this.components[index - 1].instance.focus(), 0);
-      setTimeout(() => this.components[index - 1].instance.placeCursorAtEnd(), 0);
+      setTimeout(() => {
+        this.components[index - 1].instance.focus()
+        this.components[index - 1].instance.placeCursorAtEnd()
+      }, 0);
     }
   }
 }
