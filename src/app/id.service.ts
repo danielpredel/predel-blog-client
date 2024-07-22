@@ -9,6 +9,8 @@ export class IdService {
   constructor() { }
 
   getId() {
-    return this.currentId++;
+    let id = this.currentId.toString().padStart(10,'0');
+    this.currentId++;
+    return id;
   }
 }
