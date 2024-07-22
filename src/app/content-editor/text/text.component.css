@@ -1,0 +1,17 @@
+p, h1, h3 {
+  border: none;
+  outline: none;
+}
+
+/* Related to speed dial */
+.editable-element-container {
+  position: relative;
+}
+
+.speed-dial-container {
+  position: absolute;
+  top: -5px;
+  /* top: 0; */
+  left: -70px; /* adjust to your margin size */
+  z-index: 1;
+}

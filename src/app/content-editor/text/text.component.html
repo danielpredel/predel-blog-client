@@ -1,1 +1,38 @@
-<p>text works!</p>
+<div [id]="componentIds[0]" class="editable-element-container">
+  <div [ngSwitch]="type">
+    <h1
+      *ngSwitchCase="'TITLE'"
+      #editableTitle
+      [id]="componentIds[1]"
+      [contentEditable]="true"
+      (keydown)="onKeyDown($event)"
+      (keyup)="onKeyUp($event)"
+      (focus)="onFocus()"
+    ></h1>
+    <h3
+      *ngSwitchCase="'SUBTITLE'"
+      #editableSubtitle
+      [id]="componentIds[2]"
+      [contentEditable]="true"
+      (keydown)="onKeyDown($event)"
+      (keyup)="onKeyUp($event)"
+      (focus)="onFocus()"
+    ></h3>
+    <p
+      *ngSwitchDefault
+      #editableParagraph
+      [id]="componentIds[3]"
+      [contentEditable]="true"
+      (keydown)="onKeyDown($event)"
+      (keyup)="onKeyUp($event)"
+      (focus)="onFocus()"
+    ></p>
+  </div>
+  <div class="speed-dial-container" *ngIf="showSpeedDial">
+    <app-speed-dial
+      [open]="showSpeedDialOptions"
+      (statusChage)="onSpeedStatusChange($event)"
+      (selection)="onSpeedSelection($event)"
+    ></app-speed-dial>
+  </div>
+</div>
