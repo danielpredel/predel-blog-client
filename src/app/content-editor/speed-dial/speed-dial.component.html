@@ -1,8 +1,4 @@
 <div class="button-container">
-  <!-- <button id="mainButton" class="main-button" (click)="toggleMenu()">
-    <span *ngIf="!open">+</span>
-    <span *ngIf="open">x</span>
-  </button> -->
   <a
     *ngIf="!open"
     (click)="toggleMenu()"
@@ -18,8 +14,7 @@
     uk-icon="close"
   ></a>
   <div *ngIf="open" class="options-container">
-    <a class="uk-icon-button circle-button" uk-icon="image" uk-tooltip="Add an image file"></a>
-    <!-- <a class="uk-icon-button circle-button" uk-icon="list"></a> -->
-    <a class="uk-icon-button circle-button" uk-icon="code" uk-tooltip="Add new code block"></a>
+    <a (click)="setSection('IMAGE')" class="uk-icon-button circle-button" uk-icon="image" uk-tooltip="Add an image file"></a>
+    <a (click)="setSection('CODE-SNIPPET')" class="uk-icon-button circle-button" uk-icon="code" uk-tooltip="Add new code block"></a>
   </div>
 </div>

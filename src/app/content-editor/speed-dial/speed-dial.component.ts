@@ -21,4 +21,9 @@ export class SpeedDialComponent {
       this.statusChage.emit(true);
     }
   }
+
+  setSection(type: string) {
+    this.statusChage.emit(false);
+    this.selection.emit(type);
+  }
 }
