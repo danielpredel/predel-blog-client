@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SpeedDialComponent } from "../speed-dial/speed-dial.component";
 import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
-import { IdService } from '../../id.service';
 
 @Component({
   selector: 'app-text',
@@ -10,7 +9,7 @@ import { IdService } from '../../id.service';
   templateUrl: './text.component.html',
   styleUrl: './text.component.css'
 })
-export class TextComponent implements OnInit, AfterViewInit {
+export class TextComponent {
   // Event Emitters
   @Output() addComponent = new EventEmitter();
   @Output() deleteComponent = new EventEmitter();
@@ -22,26 +21,22 @@ export class TextComponent implements OnInit, AfterViewInit {
   @ViewChild('editableParagraph', { read: ElementRef }) editableParagraph: ElementRef<HTMLParagraphElement> | undefined;
 
   // Local Varibles
-  types: Array<string> = ['PARAGRAPH', 'TITLE', 'SUBTITLE'];
-  type: string = this.types[0];
-  componentIds: Array<string> = [];
+  private _data: any;
+  @Input()
+  set data(value: any) {
+    this._data = value;
+    this.afterInputData();
+  }
+  elementType: string = 'PARAGRAPH';
+  @Input() componentIds: Array<string> = [];
 
   // Speed Dial Varibles
   showSpeedDialOptions: boolean = false;
   showSpeedDial: boolean = true;
+  text: string | undefined;
 
-  constructor(private idService: IdService) { }
-
-  ngOnInit(): void {
-    let id = this.idService.getId();
-    this.componentIds.push(`txt-${id}`);
-    this.componentIds.push(`txt-${id}-Title`);
-    this.componentIds.push(`txt-${id}-Subtitle`);
-    this.componentIds.push(`txt-${id}-Paragraph`);
-  }
-
-  ngAfterViewInit() {
-    this.focus();
+  afterInputData() {
+    // Create Data Node: Text and Anchors
   }
 
   // Event's Functions
@@ -74,11 +69,11 @@ export class TextComponent implements OnInit, AfterViewInit {
       }
       if (text.length == 1) {
         if (text == '*' && event.code == 'Space') {
-          console.log('UL')
+          // console.log('UL')
           this.changeComponent.emit('UL');
         }
         if (text == '+' && event.code == 'Space') {
-          console.log('OL')
+          // console.log('OL')
           this.changeComponent.emit('OL');
         }
       }
@@ -139,7 +134,7 @@ export class TextComponent implements OnInit, AfterViewInit {
 
   getTarget() {
     let target = null;
-    switch (this.type) {
+    switch (this.elementType) {
       case 'PARAGRAPH':
         target = this.editableParagraph;
         break;
@@ -153,7 +148,67 @@ export class TextComponent implements OnInit, AfterViewInit {
     return target;
   }
 
-  getComponentId(){
+  getComponentId() {
     return this.componentIds[0];
+  }
+
+  toTitle() {
+    let target = this.getTarget();
+    this.text = target?.nativeElement.innerText;
+    this.elementType = 'TITLE';
+    this.waitForTitle();
+  }
+
+  toSubtitle() {
+    let target = this.getTarget();
+    this.text = target?.nativeElement.innerText;
+    this.elementType = 'SUBTITLE';
+    this.waitForSubtitle();
+  }
+
+  toParagraph() {
+    let target = this.getTarget();
+    this.text = target?.nativeElement.innerText;
+    this.elementType = 'PARAGRAPH';
+    this.waitForParagraph();
+  }
+
+  waitForTitle(){
+    setTimeout(() => {
+      if (this.editableTitle && this.editableTitle.nativeElement) {
+        if(this.text){
+          this.editableTitle.nativeElement.innerText = this.text;
+          this.placeCursorAtEnd();
+        }
+      } else {
+        this.waitForTitle();
+      }
+    }, 100);
+  }
+
+  waitForSubtitle(){
+    setTimeout(() => {
+      if (this.editableSubtitle && this.editableSubtitle.nativeElement) {
+        if(this.text){
+          this.editableSubtitle.nativeElement.innerText = this.text;
+          this.placeCursorAtEnd();
+        }
+      } else {
+        this.waitForSubtitle();
+      }
+    }, 100);
+  }
+
+  waitForParagraph(){
+    setTimeout(() => {
+      if (this.editableParagraph && this.editableParagraph.nativeElement) {
+        if(this.text){
+          this.editableParagraph.nativeElement.innerText = this.text;
+          this.placeCursorAtEnd();
+        }
+      } else {
+        this.waitForParagraph();
+      }
+    }, 100);
   }
 }
