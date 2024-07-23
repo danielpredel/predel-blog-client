@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [],
+  imports: [NgClass],
   templateUrl: './list.component.html',
   styleUrl: './list.component.css'
 })
 export class ListComponent {
-  ordered: boolean = false;
-
+  @Input() isOrdered: boolean = false;
 }
