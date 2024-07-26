@@ -1,84 +1,7 @@
 <div
   class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
 >
-  <!-- <article class="uk-article">
-    <h1 class="uk-article-title">Title</h1>
-
-    <p class="uk-article-meta">
-      Written by <a href="#">Super User</a> on 12 April 2012. Posted in
-      <a href="#">Blog</a>
-    </p>
-
-    <p>
-      Lorem ipsum dolor sit <strong>Bold</strong> amet, consectetur adipiscing
-      elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-      aliquip.
-    </p>
-
-    <p>Unordered list</p>
-    <ul class="uk-list uk-list-disc">
-      <li>List item 1</li>
-      <li>List item 2</li>
-      <li>List item 3</li>
-    </ul>
-
-    <p class="uk-text-lead">Subtitle</p>
-
-    <p>
-      Quisque ante lacus, malesuada ac auctor vitae, congue
-      <a href="#">Link</a>. Phasellus lacus ex, semper ac tortor nec, fringilla
-      condimentum orci. Fusce eu rutrum tellus.
-    </p>
-
-    <p>Ordered List</p>
-    <ol class="uk-list uk-list-decimal">
-      <li>Donec blandit a lorem id convallis.</li>
-      <li>Cras gravida arcu at diam gravida gravida.</li>
-      <li>Integer in volutpat libero.</li>
-      <li>Donec a diam tellus.</li>
-      <li>Aenean nec tortor orci.</li>
-      <li>Quisque aliquam cursus urna, non bibendum massa viverra eget.</li>
-      <li>Vivamus maximus ultricies pulvinar.</li>
-    </ol>
-
-    <blockquote cite="#">
-      <p class="uk-margin-small-bottom">
-        The blockquote element represents content that is quoted from another
-        source, optionally with a citation which must be within a footer or cite
-        element.
-      </p>
-      <footer>
-        Someone famous in <cite><a href="#">Source Title</a></cite>
-      </footer>
-    </blockquote>
-
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-      velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-      cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum.
-    </p>
-
-    <div class="uk-container">
-      <img
-        src="https://cdn.environment.sa.gov.au/img/eyJidWNrZXQiOiJlbnZzYS1idWNrZXQiLCJrZXkiOiJsYW5kc2NhcGUvaW1hZ2VzL3N0YXRld2lkZS9sYnNhLWhlcm9fMjAyMy0wOC0wOC0wMTU5MjRfdWpzaC5qcGciLCJlZGl0cyI6eyJ3ZWJwIjp7InF1YWxpdHkiOjgyfSwicmVzaXplIjp7IndpZHRoIjoxMjAwLCJoZWlnaHQiOjQ5NSwiZml0IjoiY292ZXIifX19"
-        alt="Responsive Image"
-        class="uk-width-1-1 uk-align-center"
-      />
-    </div>
-    <div uk-alert>
-      <span class="uk-label">Note</span>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua.
-      </p>
-    </div>
-  </article> -->
-  <div
+  <!-- <div
     *ngIf="tooltipVisible"
     class="tooltip"
     [ngStyle]="{ 'left.px': tooltipLeft, 'top.px': tooltipTop }"
@@ -86,14 +9,20 @@
     <div class="items">
       <div
         class="uk-icon item"
-        [ngClass]="{ 'disabled': tooltipLink.disabled, 'selected': tooltipLink.selected }"
+        [ngClass]="{
+          disabled: tooltipLink.disabled,
+          selected: tooltipLink.selected
+        }"
         uk-icon="icon: link; ratio: 1.2"
-        (click)="onTooltipSelection('link')"
+        (click)="onLinkSelection()"
       ></div>
       <div class="divider"></div>
       <div
         class="uk-icon item"
-        [ngClass]="{ 'disabled': tooltipTitle.disabled, 'selected': tooltipTitle.selected }"
+        [ngClass]="{
+          disabled: tooltipTitle.disabled,
+          selected: tooltipTitle.selected
+        }"
         (click)="onTooltipSelection('title')"
       >
         <span>
@@ -107,7 +36,10 @@
       </div>
       <div
         class="uk-icon item"
-        [ngClass]="{ 'disabled': tooltipSubtitle.disabled, 'selected': tooltipSubtitle.selected }"
+        [ngClass]="{
+          disabled: tooltipSubtitle.disabled,
+          selected: tooltipSubtitle.selected
+        }"
         (click)="onTooltipSelection('subtitle')"
       >
         <span>
@@ -121,22 +53,51 @@
       </div>
     </div>
   </div>
-
-  <article id="editor-container" class="uk-article" (mouseup)="onMouseUp()" (mousedown)="onMouseDown()">
-    <!-- <h1 id="title" class="uk-article-title">Title</h1>
-    <p id="parrafo" class="uk-article-meta">
-      Written by <a href="#">Super User</a> on 12 April 2012. Posted in
-      <a href="#">Blog</a>
+  <div
+    *ngIf="tooltipLinkVisible"
+    class="tooltip"
+    [ngStyle]="{ 'left.px': tooltipLeft, 'top.px': tooltipTop }"
+  >
+    <div class="items">
+      <div
+        #linkInput
+        contenteditable="true"
+        class="item link-input"
+        (blur)="this.tooltipLinkVisible = false"
+      ></div>
+      <div
+        class="uk-icon item"
+        uk-icon="close"
+        (click)="restoreSelection()"
+      ></div>
+    </div>
+  </div> -->
+  <app-tooltip (operation)="onTooltipSelection($event)"></app-tooltip>
+  <article
+    id="editor-container"
+    class="uk-article"
+    (mouseup)="onMouseUp()"
+    (mousedown)="onMouseDown()"
+  >
+  <!-- For test only -->
+    <!-- <p id="txt-0000000001-Paragraph" contenteditable="true">
+      Paragraph with only text
     </p>
-    <ul id="lst-0000000099" contenteditable="true">
-      <li id="lsi-1">Uno</li>
-      <li id="lsi-2">Dos</li>
-      <li id="lsi-3">Tres</li>
-      <li id="lsi-4">Cuatro</li>
-    </ul>
-    <app-text></app-text>
-    <app-text></app-text>
-    <app-text></app-text> -->
+    <p id="txt-0000000002-Paragraph" contenteditable="true">
+      Paragrapgh with
+      <a id="txt-0000000002-Paragraph-anchor-1" href="#">Links</a> more text
+      <a id="txt-0000000002-Paragraph-anchor-2" href="#">And more links</a>
+    </p>
+    <h1 id="txt-0000000003-Title" contenteditable="true">Title</h1>
+    <h3 id="txt-0000000004-Subtitle" contenteditable="true">Subtitle</h3>
+    <ul id="lst-0000000005" contenteditable="true">
+      <li id="lst-0000000005-lsi-1">List Item with only text</li>
+      <li id="lst-0000000005-lsi-2">
+        List Item with Paragrapgh with
+        <a id="lst-0000000005-lsi-2-anchor-1" href="#">Links</a> more text
+        <a id="lst-0000000005-lsi-2-anchor-2" href="#">And more links</a>
+      </li>
+    </ul> -->
     <ng-container #container></ng-container>
   </article>
 </div>
