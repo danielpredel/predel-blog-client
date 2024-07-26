@@ -1,1 +1,69 @@
-<p>tooltip works!</p>
+<div
+  #tooltip
+  class="tooltip"
+  [ngStyle]="{ 'left.px': left, 'top.px': top }"
+  [ngClass]="{ hidden: this.hidden }"
+>
+  <div [ngSwitch]="this.stage">
+    <div class="items" *ngSwitchCase="'OPTIONS'">
+      <div
+        class="uk-icon item"
+        [ngClass]="{
+          disabled: link.disabled,
+          selected: link.selected
+        }"
+        uk-icon="icon: link; ratio: 1.2"
+        (click)="onLinkSelection()"
+      ></div>
+      <div class="divider"></div>
+      <div
+        class="uk-icon item"
+        [ngClass]="{
+          disabled: title.disabled,
+          selected: title.selected
+        }"
+        (click)="onTooltipSelection('title')"
+      >
+        <span>
+          <svg width="21" height="21">
+            <path
+              d="M3 2v4.747h1.656l.383-2.568.384-.311h3.88V15.82l-.408.38-1.56.12V18h7.174v-1.68l-1.56-.12-.407-.38V3.868h3.879l.36.311.4072.568h1.656V2z"
+              fill-rule="evenodd"
+            ></path>
+          </svg>
+        </span>
+      </div>
+      <div
+        class="uk-icon item"
+        [ngClass]="{
+          disabled: subtitle.disabled,
+          selected: subtitle.selected
+        }"
+        (click)="onTooltipSelection('subtitle')"
+      >
+        <span>
+          <svg width="21" height="21">
+            <path
+              d="M4 5.5v4.74h1.657l.384-2.569.384-.312h2.733v8.461l-.41.38-1.91.12V18h7.179v-1.68l-1.912-.12-.405-.38V7.359h2.729l.36.312.408 2.57h1.657V5.5z"
+              fill-rule="evenodd"
+            ></path>
+          </svg>
+        </span>
+      </div>
+    </div>
+    <div class="items" *ngSwitchCase="'LINK-INPUT'">
+      <div
+        #linkInput
+        contenteditable="true"
+        class="item link-input"
+        data-placeholder="Paste or type a link..."
+        (keydown)="onKeyDown($event)"
+      ></div>
+      <div
+        class="uk-icon item"
+        uk-icon="close"
+        (click)="this.onTooltipSelection('close')"
+      ></div>
+    </div>
+  </div>
+</div>
