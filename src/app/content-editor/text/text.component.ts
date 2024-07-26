@@ -47,14 +47,14 @@ export class TextComponent {
       this.addComponent.emit();
     }
     else if (event.key === 'Backspace') {
-      let target = this.getTarget();
-      if (target) {
-        const text = target.nativeElement.textContent?.trim() || '';
-        if (!text) {
-          this.deleteComponent.emit();
-        }
-        if (text.length == 1) {
-          this.showSpeedDial = true;
+      const selection = window.getSelection();
+      if (selection) {
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+
+          if (range.startOffset === 0 && range.endOffset === 0) {
+            this.deleteComponent.emit();
+          }
         }
       }
     }
@@ -173,10 +173,10 @@ export class TextComponent {
     this.waitForParagraph();
   }
 
-  waitForTitle(){
+  waitForTitle() {
     setTimeout(() => {
       if (this.editableTitle && this.editableTitle.nativeElement) {
-        if(this.text){
+        if (this.text) {
           this.editableTitle.nativeElement.innerText = this.text;
           this.placeCursorAtEnd();
         }
@@ -186,10 +186,10 @@ export class TextComponent {
     }, 100);
   }
 
-  waitForSubtitle(){
+  waitForSubtitle() {
     setTimeout(() => {
       if (this.editableSubtitle && this.editableSubtitle.nativeElement) {
-        if(this.text){
+        if (this.text) {
           this.editableSubtitle.nativeElement.innerText = this.text;
           this.placeCursorAtEnd();
         }
@@ -199,10 +199,10 @@ export class TextComponent {
     }, 100);
   }
 
-  waitForParagraph(){
+  waitForParagraph() {
     setTimeout(() => {
       if (this.editableParagraph && this.editableParagraph.nativeElement) {
-        if(this.text){
+        if (this.text) {
           this.editableParagraph.nativeElement.innerText = this.text;
           this.placeCursorAtEnd();
         }
