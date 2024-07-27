@@ -35,6 +35,9 @@ export class TextComponent {
   showSpeedDial: boolean = true;
   text: string | undefined;
 
+  // link count variable
+  linksCount: number = 1;
+
   afterInputData() {
     // Create Data Node: Text and Anchors
   }
@@ -171,6 +174,85 @@ export class TextComponent {
     this.text = target?.nativeElement.innerText;
     this.elementType = 'PARAGRAPH';
     this.waitForParagraph();
+  }
+
+  toLink(text: string, range: Range, url: string) {
+    if (range && this.elementType == 'PARAGRAPH') {
+      const link = document.createElement('a');
+      link.href = url;
+      link.id = `${this.componentIds[3]}-anchor-${this.linksCount++}`;
+      link.textContent = text;
+
+      range.deleteContents();
+      range.insertNode(link);
+    }
+  }
+
+  toUnlink(range: Range) {
+    if (range) {
+      // Identify links inside the selection
+      let linkIds = this.getSelectedLinkIds(range);
+      
+      // Delete links inside the selection
+      if (linkIds.length > 0) {
+        this.deleleSelectedLinks(linkIds);
+      }
+    }
+  }
+
+  getSelectedLinkIds(range: Range) {
+    let linkIds = Array();
+    if (range) {
+      if (range.startContainer === range.endContainer) {
+        const startElement = range.startContainer.parentElement as HTMLElement;
+        if (startElement.nodeType === Node.ELEMENT_NODE && startElement.tagName === 'A') {
+          linkIds.push(startElement.id);
+        }
+      }
+      else {
+        let startNode = range.startContainer;
+        let endNode = range.endContainer;
+        if (range.startContainer.parentElement?.tagName === 'A') {
+          startNode = range.startContainer.parentElement;
+          const startElement = range.startContainer.parentElement as HTMLElement;
+          linkIds.push(startElement.id);
+        }
+        if (range.endContainer.parentElement?.tagName === 'A') {
+          endNode = range.endContainer.parentElement;
+          const endElement = range.endContainer.parentElement as HTMLElement;
+          linkIds.push(endElement.id);
+        }
+
+        let nextNode = startNode.nextSibling ? startNode.nextSibling : startNode.parentElement?.nextSibling;
+        while (nextNode != endNode) {
+          if (nextNode?.nodeType === Node.ELEMENT_NODE) {
+            let nextElement = nextNode as HTMLElement;
+            if (nextElement.tagName === 'A') {
+              linkIds.push(nextElement.id);
+            }
+          }
+          nextNode = nextNode?.nextSibling;
+        }
+      }
+    }
+    return linkIds;
+  }
+
+  deleleSelectedLinks(linkIds: Array<string>) {
+    if (this.editableParagraph) {
+      const nativeElement: HTMLElement = this.editableParagraph.nativeElement;
+      const childNodes = nativeElement.childNodes;
+      childNodes.forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const elementNode = node as HTMLElement;
+          if (elementNode.tagName === 'A' && linkIds.includes(elementNode.id)) {
+            const textNode = document.createTextNode(elementNode.textContent || '');
+            nativeElement.replaceChild(textNode, elementNode);
+          }
+        }
+      });
+      nativeElement.normalize();
+    }
   }
 
   waitForTitle() {
