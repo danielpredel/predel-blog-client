@@ -48,8 +48,8 @@ export class TooltipComponent {
         }
         break;
       case 'subtitle':
-        if (!this.title.disabled) {
-          if (this.title.selected) {
+        if (!this.subtitle.disabled) {
+          if (this.subtitle.selected) {
             this.operation.emit({ operation: 'toParagraph' });
           }
           else {
