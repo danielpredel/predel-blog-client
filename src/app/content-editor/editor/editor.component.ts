@@ -1,4 +1,4 @@
-import { Component, ComponentRef, ElementRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { ListComponent } from '../list/list.component';
 import { TextComponent } from "../text/text.component";
 import { NgClass, NgIf, NgStyle } from '@angular/common';
@@ -20,6 +20,7 @@ export class EditorComponent {
   private components: ComponentRef<any>[] = [];
   private componentsIds: Array<string> = [];
 
+  selectionString: string | undefined;
   selectionRange: Range | undefined;
   selectionTargetId: string = '';
 
@@ -47,14 +48,49 @@ export class EditorComponent {
     this.hideSelection();
   }
 
-  onTooltipSelection(operation: any) {
-    console.log(operation);
-    // console.log(this.components[targetIndex].location.nativeElement.contains(this.commonAncestorElement))
+  onTooltipSelection(selection: any) {
+    if (selection.operation != 'close-link') {
+      const targetIndex = this.componentsIds.indexOf(this.selectionTargetId);
+      const targetComponentRef = this.components[targetIndex];
+      const commonAncestorElement = this.getCommonAncestorElement();
+      if (targetComponentRef.location.nativeElement.contains(commonAncestorElement)) {
+        if (targetComponentRef.componentType === TextComponent) {
+          switch (selection.operation) {
+            case 'toTitle':
+              targetComponentRef.instance.toTitle();
+              break;
+            case 'toSubtitle':
+              targetComponentRef.instance.toSubtitle();
+              break;
+            case 'toParagraph':
+              targetComponentRef.instance.toParagraph();
+              break;
+            case 'toLink':
+              targetComponentRef.instance.toLink(this.selectionString, this.selectionRange, selection.url);
+              break;
+            case 'toUnlink':
+              targetComponentRef.instance.toUnlink(this.selectionRange);
+              break;
+          }
+        }
+        else if (targetComponentRef.componentType === ListComponent) {
+          switch (selection.operation) {
+            case 'toLink':
+              targetComponentRef.instance.toLink(this.selectionString, this.selectionRange, selection.url);
+              break;
+            case 'toUnlink':
+              targetComponentRef.instance.toUnlink(this.selectionRange);
+              break;
+          }
+        }
+      }
+    }
   }
 
   // Functions
   handleSelection(selection: Selection) {
-    if (selection.toString().length > 0) {
+    this.selectionString = selection.toString();
+    if (this.selectionString.length > 0) {
       this.selectionRange = selection?.getRangeAt(0);
       const ancestorId = this.getCommonAncestorsId();
 
@@ -124,6 +160,11 @@ export class EditorComponent {
     const commonAncestor = this.selectionRange?.commonAncestorContainer as Element;
     const commonAncestorElement = commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
     return commonAncestorElement?.id;
+  }
+
+  getCommonAncestorElement() {
+    const commonAncestor = this.selectionRange?.commonAncestorContainer as Element;
+    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
   }
 
   renderNewPost() {
@@ -234,25 +275,25 @@ export class EditorComponent {
     }, 0);
   }
 
-  removeComponentAtIndex(index: number) {
-    // if (index > 0) {
-    const component = this.components.splice(index, 1)[0];
-    component.instance.deleteMe.unsubscribe();
-    component.instance.newComponent.unsubscribe();
-    this.container.remove(index);
-    setTimeout(() => {
-      this.components[index - 1].instance.focus();
-      this.components[index - 1].instance.placeCursorAtEnd();
-      // Add the tada after the cursor, in case there's any
-    }, 0);
-    // }
-  }
+  // removeComponentAtIndex(index: number) {
+  //   // if (index > 0) {
+  //   const component = this.components.splice(index, 1)[0];
+  //   component.instance.deleteMe.unsubscribe();
+  //   component.instance.newComponent.unsubscribe();
+  //   this.container.remove(index);
+  //   setTimeout(() => {
+  //     this.components[index - 1].instance.focus();
+  //     this.components[index - 1].instance.placeCursorAtEnd();
+  //     // Add the tada after the cursor, in case there's any
+  //   }, 0);
+  //   // }
+  // }
 
-  changeComponentAtIndex(index: number, type: string) {
-    // this.removeComponentAtIndex(index);
-    this.container.detach(index);
-    this.addListAtIndex(index, type);
-  }
+  // changeComponentAtIndex(index: number, type: string) {
+  //   // this.removeComponentAtIndex(index);
+  //   this.container.detach(index);
+  //   this.addListAtIndex(index, type);
+  // }
 
   changeTextComponent(index: number, newComponentType: string) {
     this.container.detach(index);
