@@ -49,8 +49,15 @@ export class TextComponent {
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      let content = this.getContentAfterCursor();
-      // this.showSpeedDial = false;
+      let target = this.getTarget();
+      let lenght = target?.nativeElement.textContent?.length;
+      if (lenght && lenght > 0) {
+        let content = this.getContentAfterCursor();
+      }
+      else {
+        this.addComponent.emit();
+        this.showSpeedDial = false;
+      }
       // this.addComponent.emit();
     }
     else if (event.key === 'Backspace') {
@@ -218,7 +225,6 @@ export class TextComponent {
     return textNode;
   }
 
-  // This needs the nodes in range
   getSelectedLinkIds(range: Range) {
     let linkIds = Array();
     if (range) {
@@ -293,9 +299,8 @@ export class TextComponent {
     }, 100);
   }
 
-  // this need the nodes in range
   getContentAfterCursor() {
-    let childNodes = null;
+    let content = null;
     const selection = window.getSelection();
     const target = this.getTarget();
     if (selection && selection.rangeCount > 0 && target) {
@@ -305,12 +310,29 @@ export class TextComponent {
       afterRange.setEnd(target.nativeElement as Node, target.nativeElement.childNodes.length);
 
       // Create objects:
+      let nodes = Array();
       let childNodes = this.getChildNodes(afterRange);
+      childNodes?.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          let childElement = node as HTMLElement;
+          if (childElement.tagName === 'A') {
+            let linkElement = childElement as HTMLAnchorElement;
+            nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+          }
+        }
+        else if (node.nodeType === Node.TEXT_NODE) {
+          nodes.push({ type: 'text', text: node.textContent });
+        }
+      });
 
-      // Delete selection at the end
-      // afterRange.deleteContents();
+      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+        content = {
+          type: this.elementType == 'TITLE' ? 'SUBTITLE' : 'PARAGRAPH',
+          content: nodes
+        }
+      }
     }
-    return childNodes;
+    return content;
   }
 
   getChildNodes(range: Range) {
