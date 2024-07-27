@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SpeedDialComponent } from "../speed-dial/speed-dial.component";
 import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
+import { after } from 'node:test';
 
 @Component({
   selector: 'app-text',
@@ -40,14 +41,17 @@ export class TextComponent {
 
   afterInputData() {
     // Create Data Node: Text and Anchors
+    // For new Text Component with initial data
+    // Like Edition and receciving content from other components
   }
 
   // Event's Functions
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      this.showSpeedDial = false;
-      this.addComponent.emit();
+      let content = this.getContentAfterCursor();
+      // this.showSpeedDial = false;
+      // this.addComponent.emit();
     }
     else if (event.key === 'Backspace') {
       const selection = window.getSelection();
@@ -192,7 +196,7 @@ export class TextComponent {
     if (range) {
       // Identify links inside the selection
       let linkIds = this.getSelectedLinkIds(range);
-      
+
       // Delete links inside the selection
       if (linkIds.length > 0) {
         this.deleleSelectedLinks(linkIds);
@@ -200,40 +204,53 @@ export class TextComponent {
     }
   }
 
+  // This needs the nodes in range
   getSelectedLinkIds(range: Range) {
     let linkIds = Array();
     if (range) {
-      if (range.startContainer === range.endContainer) {
-        const startElement = range.startContainer.parentElement as HTMLElement;
-        if (startElement.nodeType === Node.ELEMENT_NODE && startElement.tagName === 'A') {
-          linkIds.push(startElement.id);
-        }
-      }
-      else {
-        let startNode = range.startContainer;
-        let endNode = range.endContainer;
-        if (range.startContainer.parentElement?.tagName === 'A') {
-          startNode = range.startContainer.parentElement;
-          const startElement = range.startContainer.parentElement as HTMLElement;
-          linkIds.push(startElement.id);
-        }
-        if (range.endContainer.parentElement?.tagName === 'A') {
-          endNode = range.endContainer.parentElement;
-          const endElement = range.endContainer.parentElement as HTMLElement;
-          linkIds.push(endElement.id);
-        }
-
-        let nextNode = startNode.nextSibling ? startNode.nextSibling : startNode.parentElement?.nextSibling;
-        while (nextNode != endNode) {
-          if (nextNode?.nodeType === Node.ELEMENT_NODE) {
-            let nextElement = nextNode as HTMLElement;
-            if (nextElement.tagName === 'A') {
-              linkIds.push(nextElement.id);
-            }
+      let childNodes = this.getChildNodes(range);
+      console.log(childNodes);
+      childNodes?.forEach(node => {
+        if(node.nodeType === Node.ELEMENT_NODE){
+          let childElement = node as HTMLElement;
+          if(childElement.tagName === 'A'){
+            linkIds.push(childElement.id);
           }
-          nextNode = nextNode?.nextSibling;
         }
-      }
+      });
+      
+      // Original way of getting the childNodes of the selection, just in case
+      // if (range.startContainer === range.endContainer) {
+      //   const startElement = range.startContainer.parentElement as HTMLElement;
+      //   if (startElement.nodeType === Node.ELEMENT_NODE && startElement.tagName === 'A') {
+      //     linkIds.push(startElement.id);
+      //   }
+      // }
+      // else {
+      //   let startNode = range.startContainer;
+      //   let endNode = range.endContainer;
+      //   if (range.startContainer.parentElement?.tagName === 'A') {
+      //     startNode = range.startContainer.parentElement;
+      //     const startElement = range.startContainer.parentElement as HTMLElement;
+      //     linkIds.push(startElement.id);
+      //   }
+      //   if (range.endContainer.parentElement?.tagName === 'A') {
+      //     endNode = range.endContainer.parentElement;
+      //     const endElement = range.endContainer.parentElement as HTMLElement;
+      //     linkIds.push(endElement.id);
+      //   }
+
+      //   let nextNode = startNode.nextSibling ? startNode.nextSibling : startNode.parentElement?.nextSibling;
+      //   while (nextNode != endNode) {
+      //     if (nextNode?.nodeType === Node.ELEMENT_NODE) {
+      //       let nextElement = nextNode as HTMLElement;
+      //       if (nextElement.tagName === 'A') {
+      //         linkIds.push(nextElement.id);
+      //       }
+      //     }
+      //     nextNode = nextNode?.nextSibling;
+      //   }
+      // }
     }
     return linkIds;
   }
@@ -292,5 +309,35 @@ export class TextComponent {
         this.waitForParagraph();
       }
     }, 100);
+  }
+
+  // this need the nodes in range
+  getContentAfterCursor() {
+    let content = Array();
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0 && this.editableParagraph) {
+      const range = selection.getRangeAt(0);
+      const afterRange = range.cloneRange();
+      afterRange.setStart(range.endContainer, range.endOffset);
+      afterRange.setEnd(this.editableParagraph.nativeElement as Node, this.editableParagraph.nativeElement.childNodes.length);
+
+      // Create objects:
+      this.getChildNodes(afterRange);
+
+
+      // Delete selection at the end
+      // afterRange.deleteContents();
+    }
+    return content;
+  }
+
+  getChildNodes(range: Range) {
+    let childNodes = null;
+    if (range) {
+      const tempDiv = document.createElement('div');
+      tempDiv.appendChild(range.cloneContents());
+      childNodes = tempDiv.childNodes;
+    }
+    return childNodes;
   }
 }
