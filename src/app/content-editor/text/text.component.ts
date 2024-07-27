@@ -199,7 +199,7 @@ export class TextComponent {
 
       // Delete links inside the selection
       if (linkIds.length > 0) {
-        this.deleleSelectedLinks(linkIds);
+        this.deleteSelectedLinks(linkIds);
       }
     }
   }
@@ -222,7 +222,7 @@ export class TextComponent {
     return linkIds;
   }
 
-  deleleSelectedLinks(linkIds: Array<string>) {
+  deleteSelectedLinks(linkIds: Array<string>) {
     if (this.editableParagraph) {
       const nativeElement: HTMLElement = this.editableParagraph.nativeElement;
       const childNodes = nativeElement.childNodes;
