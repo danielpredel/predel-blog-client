@@ -218,39 +218,6 @@ export class TextComponent {
           }
         }
       });
-      
-      // Original way of getting the childNodes of the selection, just in case
-      // if (range.startContainer === range.endContainer) {
-      //   const startElement = range.startContainer.parentElement as HTMLElement;
-      //   if (startElement.nodeType === Node.ELEMENT_NODE && startElement.tagName === 'A') {
-      //     linkIds.push(startElement.id);
-      //   }
-      // }
-      // else {
-      //   let startNode = range.startContainer;
-      //   let endNode = range.endContainer;
-      //   if (range.startContainer.parentElement?.tagName === 'A') {
-      //     startNode = range.startContainer.parentElement;
-      //     const startElement = range.startContainer.parentElement as HTMLElement;
-      //     linkIds.push(startElement.id);
-      //   }
-      //   if (range.endContainer.parentElement?.tagName === 'A') {
-      //     endNode = range.endContainer.parentElement;
-      //     const endElement = range.endContainer.parentElement as HTMLElement;
-      //     linkIds.push(endElement.id);
-      //   }
-
-      //   let nextNode = startNode.nextSibling ? startNode.nextSibling : startNode.parentElement?.nextSibling;
-      //   while (nextNode != endNode) {
-      //     if (nextNode?.nodeType === Node.ELEMENT_NODE) {
-      //       let nextElement = nextNode as HTMLElement;
-      //       if (nextElement.tagName === 'A') {
-      //         linkIds.push(nextElement.id);
-      //       }
-      //     }
-      //     nextNode = nextNode?.nextSibling;
-      //   }
-      // }
     }
     return linkIds;
   }
