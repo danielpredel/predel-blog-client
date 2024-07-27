@@ -210,8 +210,13 @@ export class EditorComponent {
       });
     }
 
-    componentRef.instance.addComponent.subscribe(() => {
-      this.addTextComponent(index + 1);
+    componentRef.instance.addComponent.subscribe((content) => {
+      if (content) {
+        this.addTextComponent(index + 1, content);
+      }
+      else {
+        this.addTextComponent(index + 1);
+      }
     });
     componentRef.instance.changeComponent.subscribe((componentType) => {
       this.changeTextComponent(index, componentType);
