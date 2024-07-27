@@ -182,10 +182,11 @@ export class TextComponent {
 
   toLink(text: string, range: Range, url: string) {
     if (range && this.elementType == 'PARAGRAPH') {
-      const link = document.createElement('a');
-      link.href = url;
-      link.id = `${this.componentIds[3]}-anchor-${this.linksCount++}`;
-      link.textContent = text;
+      const link = this.createLinkNode(text, url);
+      // const link = document.createElement('a');
+      // link.href = url;
+      // link.id = `${this.componentIds[3]}-anchor-${this.linksCount++}`;
+      // link.textContent = text;
 
       range.deleteContents();
       range.insertNode(link);
@@ -204,6 +205,19 @@ export class TextComponent {
     }
   }
 
+  createLinkNode(text: string, url: string) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.id = `${this.componentIds[3]}-anchor-${this.linksCount++}`;
+    link.textContent = text;
+    return link;
+  }
+
+  createTextNode(text: string) {
+    const textNode = document.createTextNode(text);
+    return textNode;
+  }
+
   // This needs the nodes in range
   getSelectedLinkIds(range: Range) {
     let linkIds = Array();
@@ -211,9 +225,9 @@ export class TextComponent {
       let childNodes = this.getChildNodes(range);
       console.log(childNodes);
       childNodes?.forEach(node => {
-        if(node.nodeType === Node.ELEMENT_NODE){
+        if (node.nodeType === Node.ELEMENT_NODE) {
           let childElement = node as HTMLElement;
-          if(childElement.tagName === 'A'){
+          if (childElement.tagName === 'A') {
             linkIds.push(childElement.id);
           }
         }
@@ -230,7 +244,8 @@ export class TextComponent {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const elementNode = node as HTMLElement;
           if (elementNode.tagName === 'A' && linkIds.includes(elementNode.id)) {
-            const textNode = document.createTextNode(elementNode.textContent || '');
+            const textNode = this.createTextNode(elementNode.textContent || '');
+            // const textNode = document.createTextNode(elementNode.textContent || '');
             nativeElement.replaceChild(textNode, elementNode);
           }
         }
@@ -280,22 +295,22 @@ export class TextComponent {
 
   // this need the nodes in range
   getContentAfterCursor() {
-    let content = Array();
+    let childNodes = null;
     const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0 && this.editableParagraph) {
+    const target = this.getTarget();
+    if (selection && selection.rangeCount > 0 && target) {
       const range = selection.getRangeAt(0);
       const afterRange = range.cloneRange();
       afterRange.setStart(range.endContainer, range.endOffset);
-      afterRange.setEnd(this.editableParagraph.nativeElement as Node, this.editableParagraph.nativeElement.childNodes.length);
+      afterRange.setEnd(target.nativeElement as Node, target.nativeElement.childNodes.length);
 
       // Create objects:
-      this.getChildNodes(afterRange);
-
+      let childNodes = this.getChildNodes(afterRange);
 
       // Delete selection at the end
       // afterRange.deleteContents();
     }
-    return content;
+    return childNodes;
   }
 
   getChildNodes(range: Range) {
