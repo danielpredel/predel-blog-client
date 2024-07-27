@@ -10,4 +10,12 @@ import { NgClass } from '@angular/common';
 })
 export class ListComponent {
   @Input() isOrdered: boolean = false;
+
+  toLink(range: Range, url: string) {
+
+  }
+
+  toUnlink(range: Range) {
+
+  }
 }
