@@ -1,7 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { SpeedDialComponent } from "../speed-dial/speed-dial.component";
 import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
-import { after } from 'node:test';
 
 @Component({
   selector: 'app-text',
@@ -40,9 +39,27 @@ export class TextComponent {
   linksCount: number = 1;
 
   afterInputData() {
-    // Create Data Node: Text and Anchors
-    // For new Text Component with initial data
-    // Like Edition and receciving content from other components
+    this.elementType = this._data.type;
+    this.waitForTarget().then(() => {
+      let target = this.getTarget();
+      this._data.content.forEach((element: { type: string; text: string; url: string }) => {
+        if (element.type == 'text') {
+          let textNode = this.createTextNode(element.text);
+          target?.nativeElement.appendChild(textNode);
+        }
+        else if (element.type == 'link') {
+          if (this.elementType === 'PARAGRAPH') {
+            let linkNode = this.createLinkNode(element.text, element.url);
+            target?.nativeElement.appendChild(linkNode);
+          }
+          else {
+            let textNode = this.createTextNode(element.text);
+            target?.nativeElement.appendChild(textNode);
+          }
+        }
+      });
+      target?.nativeElement.normalize();
+    });
   }
 
   // Event's Functions
@@ -53,12 +70,19 @@ export class TextComponent {
       let lenght = target?.nativeElement.textContent?.length;
       if (lenght && lenght > 0) {
         let content = this.getContentAfterCursor();
+        if (content) {
+          this.addComponent.emit(content);
+          this.showSpeedDial = false;
+        }
+        else {
+          this.addComponent.emit();
+          this.showSpeedDial = false;
+        }
       }
       else {
         this.addComponent.emit();
         this.showSpeedDial = false;
       }
-      // this.addComponent.emit();
     }
     else if (event.key === 'Backspace') {
       const selection = window.getSelection();
@@ -67,7 +91,20 @@ export class TextComponent {
           const range = selection.getRangeAt(0);
 
           if (range.startOffset === 0 && range.endOffset === 0) {
-            this.deleteComponent.emit();
+            let target = this.getTarget();
+            let lenght = target?.nativeElement.textContent?.length;
+            if (lenght && lenght > 0) {
+              let content = this.getContentAfterCursor();
+              if (content) {
+                this.deleteComponent.emit(content);
+              }
+              else {
+                this.deleteComponent.emit();
+              }
+            }
+            else {
+              this.deleteComponent.emit();
+            }
           }
         }
       }
@@ -251,13 +288,38 @@ export class TextComponent {
           const elementNode = node as HTMLElement;
           if (elementNode.tagName === 'A' && linkIds.includes(elementNode.id)) {
             const textNode = this.createTextNode(elementNode.textContent || '');
-            // const textNode = document.createTextNode(elementNode.textContent || '');
             nativeElement.replaceChild(textNode, elementNode);
           }
         }
       });
       nativeElement.normalize();
     }
+  }
+
+  waitForTarget(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const checkTarget = () => {
+        let target;
+        switch (this.elementType) {
+          case 'TITLE':
+            target = this.editableTitle;
+            break;
+          case 'SUBTITLE':
+            target = this.editableSubtitle;
+            break;
+          default:
+            target = this.editableParagraph;
+            break;
+        }
+        if (target && target.nativeElement) {
+          resolve();
+        }
+        else {
+          setTimeout(checkTarget, 50);
+        }
+      }
+      checkTarget();
+    });
   }
 
   waitForTitle() {
@@ -331,6 +393,7 @@ export class TextComponent {
           content: nodes
         }
       }
+      afterRange.deleteContents();
     }
     return content;
   }
