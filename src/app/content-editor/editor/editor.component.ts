@@ -146,16 +146,6 @@ export class EditorComponent {
     window.getSelection()?.removeAllRanges();
   }
 
-  restoreSelection() {
-    console.log('a')
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    console.log(this.selectionRange)
-    if (this.selectionRange) {
-      selection?.addRange(this.selectionRange);
-    }
-  }
-
   getCommonAncestorsId() {
     const commonAncestor = this.selectionRange?.commonAncestorContainer as Element;
     const commonAncestorElement = commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
@@ -169,12 +159,7 @@ export class EditorComponent {
 
   renderNewPost() {
     this.addTextComponent(0);
-    // this.components[0].instance.toTitle();
-  }
-
-  renderEditPost() {
-    // console.log();
-    // 
+    this.components[0].instance.toTitle();
   }
 
   addTextComponent(index: number, data: any = null) {
@@ -187,7 +172,7 @@ export class EditorComponent {
     ids.push(`txt-${id}-Subtitle`);
     ids.push(`txt-${id}-Paragraph`);
 
-    // Send the init data in case it exists
+    // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.componentIds = ids;
       if (data) {
@@ -195,22 +180,14 @@ export class EditorComponent {
       }
     }, 0);
 
-    if (index == 0) {
-      this.components.push(componentRef);
-      // console.log(componentRef.componentType === TextComponent);
-      this.componentsIds.push(ids[0]);
-    }
-    else {
-      this.components.splice(index, 0, componentRef);
-      this.componentsIds.splice(index, 0, ids[0]);
+    this.components.splice(index, 0, componentRef);
+    this.componentsIds.splice(index, 0, ids[0]);
+    this.subscribeTextComponentEvents(componentRef);
+  }
 
-      // Suscribe only if it's not the first Component in the ViewContainerRef 
-      componentRef.instance.deleteComponent.subscribe(() => {
-        this.removeTextComponent(index);
-      });
-    }
-
+  subscribeTextComponentEvents(componentRef: ComponentRef<TextComponent>) {
     componentRef.instance.addComponent.subscribe((content) => {
+      let index = this.components.indexOf(componentRef);
       if (content) {
         this.addTextComponent(index + 1, content);
       }
@@ -218,87 +195,41 @@ export class EditorComponent {
         this.addTextComponent(index + 1);
       }
     });
-    componentRef.instance.changeComponent.subscribe((componentType) => {
-      this.changeTextComponent(index, componentType);
+
+    componentRef.instance.deleteComponent.subscribe((content) => {
+      let index = this.components.indexOf(componentRef);
+      if (content) {
+        this.removeTextComponent(index, content);
+      }
+      else {
+        this.removeTextComponent(index);
+      }
     });
+
+    // componentRef.instance.changeComponent.subscribe((componentType) => {
+    //   let index = this.components.indexOf(componentRef);
+    //   this.changeTextComponent(index, componentType);
+    // });
 
     setTimeout(() => {
       componentRef.instance.focus();
     }, 0);
   }
 
-  // addComponent(type: string) {
-  //   const componentRef = this.container.createComponent(ParagraphComponent);
-  //   this.components.push(componentRef);
-
-  //   componentRef.instance.newComponent.subscribe(() => {
-  //     this.addComponentAtIndex(1, 'P');
-  //   });
-  //   // componentRef.instance.deleteMe.subscribe(() => {
-  //   //   this.removeComponentAtIndex(0);
-  //   // });
-  //   componentRef.instance.changeElement.subscribe((componentType) => {
-  //     this.changeComponentAtIndex(0, componentType);
-  //   });
-  //   setTimeout(() => {
-  //     this.components[0].instance.blur();
-  //     componentRef.instance.focus()
-  //   }, 0);
-  // }
-
-  // addComponentAtIndex(index: number, type: string) {
-  //   const componentRef = this.container.createComponent(ParagraphComponent, { index });
-  //   this.components.splice(index, 0, componentRef);
-  //   const componentIndex = this.components.indexOf(componentRef);
-  //   componentRef.instance.newComponent.subscribe(() => {
-  //     this.addComponentAtIndex(componentIndex + 1, 'P');
-  //   });
-  //   if (componentIndex > 0) {
-  //     componentRef.instance.deleteMe.subscribe(() => {
-  //       this.removeComponentAtIndex(componentIndex);
-  //     });
-  //   }
-  //   componentRef.instance.changeElement.subscribe((componentType) => {
-  //     this.changeComponentAtIndex(componentIndex, componentType)
-  //   });
-
-  //   setTimeout(() => {
-  //     this.components[index - 1].instance.blur();
-  //     componentRef.instance.focus()
-  //   }, 0);
-  // }
-
-  removeTextComponent(index: number) {
+  removeTextComponent(index: number, data: any = null) {
     const component = this.components.splice(index, 1)[0];
-    component.instance.deleteMe.unsubscribe();
-    component.instance.newComponent.unsubscribe();
+    this.componentsIds.splice(index, 1);
+    component.instance.addComponent.unsubscribe();
+    component.instance.deleteComponent.unsubscribe();
+    // component.instance.changeComponent.unsubscribe();
     this.container.remove(index);
     setTimeout(() => {
-      this.components[index - 1].instance.focus();
       this.components[index - 1].instance.placeCursorAtEnd();
-      // Add the tada after the cursor, in case there's any
+      if(data){
+        this.components[index - 1].instance.addContentAtEnd(data);
+      }
     }, 0);
   }
-
-  // removeComponentAtIndex(index: number) {
-  //   // if (index > 0) {
-  //   const component = this.components.splice(index, 1)[0];
-  //   component.instance.deleteMe.unsubscribe();
-  //   component.instance.newComponent.unsubscribe();
-  //   this.container.remove(index);
-  //   setTimeout(() => {
-  //     this.components[index - 1].instance.focus();
-  //     this.components[index - 1].instance.placeCursorAtEnd();
-  //     // Add the tada after the cursor, in case there's any
-  //   }, 0);
-  //   // }
-  // }
-
-  // changeComponentAtIndex(index: number, type: string) {
-  //   // this.removeComponentAtIndex(index);
-  //   this.container.detach(index);
-  //   this.addListAtIndex(index, type);
-  // }
 
   changeTextComponent(index: number, newComponentType: string) {
     this.container.detach(index);
