@@ -29,10 +29,11 @@ export class TextComponent {
   }
   elementType: string = 'PARAGRAPH';
   @Input() componentIds: Array<string> = [];
+  @Input() componentBefore: string = 'NONE';
 
   // Speed Dial Varibles
   showSpeedDialOptions: boolean = false;
-  showSpeedDial: boolean = true;
+  showSpeedDial: boolean = false;
   text: string | undefined;
 
   // link count variable
@@ -41,24 +42,7 @@ export class TextComponent {
   afterInputData() {
     this.elementType = this._data.type;
     this.waitForTarget().then(() => {
-      let target = this.getTarget();
-      this._data.content.forEach((element: { type: string; text: string; url: string }) => {
-        if (element.type == 'text') {
-          let textNode = this.createTextNode(element.text);
-          target?.nativeElement.appendChild(textNode);
-        }
-        else if (element.type == 'link') {
-          if (this.elementType === 'PARAGRAPH') {
-            let linkNode = this.createLinkNode(element.text, element.url);
-            target?.nativeElement.appendChild(linkNode);
-          }
-          else {
-            let textNode = this.createTextNode(element.text);
-            target?.nativeElement.appendChild(textNode);
-          }
-        }
-      });
-      target?.nativeElement.normalize();
+      this.addContentAtEnd(this._data);
     });
   }
 
@@ -70,6 +54,7 @@ export class TextComponent {
       let lenght = target?.nativeElement.textContent?.length;
       if (lenght && lenght > 0) {
         let content = this.getContentAfterCursor();
+        this.removeEmptyLinks();
         if (content) {
           this.addComponent.emit(content);
           this.showSpeedDial = false;
@@ -87,22 +72,29 @@ export class TextComponent {
     else if (event.key === 'Backspace') {
       const selection = window.getSelection();
       if (selection) {
+        // console.log('seleccion');
         if (selection.rangeCount > 0) {
+          // console.log('rangeCount');
           const range = selection.getRangeAt(0);
-
-          if (range.startOffset === 0 && range.endOffset === 0) {
+          // console.log(`${range.startOffset}|${range.endOffset}`)
+          if (range.startOffset == 0 && range.endOffset == 0) {
+            // console.log('offset');
             let target = this.getTarget();
             let lenght = target?.nativeElement.textContent?.length;
             if (lenght && lenght > 0) {
+              // console.log('length');
               let content = this.getContentAfterCursor();
               if (content) {
+                // console.log('content');
                 this.deleteComponent.emit(content);
               }
               else {
+                // console.log('no content');
                 this.deleteComponent.emit();
               }
             }
             else {
+              // console.log('no length');
               this.deleteComponent.emit();
             }
           }
@@ -120,11 +112,9 @@ export class TextComponent {
       }
       if (text.length == 1) {
         if (text == '*' && event.code == 'Space') {
-          // console.log('UL')
           this.changeComponent.emit('UL');
         }
         if (text == '+' && event.code == 'Space') {
-          // console.log('OL')
           this.changeComponent.emit('OL');
         }
       }
@@ -132,17 +122,19 @@ export class TextComponent {
   }
 
   onFocus() {
-    let target = this.getTarget();
-    if (target) {
-      const text = target.nativeElement.textContent?.trim() || '';
-      if (text.length == 0) {
-        this.showSpeedDial = true;
+    setTimeout(() => {
+      let target = this.getTarget();
+      if (target) {
+        const text = target.nativeElement.textContent?.trim() || '';
+        if (text.length == 0) {
+          this.showSpeedDial = true;
+        }
+        else {
+          this.showSpeedDial = false;
+        }
       }
-      else {
-        this.showSpeedDial = false;
-      }
-    }
-    this.showSpeedDialOptions = false;
+      this.showSpeedDialOptions = false;
+    }, 1000);
   }
 
   onSpeedStatusChange(open: boolean) {
@@ -183,6 +175,27 @@ export class TextComponent {
     }
   }
 
+  addContentAtEnd(data: any) {
+    let target = this.getTarget();
+    data.content.forEach((element: { type: string; text: string; url: string }) => {
+      if (element.type == 'text') {
+        let textNode = this.createTextNode(element.text);
+        target?.nativeElement.appendChild(textNode);
+      }
+      else if (element.type == 'link') {
+        if (this.elementType === 'PARAGRAPH') {
+          let linkNode = this.createLinkNode(element.text, element.url);
+          target?.nativeElement.appendChild(linkNode);
+        }
+        else {
+          let textNode = this.createTextNode(element.text);
+          target?.nativeElement.appendChild(textNode);
+        }
+      }
+    });
+    target?.nativeElement.normalize();
+  }
+
   getTarget() {
     let target = null;
     switch (this.elementType) {
@@ -207,31 +220,41 @@ export class TextComponent {
     let target = this.getTarget();
     this.text = target?.nativeElement.innerText;
     this.elementType = 'TITLE';
-    this.waitForTitle();
+    this.waitForTarget().then(() => {
+      if (this.editableTitle && this.text) {
+        this.editableTitle.nativeElement.innerText = this.text;
+        this.placeCursorAtEnd();
+      }
+    });
   }
 
   toSubtitle() {
     let target = this.getTarget();
     this.text = target?.nativeElement.innerText;
     this.elementType = 'SUBTITLE';
-    this.waitForSubtitle();
+    this.waitForTarget().then(() => {
+      if (this.editableSubtitle && this.text) {
+        this.editableSubtitle.nativeElement.innerText = this.text;
+        this.placeCursorAtEnd();
+      }
+    });
   }
 
   toParagraph() {
     let target = this.getTarget();
     this.text = target?.nativeElement.innerText;
     this.elementType = 'PARAGRAPH';
-    this.waitForParagraph();
+    this.waitForTarget().then(() => {
+      if (this.editableParagraph && this.text) {
+        this.editableParagraph.nativeElement.innerText = this.text;
+        this.placeCursorAtEnd();
+      }
+    });
   }
 
   toLink(text: string, range: Range, url: string) {
     if (range && this.elementType == 'PARAGRAPH') {
       const link = this.createLinkNode(text, url);
-      // const link = document.createElement('a');
-      // link.href = url;
-      // link.id = `${this.componentIds[3]}-anchor-${this.linksCount++}`;
-      // link.textContent = text;
-
       range.deleteContents();
       range.insertNode(link);
     }
@@ -266,7 +289,6 @@ export class TextComponent {
     let linkIds = Array();
     if (range) {
       let childNodes = this.getChildNodes(range);
-      console.log(childNodes);
       childNodes?.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           let childElement = node as HTMLElement;
@@ -322,45 +344,6 @@ export class TextComponent {
     });
   }
 
-  waitForTitle() {
-    setTimeout(() => {
-      if (this.editableTitle && this.editableTitle.nativeElement) {
-        if (this.text) {
-          this.editableTitle.nativeElement.innerText = this.text;
-          this.placeCursorAtEnd();
-        }
-      } else {
-        this.waitForTitle();
-      }
-    }, 100);
-  }
-
-  waitForSubtitle() {
-    setTimeout(() => {
-      if (this.editableSubtitle && this.editableSubtitle.nativeElement) {
-        if (this.text) {
-          this.editableSubtitle.nativeElement.innerText = this.text;
-          this.placeCursorAtEnd();
-        }
-      } else {
-        this.waitForSubtitle();
-      }
-    }, 100);
-  }
-
-  waitForParagraph() {
-    setTimeout(() => {
-      if (this.editableParagraph && this.editableParagraph.nativeElement) {
-        if (this.text) {
-          this.editableParagraph.nativeElement.innerText = this.text;
-          this.placeCursorAtEnd();
-        }
-      } else {
-        this.waitForParagraph();
-      }
-    }, 100);
-  }
-
   getContentAfterCursor() {
     let content = null;
     const selection = window.getSelection();
@@ -396,6 +379,18 @@ export class TextComponent {
       afterRange.deleteContents();
     }
     return content;
+  }
+
+  removeEmptyLinks() {
+    let target = this.getTarget();
+    if (target) {
+      if (target.nativeElement.innerText.length == 0) {
+        const parent: HTMLElement = target.nativeElement;
+        while (parent.firstElementChild) {
+          parent.removeChild(parent.firstElementChild);
+        }
+      }
+    }
   }
 
   getChildNodes(range: Range) {
