@@ -1,4 +1,11 @@
 /* tooltip */
+.full-div {
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
 .tooltip {
   position: absolute;
   background-color: #333;
