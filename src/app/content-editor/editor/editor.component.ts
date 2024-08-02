@@ -8,7 +8,7 @@ import { TooltipComponent } from "../tooltip/tooltip.component";
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgIf, NgClass, NgStyle, TooltipComponent],
+  imports: [NgIf, NgClass, NgStyle, TooltipComponent, ListComponent],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.css'
 })
@@ -175,6 +175,19 @@ export class EditorComponent {
     // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.componentIds = ids;
+      if (index > 0) {
+        switch (this.components[index - 1].componentType) {
+          case TextComponent:
+            componentRef.instance.componentBefore = 'TEXT';
+            break;
+          case ListComponent:
+            componentRef.instance.componentBefore = 'LIST';
+            break;
+        }
+      }
+      if(index < this.components.length - 1){
+        this.components[index + 1].instance.componentBefore = 'TEXT';
+      }
       if (data) {
         componentRef.instance.data = data;
       }
@@ -206,10 +219,10 @@ export class EditorComponent {
       }
     });
 
-    // componentRef.instance.changeComponent.subscribe((componentType) => {
-    //   let index = this.components.indexOf(componentRef);
-    //   this.changeTextComponent(index, componentType);
-    // });
+    componentRef.instance.changeComponent.subscribe((componentType) => {
+      let index = this.components.indexOf(componentRef);
+      this.changeTextComponent(index, componentType);
+    });
 
     setTimeout(() => {
       componentRef.instance.focus();
@@ -221,22 +234,38 @@ export class EditorComponent {
     this.componentsIds.splice(index, 1);
     component.instance.addComponent.unsubscribe();
     component.instance.deleteComponent.unsubscribe();
-    // component.instance.changeComponent.unsubscribe();
+    component.instance.changeComponent.unsubscribe();
     this.container.remove(index);
     setTimeout(() => {
       this.components[index - 1].instance.placeCursorAtEnd();
-      if(data){
+      if (data) {
         this.components[index - 1].instance.addContentAtEnd(data);
       }
     }, 0);
   }
 
-  changeTextComponent(index: number, newComponentType: string) {
-    this.container.detach(index);
-    this.addListAtIndex(index, newComponentType);
+  changeTextComponent(index: number, componentType: string) {
+    setTimeout(() => {
+      const component = this.components.splice(index, 1)[0];
+      this.componentsIds.splice(index, 1);
+      component.instance.addComponent.unsubscribe();
+      component.instance.deleteComponent.unsubscribe();
+      component.instance.changeComponent.unsubscribe();
+      this.container.remove(index);
+    }, 0)
+    // this.container.detach(index);
+    switch (componentType) {
+      case 'UL' || 'OL':
+        break;
+      case 'IMAGE':
+        break;
+      case 'CODE-SNIPPET':
+        break;
+    }
+    this.addListComponent(index, componentType);
   }
 
-  addListAtIndex(index: number, type: string) {
+  addListComponent(index: number, type: string) {
     const componentRef = this.container.createComponent(ListComponent, { index });
     if (type == 'OL') {
       componentRef.instance.isOrdered = true;
