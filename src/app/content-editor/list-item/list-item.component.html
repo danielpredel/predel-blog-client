@@ -1,1 +1,6 @@
-<p>list-item works!</p>
+<li
+  #editableListItem
+  [id]="id"
+  [contentEditable]="true"
+  (keydown)="onKeyDown($event)"
+></li>
