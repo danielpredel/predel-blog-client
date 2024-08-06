@@ -1,4 +1,4 @@
-import { Component, ComponentRef, EventEmitter, input, Input, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentRef, EventEmitter, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { ListItemComponent } from '../list-item/list-item.component';
 
@@ -13,12 +13,14 @@ export class ListComponent {
   // Event Emitters
   @Output() addComponent = new EventEmitter();
   @Output() deleteComponent = new EventEmitter();
-  
-  @ViewChild('listElement', { read: ViewContainerRef, static: true }) listElement!: ViewContainerRef;
-  @Input() componentBefore: string = 'NONE';
 
-  isOrdered: boolean = false;
+  // DOM
+  @ViewChild('listElement', { read: ViewContainerRef, static: true }) listElement!: ViewContainerRef;
+
+  // Local Varibles
+  componentBefore: string = 'NONE';
   id: string = '';
+  isOrdered: boolean = false;
   listItemCount: number = 1;
 
   private listItems: ComponentRef<ListItemComponent>[] = [];
@@ -42,10 +44,14 @@ export class ListComponent {
     }
   }
 
+  setComponentBefore(type: string) {
+    this.componentBefore = type;
+  }
+
   addListItem(index: number, data: any = null) {
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
 
-    let liID= `${this.id}-lsi-${this.listItemCount++}`;
+    let liID = `${this.id}-lsi-${this.listItemCount++}`;
 
     // Send the init data in case there's any
     setTimeout(() => {
@@ -56,7 +62,7 @@ export class ListComponent {
     }, 0);
 
     this.listItems.splice(index, 0, componentRef);
-    this.listItemsIds.splice(index, 0, );
+    this.listItemsIds.splice(index, 0,);
     this.suscribeListItemEvents(componentRef);
   }
 
