@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { SpeedDialComponent } from "../speed-dial/speed-dial.component";
 import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 
@@ -21,30 +21,15 @@ export class TextComponent {
   @ViewChild('editableParagraph', { read: ElementRef }) editableParagraph: ElementRef<HTMLParagraphElement> | undefined;
 
   // Local Varibles
-  private _data: any;
-  @Input()
-  set data(value: any) {
-    this._data = value;
-    this.afterInputData();
-  }
+  componentBefore: string = 'NONE';
+  componentIds: Array<string> = [];
   elementType: string = 'PARAGRAPH';
-  @Input() componentIds: Array<string> = [];
-  @Input() componentBefore: string = 'NONE';
+  linksCount: number = 1;
 
   // Speed Dial Varibles
   showSpeedDialOptions: boolean = false;
   showSpeedDial: boolean = false;
   text: string | undefined;
-
-  // link count variable
-  linksCount: number = 1;
-
-  afterInputData() {
-    this.elementType = this._data.type;
-    this.waitForTarget().then(() => {
-      this.addContentAtEnd(this._data);
-    });
-  }
 
   // Event's Functions
   onKeyDown(event: KeyboardEvent) {
@@ -146,6 +131,21 @@ export class TextComponent {
   }
 
   // Functions
+  setId(ids: Array<string>) {
+    this.componentIds = ids;
+  }
+
+  setData(data: any) {
+    this.elementType = data.type;
+    this.waitForTarget().then(() => {
+      this.addContentAtEnd(data);
+    });
+  }
+
+  setComponentBefore(type: string) {
+    this.componentBefore = type;
+  }
+
   focus() {
     let target = this.getTarget();
     if (target) {
@@ -153,12 +153,12 @@ export class TextComponent {
     }
   }
 
-  blur() {
-    let target = this.getTarget();
-    if (target) {
-      target.nativeElement.blur();
-    }
-  }
+  // blur() {
+  //   let target = this.getTarget();
+  //   if (target) {
+  //     target.nativeElement.blur();
+  //   }
+  // }
 
   placeCursorAtEnd(): void {
     let target = this.getTarget();
@@ -210,10 +210,6 @@ export class TextComponent {
         break;
     }
     return target;
-  }
-
-  getComponentId() {
-    return this.componentIds[0];
   }
 
   toTitle() {

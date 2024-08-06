@@ -13,13 +13,15 @@ import { TooltipComponent } from "../tooltip/tooltip.component";
   styleUrl: './editor.component.css'
 })
 export class EditorComponent {
-  // Element's Varibles
+  // DOM Manipulation Varibles
   @ViewChild('container', { read: ViewContainerRef, static: true }) container!: ViewContainerRef;
   @ViewChild(TooltipComponent) tooltip!: TooltipComponent;
 
+  // ComponentRef inside the ViewContainerRef and their Ids
   private components: ComponentRef<any>[] = [];
   private componentsIds: Array<string> = [];
 
+  // Selection varibles
   selectionString: string | undefined;
   selectionRange: Range | undefined;
   selectionTargetId: string = '';
@@ -165,16 +167,16 @@ export class EditorComponent {
   setComponentBefore(index: number) {
     switch (this.components[index - 1].componentType) {
       case TextComponent:
-        this.components[index].instance.componentBefore = 'TEXT';
+        this.components[index].instance.setComponentBefore('TEXT');
         break;
       case ListComponent:
-        this.components[index].instance.componentBefore = 'LIST';
+        this.components[index].instance.setComponentBefore('LIST');
         break;
       // case ImageComponent:
-      //   this.components[index].instance.componentBefore = 'IMAGE';
+      //   this.components[index].instance.setComponentBefore('IMAGE');
       //   break;
       // case CodeSnippetComponent:
-      //   this.components[index].instance.componentBefore = 'CODE-SNIPPET';
+      //   this.components[index].instance.setComponentBefore('CODE-SNIPPET');
       //   break;
     }
   }
@@ -191,15 +193,15 @@ export class EditorComponent {
 
     // Send the init data in case there's any
     setTimeout(() => {
-      componentRef.instance.componentIds = ids;
+      componentRef.instance.setId(ids);
       if (index > 0) {
         this.setComponentBefore(index);
       }
       if (index < this.components.length - 1) {
-        this.components[index + 1].instance.componentBefore = 'TEXT';
+        this.components[index + 1].instance.setComponentBefore('TEXT');
       }
       if (data) {
-        componentRef.instance.data = data;
+        componentRef.instance.setData(data);
       }
     }, 0);
 
@@ -291,7 +293,7 @@ export class EditorComponent {
         this.setComponentBefore(index);
       }
       if (index < this.components.length - 1) {
-        this.components[index + 1].instance.componentBefore = 'LIST';
+        this.components[index + 1].instance.setComponentBefore('LIST');
       }
       if (data) {
         componentRef.instance.setData(data);
