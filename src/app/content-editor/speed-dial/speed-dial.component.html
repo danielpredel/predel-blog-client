@@ -1,14 +1,14 @@
 <div class="button-container">
   <a
     *ngIf="!open"
-    (click)="toggleMenu()"
+    (click)="openMenu()"
     id="mainButton"
     class="uk-icon-button main-button"
     uk-icon="plus"
   ></a>
   <a
     *ngIf="open"
-    (click)="toggleMenu()"
+    (click)="closeMenu()"
     id="mainButton"
     class="uk-icon-button main-button"
     uk-icon="close"

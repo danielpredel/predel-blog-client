@@ -30,8 +30,6 @@
   </div>
   <div class="speed-dial-container" *ngIf="showSpeedDial">
     <app-speed-dial
-      [open]="showSpeedDialOptions"
-      (statusChage)="onSpeedStatusChange($event)"
       (selection)="onSpeedSelection($event)"
     ></app-speed-dial>
   </div>

@@ -20,6 +20,7 @@ export class EditorComponent {
   // ComponentRef inside the ViewContainerRef and their Ids
   private components: ComponentRef<any>[] = [];
   private componentsIds: Array<string> = [];
+  private lastFocusedComponent: number = 0;
 
   // Selection varibles
   selectionString: string | undefined;
@@ -235,6 +236,14 @@ export class EditorComponent {
       let index = this.components.indexOf(componentRef);
       this.changeTextComponent(index, componentType);
     });
+
+    componentRef.instance.focused.subscribe(() => {
+      let index = this.components.indexOf(componentRef);
+      if (this.components[this.lastFocusedComponent].componentType === TextComponent) {
+        this.components[this.lastFocusedComponent].instance.hideSpeedDial();
+      }
+      this.lastFocusedComponent = index;
+    })
 
     setTimeout(() => {
       componentRef.instance.focus();

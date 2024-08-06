@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-speed-dial',
@@ -9,21 +9,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrl: './speed-dial.component.css'
 })
 export class SpeedDialComponent {
-  @Input() open: boolean = false;
-  @Output() statusChage = new EventEmitter<boolean>();
+  open: boolean = false;
   @Output() selection = new EventEmitter<string>();
 
-  toggleMenu() {
-    if (this.open) {
-      this.statusChage.emit(false);
-    }
-    else {
-      this.statusChage.emit(true);
-    }
+  openMenu() {
+    this.open = true;
+  }
+
+  closeMenu() {
+    this.open = false;
   }
 
   setSection(type: string) {
-    this.statusChage.emit(false);
+    this.closeMenu();
     this.selection.emit(type);
   }
 }

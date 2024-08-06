@@ -14,11 +14,13 @@ export class TextComponent {
   @Output() addComponent = new EventEmitter();
   @Output() deleteComponent = new EventEmitter();
   @Output() changeComponent = new EventEmitter<string>();
+  @Output() focused = new EventEmitter();
 
   // DOM Manipulation Variables
   @ViewChild('editableTitle', { read: ElementRef }) editableTitle: ElementRef<HTMLHeadingElement> | undefined;
   @ViewChild('editableSubtitle', { read: ElementRef }) editableSubtitle: ElementRef<HTMLHeadingElement> | undefined;
   @ViewChild('editableParagraph', { read: ElementRef }) editableParagraph: ElementRef<HTMLParagraphElement> | undefined;
+  @ViewChild(SpeedDialComponent) speedDial!: SpeedDialComponent;
 
   // Local Varibles
   componentBefore: string = 'NONE';
@@ -27,8 +29,7 @@ export class TextComponent {
   linksCount: number = 1;
 
   // Speed Dial Varibles
-  showSpeedDialOptions: boolean = false;
-  showSpeedDial: boolean = false;
+  showSpeedDial: boolean = true;
   text: string | undefined;
 
   // Event's Functions
@@ -42,44 +43,36 @@ export class TextComponent {
         this.removeEmptyLinks();
         if (content) {
           this.addComponent.emit(content);
-          this.showSpeedDial = false;
+          this.hideSpeedDial();
         }
         else {
           this.addComponent.emit();
-          this.showSpeedDial = false;
+          this.hideSpeedDial();
         }
       }
       else {
         this.addComponent.emit();
-        this.showSpeedDial = false;
+        this.hideSpeedDial();
       }
     }
     else if (event.key === 'Backspace') {
       const selection = window.getSelection();
       if (selection) {
-        // console.log('seleccion');
         if (selection.rangeCount > 0) {
-          // console.log('rangeCount');
           const range = selection.getRangeAt(0);
-          // console.log(`${range.startOffset}|${range.endOffset}`)
           if (range.startOffset == 0 && range.endOffset == 0) {
-            // console.log('offset');
             let target = this.getTarget();
             let lenght = target?.nativeElement.textContent?.length;
             if (lenght && lenght > 0) {
-              // console.log('length');
               let content = this.getContentAfterCursor();
               if (content) {
-                // console.log('content');
                 this.deleteComponent.emit(content);
               }
               else {
-                // console.log('no content');
                 this.deleteComponent.emit();
               }
             }
             else {
-              // console.log('no length');
               this.deleteComponent.emit();
             }
           }
@@ -93,7 +86,7 @@ export class TextComponent {
     if (target) {
       const text = target.nativeElement.textContent?.trim() || '';
       if (text.length > 0 && this.showSpeedDial) {
-        this.showSpeedDial = false;
+        this.hideSpeedDial();
       }
       if (text.length == 1) {
         if (text == '*' && event.code == 'Space') {
@@ -107,23 +100,20 @@ export class TextComponent {
   }
 
   onFocus() {
-    setTimeout(() => {
-      let target = this.getTarget();
-      if (target) {
-        const text = target.nativeElement.textContent?.trim() || '';
-        if (text.length == 0) {
-          this.showSpeedDial = true;
-        }
-        else {
-          this.showSpeedDial = false;
-        }
+    this.focused.emit();
+    if (this.showSpeedDial) {
+      this.speedDial.closeMenu();
+    }
+    let target = this.getTarget();
+    if (target) {
+      const text = target.nativeElement.textContent?.trim() || '';
+      if (text.length == 0) {
+        this.showSpeedDial = true;
       }
-      this.showSpeedDialOptions = false;
-    }, 1000);
-  }
-
-  onSpeedStatusChange(open: boolean) {
-    this.showSpeedDialOptions = open;
+      else {
+        this.hideSpeedDial();
+      }
+    }
   }
 
   onSpeedSelection(type: string) {
@@ -146,19 +136,19 @@ export class TextComponent {
     this.componentBefore = type;
   }
 
+  hideSpeedDial() {
+    if (this.showSpeedDial) {
+      this.speedDial.closeMenu();
+    }
+    this.showSpeedDial = false;
+  }
+
   focus() {
     let target = this.getTarget();
     if (target) {
       target.nativeElement.focus();
     }
   }
-
-  // blur() {
-  //   let target = this.getTarget();
-  //   if (target) {
-  //     target.nativeElement.blur();
-  //   }
-  // }
 
   placeCursorAtEnd(): void {
     let target = this.getTarget();
