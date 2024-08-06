@@ -162,8 +162,21 @@ export class EditorComponent {
     this.components[0].instance.toTitle();
   }
 
-  setComponentBefore(index: number){
-    
+  setComponentBefore(index: number) {
+    switch (this.components[index - 1].componentType) {
+      case TextComponent:
+        this.components[index].instance.componentBefore = 'TEXT';
+        break;
+      case ListComponent:
+        this.components[index].instance.componentBefore = 'LIST';
+        break;
+      // case ImageComponent:
+      //   this.components[index].instance.componentBefore = 'IMAGE';
+      //   break;
+      // case CodeSnippetComponent:
+      //   this.components[index].instance.componentBefore = 'CODE-SNIPPET';
+      //   break;
+    }
   }
 
   addTextComponent(index: number, data: any = null) {
@@ -180,14 +193,7 @@ export class EditorComponent {
     setTimeout(() => {
       componentRef.instance.componentIds = ids;
       if (index > 0) {
-        switch (this.components[index - 1].componentType) {
-          case TextComponent:
-            componentRef.instance.componentBefore = 'TEXT';
-            break;
-          case ListComponent:
-            componentRef.instance.componentBefore = 'LIST';
-            break;
-        }
+        this.setComponentBefore(index);
       }
       if (index < this.components.length - 1) {
         this.components[index + 1].instance.componentBefore = 'TEXT';
@@ -282,14 +288,7 @@ export class EditorComponent {
         componentRef.instance.changeTypeToOrdered();
       }
       if (index > 0) {
-        switch (this.components[index - 1].componentType) {
-          case TextComponent:
-            componentRef.instance.componentBefore = 'TEXT';
-            break;
-          case ListComponent:
-            componentRef.instance.componentBefore = 'LIST';
-            break;
-        }
+        this.setComponentBefore(index);
       }
       if (index < this.components.length - 1) {
         this.components[index + 1].instance.componentBefore = 'LIST';
