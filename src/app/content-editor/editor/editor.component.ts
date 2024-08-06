@@ -162,6 +162,10 @@ export class EditorComponent {
     this.components[0].instance.toTitle();
   }
 
+  setComponentBefore(index: number){
+    
+  }
+
   addTextComponent(index: number, data: any = null) {
     const componentRef = this.container.createComponent(TextComponent, { index });
 
@@ -185,7 +189,7 @@ export class EditorComponent {
             break;
         }
       }
-      if(index < this.components.length - 1){
+      if (index < this.components.length - 1) {
         this.components[index + 1].instance.componentBefore = 'TEXT';
       }
       if (data) {
@@ -237,6 +241,8 @@ export class EditorComponent {
     component.instance.changeComponent.unsubscribe();
     this.container.remove(index);
     setTimeout(() => {
+      // For text and list components will be allowed to place the cursor at the end and add data
+      // but for image, it only focus the image
       this.components[index - 1].instance.placeCursorAtEnd();
       if (data) {
         this.components[index - 1].instance.addContentAtEnd(data);
@@ -245,45 +251,63 @@ export class EditorComponent {
   }
 
   changeTextComponent(index: number, componentType: string) {
-    setTimeout(() => {
-      const component = this.components.splice(index, 1)[0];
-      this.componentsIds.splice(index, 1);
-      component.instance.addComponent.unsubscribe();
-      component.instance.deleteComponent.unsubscribe();
-      component.instance.changeComponent.unsubscribe();
-      this.container.remove(index);
-    }, 0)
-    // this.container.detach(index);
+    const component = this.components.splice(index, 1)[0];
+    this.componentsIds.splice(index, 1);
+    component.instance.deleteComponent.unsubscribe();
+    component.instance.addComponent.unsubscribe();
+    component.instance.changeComponent.unsubscribe();
     switch (componentType) {
-      case 'UL' || 'OL':
+      case 'UL':
+        this.addListComponent(index, componentType);
+        break;
+      case 'OL':
+        this.addListComponent(index, componentType);
         break;
       case 'IMAGE':
         break;
       case 'CODE-SNIPPET':
         break;
     }
-    this.addListComponent(index, componentType);
   }
 
-  addListComponent(index: number, type: string) {
+  addListComponent(index: number, type: string, data: any = null) {
     const componentRef = this.container.createComponent(ListComponent, { index });
-    if (type == 'OL') {
-      componentRef.instance.isOrdered = true;
-    }
+    let id = this.idService.getId();
+    let listId = `lst-${id}`;
+
+    // Send the init data in case there's any
+    setTimeout(() => {
+      componentRef.instance.setId(listId);
+      if (type == 'OL') {
+        componentRef.instance.changeTypeToOrdered();
+      }
+      if (index > 0) {
+        switch (this.components[index - 1].componentType) {
+          case TextComponent:
+            componentRef.instance.componentBefore = 'TEXT';
+            break;
+          case ListComponent:
+            componentRef.instance.componentBefore = 'LIST';
+            break;
+        }
+      }
+      if (index < this.components.length - 1) {
+        this.components[index + 1].instance.componentBefore = 'LIST';
+      }
+      if (data) {
+        componentRef.instance.setData(data);
+      }
+      else {
+        componentRef.instance.renderNewList();
+      }
+    }, 0);
+
     this.components.splice(index, 0, componentRef);
+    this.componentsIds.splice(index, 0, listId);
+    this.subscribeListComponentEvents(componentRef);
+  }
 
-    // componentRef.instance.newComponent.subscribe(() => {
-    //   const componentIndex = this.components.indexOf(componentRef);
-    //   this.addComponentAtIndex(componentIndex + 1, 'P');
-    // });
-    // componentRef.instance.deleteMe.subscribe(() => {
-    //   const componentIndex = this.components.indexOf(componentRef);
-    //   this.removeComponentAtIndex(componentIndex);
-    // });
+  subscribeListComponentEvents(componentRef: ComponentRef<ListComponent>) {
 
-    // setTimeout(() => {
-    //   this.components[index - 1].instance.blur();
-    //   componentRef.instance.focus();
-    // }, 0);
   }
 }
