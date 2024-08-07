@@ -244,7 +244,7 @@ export class EditorComponent {
         this.components[this.lastFocusedComponent].instance.hideSpeedDial();
       }
       this.lastFocusedComponent = index;
-    })
+    });
 
     setTimeout(() => {
       componentRef.instance.focus();
@@ -323,6 +323,23 @@ export class EditorComponent {
   }
 
   subscribeListComponentEvents(componentRef: ComponentRef<ListComponent>) {
+    componentRef.instance.addComponent.subscribe((content) => {
+      let index = this.components.indexOf(componentRef);
+      if (content) {
+        this.addTextComponent(index + 1, content);
+      }
+      else {
+        this.addTextComponent(index + 1);
+      }
+    });
 
+    componentRef.instance.focused.subscribe(() => {
+      let index = this.components.indexOf(componentRef);
+      if (this.lastFocusedComponent < this.container.length
+        && this.components[this.lastFocusedComponent].componentType === TextComponent) {
+        this.components[this.lastFocusedComponent].instance.hideSpeedDial();
+      }
+      this.lastFocusedComponent = index;
+    });
   }
 }

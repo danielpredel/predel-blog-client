@@ -13,6 +13,7 @@ export class ListComponent {
   // Event Emitters
   @Output() addComponent = new EventEmitter();
   @Output() deleteComponent = new EventEmitter();
+  @Output() focused = new EventEmitter();
 
   // DOM
   @ViewChild('listElement', { read: ViewContainerRef, static: true }) listElement!: ViewContainerRef;
@@ -20,7 +21,7 @@ export class ListComponent {
   // Local Varibles
   componentBefore: string = 'NONE';
   id: string = '';
-  isOrdered: boolean = false;
+  ordered: boolean = false;
   listItemCount: number = 1;
 
   private listItems: ComponentRef<ListItemComponent>[] = [];
@@ -31,7 +32,11 @@ export class ListComponent {
   }
 
   changeTypeToOrdered() {
-    this.isOrdered = true;
+    this.ordered = true;
+  }
+
+  isOrdered() {
+    return this.ordered;
   }
 
   setId(id: string) {
@@ -69,11 +74,22 @@ export class ListComponent {
   suscribeListItemEvents(componentRef: ComponentRef<ListItemComponent>) {
     componentRef.instance.addListItem.subscribe((content) => {
       let index = this.listItems.indexOf(componentRef);
-      if (content) {
-        this.addListItem(index + 1, content);
+      let emitAddEvent = false;
+      if (this.listItems.length > 1 && index == this.listItems.length - 1) {
+        if (this.listItems[index - 1].instance.isEmpty() && this.listItems[index].instance.isEmpty()) {
+          emitAddEvent = true;
+        }
+      }
+      if (emitAddEvent) {
+        this.addComponent.emit();
       }
       else {
-        this.addListItem(index + 1);
+        if (content) {
+          this.addListItem(index + 1, content);
+        }
+        else {
+          this.addListItem(index + 1);
+        }
       }
     });
 
@@ -90,6 +106,10 @@ export class ListComponent {
     setTimeout(() => {
       componentRef.instance.focus();
     }, 0);
+
+    componentRef.instance.focused.subscribe(() => {
+      this.focused.emit();
+    });
   }
 
   removeListItem(index: number, data: any = null) {
