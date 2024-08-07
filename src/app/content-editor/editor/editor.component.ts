@@ -273,6 +273,8 @@ export class EditorComponent {
     component.instance.deleteComponent.unsubscribe();
     component.instance.addComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
+    this.container.remove(index);
+
     switch (componentType) {
       case 'UL':
         this.addListComponent(index, componentType);
