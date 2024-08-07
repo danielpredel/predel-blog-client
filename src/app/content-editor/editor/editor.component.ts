@@ -26,6 +26,7 @@ export class EditorComponent {
   selectionString: string | undefined;
   selectionRange: Range | undefined;
   selectionTargetId: string = '';
+  selectionAncestorId: string = '';
 
   constructor(private idService: IdService) { }
 
@@ -72,17 +73,24 @@ export class EditorComponent {
               targetComponentRef.instance.toLink(this.selectionString, this.selectionRange, selection.url);
               break;
             case 'toUnlink':
-              targetComponentRef.instance.toUnlink(this.selectionRange);
+              if (this.selectionAncestorId.includes('anchor')) {
+                targetComponentRef.instance.toUnlink(this.selectionRange, this.selectionAncestorId);
+              }
+              else {
+                targetComponentRef.instance.toUnlink(this.selectionRange);
+              }
               break;
           }
         }
         else if (targetComponentRef.componentType === ListComponent) {
           switch (selection.operation) {
             case 'toLink':
-              targetComponentRef.instance.toLink(this.selectionString, this.selectionRange, selection.url);
+              targetComponentRef.instance.toLink(this.selectionString, this.selectionRange, selection.url,
+                this.selectionAncestorId.substring(0, 29));
               break;
             case 'toUnlink':
-              targetComponentRef.instance.toUnlink(this.selectionRange);
+              targetComponentRef.instance.toUnlink(this.selectionRange,
+                this.selectionAncestorId);
               break;
           }
         }
@@ -99,6 +107,7 @@ export class EditorComponent {
 
       if (ancestorId && ancestorId.length >= 14) {
         this.selectionTargetId = ancestorId.substring(0, 14);
+        this.selectionAncestorId = ancestorId;
         switch (true) {
           case ancestorId?.includes('txt'):
             switch (true) {
@@ -358,8 +367,8 @@ export class EditorComponent {
     if (data) {
       this.addTextComponent(index, data);
     }
-    else{
-    this.addTextComponent(index);
+    else {
+      this.addTextComponent(index);
     }
   }
 }
