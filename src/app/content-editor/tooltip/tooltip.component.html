@@ -9,6 +9,33 @@
       <div
         class="uk-icon item"
         [ngClass]="{
+          disabled: bold.disabled,
+          selected: bold.selected
+        }"
+        uk-icon="icon: bold; ratio: 1.2"
+        (click)="onBoldSelection()"
+      ></div>
+      <div
+        class="uk-icon item"
+        [ngClass]="{
+          disabled: italic.disabled,
+          selected: italic.selected
+        }"
+        uk-icon="icon: italic; ratio: 1.2"
+        (click)="onItalicSelection()"
+      ></div>
+      <div
+        class="uk-icon item"
+        [ngClass]="{
+          disabled: strikethrough.disabled,
+          selected: strikethrough.selected
+        }"
+        uk-icon="icon: strikethrough; ratio: 1.2"
+        (click)="onStrikethroughSelection()"
+      ></div>
+      <div
+        class="uk-icon item"
+        [ngClass]="{
           disabled: link.disabled,
           selected: link.selected
         }"
@@ -50,6 +77,15 @@
           </svg>
         </span>
       </div>
+      <div
+        class="uk-icon item"
+        [ngClass]="{
+          disabled: quote.disabled,
+          selected: quote.selected
+        }"
+        uk-icon="icon: quote-right; ratio: 1.2"
+        (click)="onTooltipSelection('quote')"
+      ></div>
     </div>
     <div class="items" *ngSwitchCase="'LINK-INPUT'">
       <div

@@ -16,9 +16,13 @@ export class TooltipComponent {
   hidden: boolean = true;
   left: number = 0;
   top: number = 0;
+  bold = { disabled: false, selected: false };
+  italic = { disabled: false, selected: false };
+  strikethrough = { disabled: false, selected: false };
   link = { disabled: false, selected: false };
   title = { disabled: false, selected: false };
   subtitle = { disabled: false, selected: false };
+  quote = { disabled: false, selected: false };
   stage: string = 'OPTIONS';
   clientRect: DOMRect | undefined;
 
@@ -65,6 +69,15 @@ export class TooltipComponent {
     this.restoreConfig();
   }
 
+  onBoldSelection() {
+  }
+
+  onItalicSelection() {
+  }
+
+  onStrikethroughSelection() {
+  }
+
   onLinkSelection() {
     if (!this.link.disabled) {
       if (this.link.selected) {
@@ -89,7 +102,8 @@ export class TooltipComponent {
   placeForOptions() {
     this.stage = 'OPTIONS';
     if (this.clientRect) {
-      this.left = this.clientRect.right - (this.clientRect.right - this.clientRect.left) / 2 - 49;
+      this.left = this.clientRect.right - (this.clientRect.right - this.clientRect.left) / 2
+        - this.tooltip.nativeElement.offsetWidth / 2;
       this.top = this.clientRect.top - 45;
       this.show();
     }
@@ -98,7 +112,8 @@ export class TooltipComponent {
   placeForLinkInput() {
     this.stage = 'LINK-INPUT';
     if (this.clientRect) {
-      this.left = this.clientRect.right - (this.clientRect.right - this.clientRect.left) / 2 - 120;
+      this.left = this.clientRect.right - (this.clientRect.right - this.clientRect.left) / 2
+        - this.tooltip.nativeElement.offsetWidth / 2;
       this.top = this.clientRect.top - 45;
       this.show();
     }
