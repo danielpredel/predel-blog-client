@@ -1,6 +1,7 @@
 import { Component, ComponentRef, EventEmitter, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { ListItemComponent } from '../list-item/list-item.component';
+import { IdService } from '../../id.service';
 
 @Component({
   selector: 'app-list',
@@ -23,10 +24,11 @@ export class ListComponent {
   componentBefore: string = 'NONE';
   id: string = '';
   ordered: boolean = false;
-  listItemCount: number = 1;
 
   private listItems: ComponentRef<ListItemComponent>[] = [];
   private listItemsIds: Array<string> = [];
+
+  constructor(private idService: IdService) { }
 
   renderNewList() {
     this.addListItem(0);
@@ -57,7 +59,7 @@ export class ListComponent {
   addListItem(index: number, data: any = null) {
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
 
-    let liID = `${this.id}-lsi-${this.listItemCount++}`;
+    let liID = `${this.id}-lsi-${this.idService.getId()}`;
 
     // Send the init data in case there's any
     setTimeout(() => {
@@ -68,7 +70,7 @@ export class ListComponent {
     }, 0);
 
     this.listItems.splice(index, 0, componentRef);
-    this.listItemsIds.splice(index, 0,);
+    this.listItemsIds.splice(index, 0, liID);
     this.suscribeListItemEvents(componentRef);
   }
 
@@ -133,5 +135,23 @@ export class ListComponent {
     //     this.components[index - 1].instance.addContentAtEnd(data);
     //   }
     // }, 0);
+  }
+
+  toLink(text: string, range: Range, url: string, listItemId: string) {
+    let index = this.listItemsIds.indexOf(listItemId);
+    if (index >= 0) {
+      this.listItems[index].instance.toLink(text, range, url);
+    }
+  }
+
+  toUnlink(range: Range, listItemId: string) {
+    let targetId = listItemId.substring(0, 29);
+    let index = this.listItemsIds.indexOf(targetId);
+    if (index >= 0) {
+      if (listItemId.includes('anchor')) {
+        this.listItems[index].instance.toUnlink(range, listItemId);
+      }
+      this.listItems[index].instance.toUnlink(range);
+    }
   }
 }

@@ -126,14 +126,19 @@ export class ListItemComponent {
     }
   }
 
-  toUnlink(range: Range) {
+  toUnlink(range: Range, targetId: string = '') {
     if (range) {
-      // Identify links inside the selection
-      let linkIds = this.getSelectedLinkIds(range);
+      if (targetId != '') {
+        this.deleteSelectedLinks([targetId]);
+      }
+      else {
+        // Identify links inside the selection
+        let linkIds = this.getSelectedLinkIds(range);
 
-      // Delete links inside the selection
-      if (linkIds.length > 0) {
-        this.deleteSelectedLinks(linkIds);
+        // Delete links inside the selection
+        if (linkIds.length > 0) {
+          this.deleteSelectedLinks(linkIds);
+        }
       }
     }
   }
