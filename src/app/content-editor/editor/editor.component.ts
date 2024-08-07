@@ -239,7 +239,8 @@ export class EditorComponent {
 
     componentRef.instance.focused.subscribe(() => {
       let index = this.components.indexOf(componentRef);
-      if (this.components[this.lastFocusedComponent].componentType === TextComponent) {
+      if (this.lastFocusedComponent < this.container.length
+        && this.components[this.lastFocusedComponent].componentType === TextComponent) {
         this.components[this.lastFocusedComponent].instance.hideSpeedDial();
       }
       this.lastFocusedComponent = index;
@@ -256,6 +257,7 @@ export class EditorComponent {
     component.instance.addComponent.unsubscribe();
     component.instance.deleteComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
+    component.instance.focused.unsubscribe();
     this.container.remove(index);
     setTimeout(() => {
       // For text and list components will be allowed to place the cursor at the end and add data
@@ -273,6 +275,7 @@ export class EditorComponent {
     component.instance.deleteComponent.unsubscribe();
     component.instance.addComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
+    component.instance.focused.unsubscribe();
     this.container.remove(index);
 
     switch (componentType) {
