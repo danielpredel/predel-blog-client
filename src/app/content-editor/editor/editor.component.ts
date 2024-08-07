@@ -333,6 +333,11 @@ export class EditorComponent {
       }
     });
 
+    componentRef.instance.changeComponent.subscribe((componentType) => {
+      let index = this.components.indexOf(componentRef);
+      this.changeListComponent(index);
+    });
+
     componentRef.instance.focused.subscribe(() => {
       let index = this.components.indexOf(componentRef);
       if (this.lastFocusedComponent < this.container.length
@@ -341,5 +346,20 @@ export class EditorComponent {
       }
       this.lastFocusedComponent = index;
     });
+  }
+
+  changeListComponent(index: number, data: any = null) {
+    const component = this.components.splice(index, 1)[0];
+    this.componentsIds.splice(index, 1);
+    component.instance.addComponent.unsubscribe();
+    component.instance.changeComponent.unsubscribe();
+    component.instance.focused.unsubscribe();
+    this.container.remove(index);
+    if (data) {
+      this.addTextComponent(index, data);
+    }
+    else{
+    this.addTextComponent(index);
+    }
   }
 }

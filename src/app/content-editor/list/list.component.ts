@@ -12,7 +12,8 @@ import { ListItemComponent } from '../list-item/list-item.component';
 export class ListComponent {
   // Event Emitters
   @Output() addComponent = new EventEmitter();
-  @Output() deleteComponent = new EventEmitter();
+  @Output() changeComponent = new EventEmitter();
+  @Output() splitComponent = new EventEmitter();
   @Output() focused = new EventEmitter();
 
   // DOM
@@ -95,6 +96,14 @@ export class ListComponent {
 
     componentRef.instance.deleteListItem.subscribe((content) => {
       let index = this.listItems.indexOf(componentRef);
+      if (this.listItems.length == 1) {
+        if (content) {
+          this.changeComponent.emit(content);
+        }
+        else {
+          this.changeComponent.emit();
+        }
+      }
       if (content) {
         this.removeListItem(index, content);
       }
@@ -103,13 +112,13 @@ export class ListComponent {
       }
     });
 
-    setTimeout(() => {
-      componentRef.instance.focus();
-    }, 0);
-
     componentRef.instance.focused.subscribe(() => {
       this.focused.emit();
     });
+
+    setTimeout(() => {
+      componentRef.instance.focus();
+    }, 0);
   }
 
   removeListItem(index: number, data: any = null) {
