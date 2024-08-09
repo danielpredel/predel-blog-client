@@ -4,11 +4,12 @@ import { TextComponent } from "../text/text.component";
 import { NgClass, NgIf, NgStyle } from '@angular/common';
 import { IdService } from '../../id.service';
 import { TooltipComponent } from "../tooltip/tooltip.component";
+import { ImageComponent } from "../image/image.component";
 
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgIf, NgClass, NgStyle, TooltipComponent, ListComponent],
+  imports: [NgIf, NgClass, NgStyle, TooltipComponent, ListComponent, ImageComponent],
   templateUrl: './editor.component.html',
   styleUrl: './editor.component.css'
 })
@@ -37,13 +38,16 @@ export class EditorComponent {
     // + Edit:  body will have data -> editPostRender()
     // + 403:   forbiden go to main page or not found
     this.renderNewPost();
+    let tagNames = this.getTagNames();
+    console.log(tagNames);
   }
 
   // Event's functions
   onMouseUp() {
     const selection = window.getSelection();
-    if (selection) {
-      this.handleSelection(selection);
+    if (selection && selection.toString().length > 0) {
+    //   this.handleSelection(selection);
+      this.tooltip.onWindowSelection(selection);
     }
   }
 
@@ -98,7 +102,64 @@ export class EditorComponent {
     }
   }
 
+  // Related to text selection
+  // Can be moved to the tooltip component
   // Functions
+  // handleSelection(selection: Selection) {
+  //   this.selectionString = selection.toString();
+  //   if (this.selectionString.length > 0) {
+  //     this.selectionRange = selection?.getRangeAt(0);
+  //     const ancestorId = this.getCommonAncestorsId();
+
+  //     if (ancestorId && ancestorId.length >= 14) {
+  //       this.selectionTargetId = ancestorId.substring(0, 14);
+  //       this.selectionAncestorId = ancestorId;
+  //       switch (true) {
+  //         case ancestorId?.includes('txt'):
+  //           switch (true) {
+  //             case ancestorId?.includes('Paragraph'):
+  //               if (ancestorId?.includes('anchor')) {
+  //                 this.tooltip.setConfig('onLinkedParagraph');
+  //               }
+  //               else {
+  //                 if (this.selectionRange.startContainer === this.selectionRange.endContainer) {
+  //                   this.tooltip.restoreConfig();
+  //                 }
+  //                 else {
+  //                   this.tooltip.setConfig('onLinkedParagraph');
+  //                 }
+  //               }
+  //               break;
+  //             case ancestorId?.includes('Title'):
+  //               this.tooltip.setConfig('onTitle');
+  //               break;
+  //             case ancestorId?.includes('Subtitle'):
+  //               this.tooltip.setConfig('onSubtitle');
+  //               break;
+  //           }
+  //           this.tooltip.setClientRect(this.selectionRange.getBoundingClientRect());
+  //           this.tooltip.placeForOptions();
+  //           break;
+  //         case ancestorId?.includes('lsi'):
+  //           if (ancestorId?.includes('anchor')) {
+  //             this.tooltip.setConfig('onLinkedListItem');
+  //           }
+  //           else {
+  //             if (this.selectionRange.startContainer === this.selectionRange.endContainer) {
+  //               this.tooltip.setConfig('onListItem');
+  //             }
+  //             else {
+  //               this.tooltip.setConfig('onLinkedListItem');
+  //             }
+  //           }
+  //           this.tooltip.setClientRect(this.selectionRange.getBoundingClientRect());
+  //           this.tooltip.placeForOptions();
+  //           break;
+  //       }
+  //     }
+  //   }
+  // }
+
   handleSelection(selection: Selection) {
     this.selectionString = selection.toString();
     if (this.selectionString.length > 0) {
@@ -112,17 +173,37 @@ export class EditorComponent {
           case ancestorId?.includes('txt'):
             switch (true) {
               case ancestorId?.includes('Paragraph'):
+                // If and else ifs mean that the selection is inside an element
+                // So only that element can be chosen and it's displayed as selected
                 if (ancestorId?.includes('anchor')) {
-                  this.tooltip.setConfig('onLinkedParagraph');
+                  // Allow link
+                  // forbide others
                 }
+                else if (ancestorId?.includes('bold')) {
+                  // Allow bold
+                  // forbide others
+                }
+                else if (ancestorId?.includes('italic')) {
+                  // Allow italic
+                  // forbide others
+                }
+                else if (ancestorId?.includes('strike')) {
+                  // Allow strikethrough
+                  // forbide others
+                }
+                // else means that the selection is not inside an element
+                // so it may include many elements n > 1
+                // or it does not include elements at all
                 else {
+                  // does not include element at all
                   if (this.selectionRange.startContainer === this.selectionRange.endContainer) {
-                    this.tooltip.restoreConfig();
                   }
+                  // includes element and we need to identify their types
                   else {
-                    this.tooltip.setConfig('onLinkedParagraph');
                   }
                 }
+                break;
+              case ancestorId?.includes('Quote'):
                 break;
               case ancestorId?.includes('Title'):
                 this.tooltip.setConfig('onTitle');
@@ -168,7 +249,10 @@ export class EditorComponent {
     const commonAncestor = this.selectionRange?.commonAncestorContainer as Element;
     return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
   }
+  // Related to text selection
+  /** */
 
+  // Editor's functionality
   renderNewPost() {
     this.addTextComponent(0);
     this.components[0].instance.toTitle();
@@ -371,4 +455,50 @@ export class EditorComponent {
       this.addTextComponent(index);
     }
   }
+  // Editor's functionality
+  /** */
+
+  // Related to text selection
+  getSelectedElements(range: Range) {
+    let tagNames = Array();
+    if (range) {
+      let childNodes = this.getChildNodes(range);
+      childNodes?.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          let childElement = node as HTMLElement;
+          tagNames.push(childElement.tagName);
+        }
+      });
+    }
+    return tagNames;
+  }
+
+  getChildNodes(range: Range) {
+    let childNodes = null;
+    if (range) {
+      const tempDiv = document.createElement('div');
+      tempDiv.appendChild(range.cloneContents());
+      childNodes = tempDiv.childNodes;
+    }
+    return childNodes;
+  }
+
+  getTagNames() {
+    let tagNames = new Array<string>;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = `This text is just to see <i>bold text</i>, also <i>italic text</i> and
+        finally <s>striketrough text</s>, This text is just to see <b>bold text</b>, also <i>italic text</i> and
+        finally, This text is just to see <b>bold text</b>, also <i>italic text</i> and
+        finally <s>striketrough text</s>`;
+    let childNodes = tempDiv.childNodes;
+
+    childNodes?.forEach(node => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        let childElement = node as HTMLElement;
+        tagNames.push(childElement.tagName);
+      }
+    });
+    return tagNames;
+  }
+  // Related to text selection
 }

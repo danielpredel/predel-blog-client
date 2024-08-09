@@ -393,4 +393,9 @@ export class TextComponent {
     }
     return childNodes;
   }
+
+  // If the editor handles the selection
+  // It can identify the elements inside the range and also their Id's
+  // knowing this the Text and List components can recibe an array of id to delete instead of a range
+  
 }

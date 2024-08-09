@@ -16,15 +16,33 @@ export class TooltipComponent {
   hidden: boolean = true;
   left: number = 0;
   top: number = 0;
+
+  // Text type options
   bold = { disabled: false, selected: false };
   italic = { disabled: false, selected: false };
   strikethrough = { disabled: false, selected: false };
-  link = { disabled: false, selected: false };
+  anchor = { disabled: false, selected: false };
+
+  // Component type options
+  // This will always be available so there's no need for the disabled property
   title = { disabled: false, selected: false };
   subtitle = { disabled: false, selected: false };
   quote = { disabled: false, selected: false };
   stage: string = 'OPTIONS';
   clientRect: DOMRect | undefined;
+
+  // window selection variables
+  selectionString: string | undefined;
+  selectionRange: Range | undefined;
+  // selectionComponentId: string = '';
+
+  onWindowSelection(selection: Selection){
+    if (selection) {
+      this.selectionString = selection.toString();
+      this.selectionRange = selection.getRangeAt(0);
+      
+    }
+  }
 
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
@@ -61,6 +79,16 @@ export class TooltipComponent {
           }
         }
         break;
+      case 'quote':
+        if (!this.quote.disabled) {
+          if (this.quote.selected) {
+            this.operation.emit({ operation: 'toParagraph' });
+          }
+          else {
+            this.operation.emit({ operation: 'toQuote' });
+          }
+        }
+        break;
       case 'close':
         this.operation.emit({ operation: 'close' });
         break;
@@ -79,8 +107,8 @@ export class TooltipComponent {
   }
 
   onLinkSelection() {
-    if (!this.link.disabled) {
-      if (this.link.selected) {
+    if (!this.anchor.disabled) {
+      if (this.anchor.selected) {
         this.operation.emit({ operation: 'toUnlink' });
         this.hide();
       }
@@ -137,31 +165,99 @@ export class TooltipComponent {
     this.restoreConfig();
     switch (state) {
       case 'onTitle':
-        this.link.disabled = true;
+        this.anchor.disabled = true;
         this.title.selected = true;
         break;
       case 'onSubtitle':
-        this.link.disabled = true;
+        this.anchor.disabled = true;
         this.subtitle.selected = true;
         break;
       case 'onLinkedParagraph':
-        this.link.selected = true;
+        this.anchor.selected = true;
         break;
       case 'onListItem':
         this.title.disabled = true;
         this.subtitle.disabled = true;
         break;
       case 'onLinkedListItem':
-        this.link.selected = true;
+        this.anchor.selected = true;
         this.title.disabled = true;
         this.subtitle.disabled = true;
         break;
     }
   }
 
+  // Allows all types of selection
   restoreConfig() {
-    this.link = { disabled: false, selected: false };
+    this.restoreTextOptions();
+    this.restoreComponentOptions();
+  }
+
+  restoreTextOptions() {
+    this.bold = { disabled: false, selected: false };
+    this.italic = { disabled: false, selected: false };
+    this.strikethrough = { disabled: false, selected: false };
+    this.anchor = { disabled: false, selected: false };
+  }
+
+  restoreComponentOptions() {
     this.title = { disabled: false, selected: false };
     this.subtitle = { disabled: false, selected: false };
+    this.quote = { disabled: false, selected: false };
+  }
+
+  // allowAll(){
+  //   this.setContext();
+  //   this.restoreTextOptions();
+  // }
+
+  // allowOnly(option: string) {
+  //   this.disableTextOptions();
+  //   switch(option){
+  //     case 'anchor':
+  //       this.anchor.disabled = false;
+  //   }
+  // }
+
+  // allowFollowing(options: Array<string>) {
+
+  // }
+
+  // disableTextOption(option: string) {
+
+  // }
+
+  // enableTextOption(option: string){
+
+  // }
+
+  enableTextOptions(){
+    
+  }
+
+  disableTextOptions() {
+    this.bold.disabled = true;
+    this.italic.disabled = true;
+    this.strikethrough.disabled = true;
+    this.anchor.disabled = true;
+  }
+
+  markSelected(option: string) {
+
+  }
+
+  setContext(context: string = '') {
+    this.restoreComponentOptions();
+    switch (context) {
+      case 'Title':
+        this.title.selected = true;
+        break;
+      case 'Subtitle':
+        this.subtitle.selected = true;
+        break;
+      case 'Quote':
+        this.quote.selected = true;
+        break;
+    }
   }
 }
