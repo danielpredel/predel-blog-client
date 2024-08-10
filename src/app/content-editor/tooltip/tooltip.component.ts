@@ -48,26 +48,90 @@ export class TooltipComponent {
       if (this.linkInput) {
         const url = this.linkInput.nativeElement.textContent;
         if (url) {
-          this.operation.emit({ operation: 'toLink', url });
+          this.operation.emit({
+            operation: 'addLink',
+            componentId: this.componentId,
+            range: this.selectionRange,
+            text: this.selectionString,
+            url
+          });
           this.hide();
         }
       }
     }
   }
 
-  onTooltipSelection(type: string) {
-    switch (type) {
+  onTooltipSelection(option: string) {
+    switch (option) {
       case 'bold':
+        if (!this.bold.disabled) {
+          if (this.bold.selected) {
+            this.operation.emit({
+              operation: 'removeBold',
+              componentId: this.componentId,
+              range: this.selectionRange,
+              elementIds: this.elementIds
+            });
+          }
+          else {
+            this.operation.emit({
+              operation: 'addBold',
+              componentId: this.componentId,
+              range: this.selectionRange,
+              text: this.selectionString
+            });
+          }
+        }
         break;
       case 'italic':
+        if (!this.italic.disabled) {
+          if (this.italic.selected) {
+            this.operation.emit({
+              operation: 'removeItalic',
+              componentId: this.componentId,
+              range: this.selectionRange,
+              elementIds: this.elementIds
+            });
+          }
+          else {
+            this.operation.emit({
+              operation: 'addItalic',
+              componentId: this.componentId,
+              range: this.selectionRange,
+              text: this.selectionString
+            });
+          }
+        }
         break;
       case 'strike':
+        if (!this.strike.disabled) {
+          if (this.strike.selected) {
+            this.operation.emit({
+              operation: 'removeStrike',
+              componentId: this.componentId,
+              range: this.selectionRange,
+              elementIds: this.elementIds
+            });
+          }
+          else {
+            this.operation.emit({
+              operation: 'addStrike',
+              componentId: this.componentId,
+              range: this.selectionRange,
+              text: this.selectionString
+            });
+          }
+        }
         break;
       case 'link':
         if (!this.link.disabled) {
           if (this.link.selected) {
-            this.operation.emit({ operation: 'removeLink' });
-            this.hide();
+            this.operation.emit({
+              operation: 'removeLink',
+              componentId: this.componentId,
+              elementIds: this.elementIds,
+              range: this.selectionRange
+            });
           }
           else {
             this.showLinkInput();
@@ -77,41 +141,44 @@ export class TooltipComponent {
       case 'title':
         if (!this.title.disabled) {
           if (this.title.selected) {
-            this.operation.emit({ operation: 'toParagraph' });
+            this.operation.emit({
+              operation: 'toParagraph',
+              componentId: this.componentId
+            });
           }
           else {
-            this.operation.emit({ operation: 'toTitle' });
+            this.operation.emit({
+              operation: 'toTitle',
+              componentId: this.componentId
+            });
           }
         }
         break;
       case 'subtitle':
         if (!this.subtitle.disabled) {
           if (this.subtitle.selected) {
-            this.operation.emit({ operation: 'toParagraph' });
+            this.operation.emit({
+              operation: 'toParagraph',
+              componentId: this.componentId
+            });
           }
           else {
-            this.operation.emit({ operation: 'toSubtitle' });
+            this.operation.emit({
+              operation: 'toSubtitle',
+              componentId: this.componentId
+            });
           }
         }
         break;
-      case 'close':
-        this.operation.emit({ operation: 'close' });
-        break;
     }
-    this.hide();
+    if (this.stage == 'OPTIONS') {
+      this.hide();
+    }
   }
 
   showLinkInput() {
-    if (!this.link.disabled) {
-      if (this.link.selected) {
-        this.operation.emit({ operation: 'toUnlink' });
-        this.hide();
-      }
-      else {
-        this.placeForLinkInput();
-        this.waitForLinkInput();
-      }
-    }
+    this.placeForLinkInput();
+    this.waitForLinkInput();
   }
 
   setOptions(selection: Selection) {
@@ -295,30 +362,6 @@ export class TooltipComponent {
     this.link.selected = false;
   }
 
-  // setAllSelected() {
-  //   this.bold.selected = true;
-  //   this.italic.selected = true;
-  //   this.strike.selected = true;
-  //   this.link.selected = true;
-  // }
-
-  // setDiasable(option: string) {
-  //   switch (option) {
-  //     case 'B':
-  //       this.bold.disabled = true;
-  //       break;
-  //     case 'I':
-  //       this.italic.disabled = true;
-  //       break;
-  //     case 'S':
-  //       this.strike.disabled = true;
-  //       break;
-  //     case 'A':
-  //       this.link.disabled = true;
-  //       break;
-  //   }
-  // }
-
   setSelected(option: string) {
     switch (option) {
       case 'B':
@@ -340,7 +383,7 @@ export class TooltipComponent {
     }
   }
 
-  setContext(context: string = '') {
+  setContext(context: string) {
     this.restoreComponentOptions();
     switch (context) {
       case 'Title':
