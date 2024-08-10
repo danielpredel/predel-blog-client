@@ -27,8 +27,8 @@
       <div
         class="uk-icon item"
         [ngClass]="{
-          disabled: strikethrough.disabled,
-          selected: strikethrough.selected
+          disabled: strike.disabled,
+          selected: strike.selected
         }"
         uk-icon="icon: strikethrough; ratio: 1.2"
         (click)="onStrikethroughSelection()"
@@ -46,7 +46,6 @@
       <div
         class="uk-icon item"
         [ngClass]="{
-          disabled: title.disabled,
           selected: title.selected
         }"
         (click)="onTooltipSelection('title')"
@@ -63,7 +62,6 @@
       <div
         class="uk-icon item"
         [ngClass]="{
-          disabled: subtitle.disabled,
           selected: subtitle.selected
         }"
         (click)="onTooltipSelection('subtitle')"
@@ -77,15 +75,6 @@
           </svg>
         </span>
       </div>
-      <div
-        class="uk-icon item"
-        [ngClass]="{
-          disabled: quote.disabled,
-          selected: quote.selected
-        }"
-        uk-icon="icon: quote-right; ratio: 1.2"
-        (click)="onTooltipSelection('quote')"
-      ></div>
     </div>
     <div class="items" *ngSwitchCase="'LINK-INPUT'">
       <div

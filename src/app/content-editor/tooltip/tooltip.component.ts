@@ -20,27 +20,25 @@ export class TooltipComponent {
   // Text type options
   bold = { disabled: false, selected: false };
   italic = { disabled: false, selected: false };
-  strikethrough = { disabled: false, selected: false };
+  strike = { disabled: false, selected: false };
   anchor = { disabled: false, selected: false };
 
   // Component type options
   // This will always be available so there's no need for the disabled property
   title = { disabled: false, selected: false };
   subtitle = { disabled: false, selected: false };
-  quote = { disabled: false, selected: false };
   stage: string = 'OPTIONS';
   clientRect: DOMRect | undefined;
 
   // window selection variables
   selectionString: string | undefined;
   selectionRange: Range | undefined;
-  // selectionComponentId: string = '';
+  componentId: string = '';
+  elementIds: Array<string> = [];
 
-  onWindowSelection(selection: Selection){
+  onWindowSelection(selection: Selection) {
     if (selection) {
-      this.selectionString = selection.toString();
-      this.selectionRange = selection.getRangeAt(0);
-      
+      this.setOptions(selection);
     }
   }
 
@@ -79,22 +77,11 @@ export class TooltipComponent {
           }
         }
         break;
-      case 'quote':
-        if (!this.quote.disabled) {
-          if (this.quote.selected) {
-            this.operation.emit({ operation: 'toParagraph' });
-          }
-          else {
-            this.operation.emit({ operation: 'toQuote' });
-          }
-        }
-        break;
       case 'close':
         this.operation.emit({ operation: 'close' });
         break;
     }
     this.hide();
-    this.restoreConfig();
   }
 
   onBoldSelection() {
@@ -117,6 +104,82 @@ export class TooltipComponent {
         this.waitForLinkInput();
       }
     }
+  }
+
+  setOptions(selection: Selection) {
+    this.restoreOptions();
+    this.selectionString = selection.toString();
+    if (this.selectionString.length > 0) {
+      this.selectionRange = selection?.getRangeAt(0);
+      const ancestorId = this.getCommonAncestorsId();
+
+      if (ancestorId && ancestorId.length >= 14) {
+        this.componentId = ancestorId.substring(0, 14);
+        switch (true) {
+          case ancestorId?.includes('txt'):
+            switch (true) {
+              case ancestorId?.includes('Paragraph'):
+                this.checkCommonAncestor(ancestorId);
+                break;
+              case ancestorId?.includes('Title'):
+                this.setAllDisabled();
+                this.setContext('Title');
+                break;
+              case ancestorId?.includes('Subtitle'):
+                this.setAllDisabled();
+                this.setContext('Subtitle');
+                break;
+            }
+            this.setClientRect(this.selectionRange.getBoundingClientRect());
+            this.placeForOptions();
+            break;
+          case ancestorId?.includes('lsi'):
+            this.checkCommonAncestor(ancestorId);
+            this.setClientRect(this.selectionRange.getBoundingClientRect());
+            this.placeForOptions();
+            break;
+        }
+      }
+    }
+  }
+
+  checkCommonAncestor(ancestorId: string) {
+    switch (true) {
+      case ancestorId?.includes('anchor'):
+        this.setAllDisabled();
+        this.setSelected('A');
+        this.elementIds.push(ancestorId);
+        break;
+      case ancestorId?.includes('bold'):
+        this.setAllDisabled();
+        this.setSelected('B');
+        this.elementIds.push(ancestorId);
+        break;
+      case ancestorId?.includes('italic'):
+        this.setAllDisabled();
+        this.setSelected('I');
+        this.elementIds.push(ancestorId);
+        break;
+      case ancestorId?.includes('strike'):
+        this.setAllDisabled();
+        this.setSelected('S');
+        this.elementIds.push(ancestorId);
+        break;
+      default:
+        let selectedElements = this.getSelectedElements();
+        if (selectedElements.tagNames.length > 0) {
+          this.setAllDisabled();
+          let tagNames = [...new Set(selectedElements.tagNames)];
+          tagNames.forEach(tagName => this.setSelected(tagName));
+        }
+        break;
+    }
+  }
+
+  getCommonAncestorsId() {
+    const commonAncestor = this.selectionRange?.commonAncestorContainer as Element;
+    const commonAncestorElement = commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
+    return commonAncestorElement?.id;
   }
 
   setClientRect(clientRect: DOMRect) {
@@ -162,7 +225,7 @@ export class TooltipComponent {
   }
 
   setConfig(state: string) {
-    this.restoreConfig();
+    // this.restoreOptions();
     switch (state) {
       case 'onTitle':
         this.anchor.disabled = true;
@@ -188,62 +251,85 @@ export class TooltipComponent {
   }
 
   // Allows all types of selection
-  restoreConfig() {
+  restoreOptions() {
     this.restoreTextOptions();
     this.restoreComponentOptions();
   }
 
   restoreTextOptions() {
-    this.bold = { disabled: false, selected: false };
-    this.italic = { disabled: false, selected: false };
-    this.strikethrough = { disabled: false, selected: false };
-    this.anchor = { disabled: false, selected: false };
+    this.setAllEnabled();
+    this.setAllDeselected();
   }
 
   restoreComponentOptions() {
-    this.title = { disabled: false, selected: false };
-    this.subtitle = { disabled: false, selected: false };
-    this.quote = { disabled: false, selected: false };
+    this.title.selected = false;
+    this.subtitle.selected = false;
   }
 
-  // allowAll(){
-  //   this.setContext();
-  //   this.restoreTextOptions();
-  // }
-
-  // allowOnly(option: string) {
-  //   this.disableTextOptions();
-  //   switch(option){
-  //     case 'anchor':
-  //       this.anchor.disabled = false;
-  //   }
-  // }
-
-  // allowFollowing(options: Array<string>) {
-
-  // }
-
-  // disableTextOption(option: string) {
-
-  // }
-
-  // enableTextOption(option: string){
-
-  // }
-
-  enableTextOptions(){
-    
+  setAllEnabled() {
+    this.bold.disabled = false;
+    this.italic.disabled = false;
+    this.strike.disabled = false;
+    this.anchor.disabled = false;
   }
 
-  disableTextOptions() {
+  setAllDisabled() {
     this.bold.disabled = true;
     this.italic.disabled = true;
-    this.strikethrough.disabled = true;
+    this.strike.disabled = true;
     this.anchor.disabled = true;
   }
 
-  markSelected(option: string) {
+  setAllDeselected() {
+    this.bold.selected = false;
+    this.italic.selected = false;
+    this.strike.selected = false;
+    this.anchor.selected = false;
+  }
 
+  // setAllSelected() {
+  //   this.bold.selected = true;
+  //   this.italic.selected = true;
+  //   this.strike.selected = true;
+  //   this.anchor.selected = true;
+  // }
+
+  // setDiasable(option: string) {
+  //   switch (option) {
+  //     case 'B':
+  //       this.bold.disabled = true;
+  //       break;
+  //     case 'I':
+  //       this.italic.disabled = true;
+  //       break;
+  //     case 'S':
+  //       this.strike.disabled = true;
+  //       break;
+  //     case 'A':
+  //       this.anchor.disabled = true;
+  //       break;
+  //   }
+  // }
+
+  setSelected(option: string) {
+    switch (option) {
+      case 'B':
+        this.bold.selected = true;
+        this.bold.disabled = false;
+        break;
+      case 'I':
+        this.italic.selected = true;
+        this.italic.disabled = false;
+        break;
+      case 'S':
+        this.strike.selected = true;
+        this.strike.disabled = false;
+        break;
+      case 'A':
+        this.anchor.selected = true;
+        this.anchor.disabled = false;
+        break;
+    }
   }
 
   setContext(context: string = '') {
@@ -255,9 +341,32 @@ export class TooltipComponent {
       case 'Subtitle':
         this.subtitle.selected = true;
         break;
-      case 'Quote':
-        this.quote.selected = true;
-        break;
     }
+  }
+
+  getSelectedElements() {
+    let tagNames = Array();
+    let ids = Array();
+    if (this.selectionRange) {
+      let childNodes = this.getChildNodes();
+      childNodes?.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          let childElement = node as HTMLElement;
+          tagNames.push(childElement.tagName);
+          ids.push(childElement.id);
+        }
+      });
+    }
+    return { tagNames, ids };
+  }
+
+  getChildNodes() {
+    let childNodes = null;
+    if (this.selectionRange) {
+      const tempDiv = document.createElement('div');
+      tempDiv.appendChild(this.selectionRange.cloneContents());
+      childNodes = tempDiv.childNodes;
+    }
+    return childNodes;
   }
 }
