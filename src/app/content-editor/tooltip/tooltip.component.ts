@@ -298,34 +298,7 @@ export class TooltipComponent {
       }
     }, 100);
   }
-
-  setConfig(state: string) {
-    // this.restoreOptions();
-    switch (state) {
-      case 'onTitle':
-        this.link.disabled = true;
-        this.title.selected = true;
-        break;
-      case 'onSubtitle':
-        this.link.disabled = true;
-        this.subtitle.selected = true;
-        break;
-      case 'onLinkedParagraph':
-        this.link.selected = true;
-        break;
-      case 'onListItem':
-        this.title.disabled = true;
-        this.subtitle.disabled = true;
-        break;
-      case 'onLinkedListItem':
-        this.link.selected = true;
-        this.title.disabled = true;
-        this.subtitle.disabled = true;
-        break;
-    }
-  }
-
-  // Allows all types of selection
+  
   restoreOptions() {
     this.restoreTextOptions();
     this.restoreComponentOptions();
