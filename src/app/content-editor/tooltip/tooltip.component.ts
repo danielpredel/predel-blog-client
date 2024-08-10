@@ -33,7 +33,7 @@ export class TooltipComponent {
   // window selection variables
   selectionString: string | undefined;
   selectionRange: Range | undefined;
-  componentId: string = '';
+  ancestorId: string = '';
   elementIds: Array<string> = [];
 
   onWindowSelection(selection: Selection) {
@@ -50,7 +50,7 @@ export class TooltipComponent {
         if (url) {
           this.operation.emit({
             operation: 'addLink',
-            componentId: this.componentId,
+            ancestorId: this.ancestorId,
             range: this.selectionRange,
             text: this.selectionString,
             url
@@ -68,7 +68,7 @@ export class TooltipComponent {
           if (this.bold.selected) {
             this.operation.emit({
               operation: 'removeBold',
-              componentId: this.componentId,
+              ancestorId: this.ancestorId,
               range: this.selectionRange,
               elementIds: this.elementIds
             });
@@ -76,7 +76,7 @@ export class TooltipComponent {
           else {
             this.operation.emit({
               operation: 'addBold',
-              componentId: this.componentId,
+              ancestorId: this.ancestorId,
               range: this.selectionRange,
               text: this.selectionString
             });
@@ -88,7 +88,7 @@ export class TooltipComponent {
           if (this.italic.selected) {
             this.operation.emit({
               operation: 'removeItalic',
-              componentId: this.componentId,
+              ancestorId: this.ancestorId,
               range: this.selectionRange,
               elementIds: this.elementIds
             });
@@ -96,7 +96,7 @@ export class TooltipComponent {
           else {
             this.operation.emit({
               operation: 'addItalic',
-              componentId: this.componentId,
+              ancestorId: this.ancestorId,
               range: this.selectionRange,
               text: this.selectionString
             });
@@ -108,7 +108,7 @@ export class TooltipComponent {
           if (this.strike.selected) {
             this.operation.emit({
               operation: 'removeStrike',
-              componentId: this.componentId,
+              ancestorId: this.ancestorId,
               range: this.selectionRange,
               elementIds: this.elementIds
             });
@@ -116,7 +116,7 @@ export class TooltipComponent {
           else {
             this.operation.emit({
               operation: 'addStrike',
-              componentId: this.componentId,
+              ancestorId: this.ancestorId,
               range: this.selectionRange,
               text: this.selectionString
             });
@@ -128,7 +128,7 @@ export class TooltipComponent {
           if (this.link.selected) {
             this.operation.emit({
               operation: 'removeLink',
-              componentId: this.componentId,
+              ancestorId: this.ancestorId,
               elementIds: this.elementIds,
               range: this.selectionRange
             });
@@ -143,13 +143,13 @@ export class TooltipComponent {
           if (this.title.selected) {
             this.operation.emit({
               operation: 'toParagraph',
-              componentId: this.componentId
+              ancestorId: this.ancestorId
             });
           }
           else {
             this.operation.emit({
               operation: 'toTitle',
-              componentId: this.componentId
+              ancestorId: this.ancestorId
             });
           }
         }
@@ -159,13 +159,13 @@ export class TooltipComponent {
           if (this.subtitle.selected) {
             this.operation.emit({
               operation: 'toParagraph',
-              componentId: this.componentId
+              ancestorId: this.ancestorId
             });
           }
           else {
             this.operation.emit({
               operation: 'toSubtitle',
-              componentId: this.componentId
+              ancestorId: this.ancestorId
             });
           }
         }
@@ -189,7 +189,7 @@ export class TooltipComponent {
       const ancestorId = this.getCommonAncestorsId();
 
       if (ancestorId && ancestorId.length >= 14) {
-        this.componentId = ancestorId.substring(0, 14);
+        this.ancestorId = ancestorId;
         switch (true) {
           case ancestorId?.includes('txt'):
             switch (true) {
