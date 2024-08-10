@@ -148,7 +148,7 @@ export class ListComponent {
     let targetId = listItemId.substring(0, 29);
     let index = this.listItemsIds.indexOf(targetId);
     if (index >= 0) {
-      if (listItemId.includes('anchor')) {
+      if (listItemId.includes('link')) {
         this.listItems[index].instance.toUnlink(range, listItemId);
       }
       this.listItems[index].instance.toUnlink(range);

@@ -21,7 +21,7 @@ export class TooltipComponent {
   bold = { disabled: false, selected: false };
   italic = { disabled: false, selected: false };
   strike = { disabled: false, selected: false };
-  anchor = { disabled: false, selected: false };
+  link = { disabled: false, selected: false };
 
   // Component type options
   // This will always be available so there's no need for the disabled property
@@ -57,6 +57,23 @@ export class TooltipComponent {
 
   onTooltipSelection(type: string) {
     switch (type) {
+      case 'bold':
+        break;
+      case 'italic':
+        break;
+      case 'strike':
+        break;
+      case 'link':
+        if (!this.link.disabled) {
+          if (this.link.selected) {
+            this.operation.emit({ operation: 'removeLink' });
+            this.hide();
+          }
+          else {
+            this.showLinkInput();
+          }
+        }
+        break;
       case 'title':
         if (!this.title.disabled) {
           if (this.title.selected) {
@@ -84,18 +101,9 @@ export class TooltipComponent {
     this.hide();
   }
 
-  onBoldSelection() {
-  }
-
-  onItalicSelection() {
-  }
-
-  onStrikethroughSelection() {
-  }
-
-  onLinkSelection() {
-    if (!this.anchor.disabled) {
-      if (this.anchor.selected) {
+  showLinkInput() {
+    if (!this.link.disabled) {
+      if (this.link.selected) {
         this.operation.emit({ operation: 'toUnlink' });
         this.hide();
       }
@@ -145,7 +153,7 @@ export class TooltipComponent {
 
   checkCommonAncestor(ancestorId: string) {
     switch (true) {
-      case ancestorId?.includes('anchor'):
+      case ancestorId?.includes('link'):
         this.setAllDisabled();
         this.setSelected('A');
         this.elementIds.push(ancestorId);
@@ -228,22 +236,22 @@ export class TooltipComponent {
     // this.restoreOptions();
     switch (state) {
       case 'onTitle':
-        this.anchor.disabled = true;
+        this.link.disabled = true;
         this.title.selected = true;
         break;
       case 'onSubtitle':
-        this.anchor.disabled = true;
+        this.link.disabled = true;
         this.subtitle.selected = true;
         break;
       case 'onLinkedParagraph':
-        this.anchor.selected = true;
+        this.link.selected = true;
         break;
       case 'onListItem':
         this.title.disabled = true;
         this.subtitle.disabled = true;
         break;
       case 'onLinkedListItem':
-        this.anchor.selected = true;
+        this.link.selected = true;
         this.title.disabled = true;
         this.subtitle.disabled = true;
         break;
@@ -270,28 +278,28 @@ export class TooltipComponent {
     this.bold.disabled = false;
     this.italic.disabled = false;
     this.strike.disabled = false;
-    this.anchor.disabled = false;
+    this.link.disabled = false;
   }
 
   setAllDisabled() {
     this.bold.disabled = true;
     this.italic.disabled = true;
     this.strike.disabled = true;
-    this.anchor.disabled = true;
+    this.link.disabled = true;
   }
 
   setAllDeselected() {
     this.bold.selected = false;
     this.italic.selected = false;
     this.strike.selected = false;
-    this.anchor.selected = false;
+    this.link.selected = false;
   }
 
   // setAllSelected() {
   //   this.bold.selected = true;
   //   this.italic.selected = true;
   //   this.strike.selected = true;
-  //   this.anchor.selected = true;
+  //   this.link.selected = true;
   // }
 
   // setDiasable(option: string) {
@@ -306,7 +314,7 @@ export class TooltipComponent {
   //       this.strike.disabled = true;
   //       break;
   //     case 'A':
-  //       this.anchor.disabled = true;
+  //       this.link.disabled = true;
   //       break;
   //   }
   // }
@@ -326,8 +334,8 @@ export class TooltipComponent {
         this.strike.disabled = false;
         break;
       case 'A':
-        this.anchor.selected = true;
-        this.anchor.disabled = false;
+        this.link.selected = true;
+        this.link.disabled = false;
         break;
     }
   }

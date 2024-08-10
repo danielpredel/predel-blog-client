@@ -13,7 +13,7 @@
           selected: bold.selected
         }"
         uk-icon="icon: bold; ratio: 1.2"
-        (click)="onBoldSelection()"
+        (click)="onTooltipSelection('bold')"
       ></div>
       <div
         class="uk-icon item"
@@ -22,7 +22,7 @@
           selected: italic.selected
         }"
         uk-icon="icon: italic; ratio: 1.2"
-        (click)="onItalicSelection()"
+        (click)="onTooltipSelection('italic')"
       ></div>
       <div
         class="uk-icon item"
@@ -31,16 +31,16 @@
           selected: strike.selected
         }"
         uk-icon="icon: strikethrough; ratio: 1.2"
-        (click)="onStrikethroughSelection()"
+        (click)="onTooltipSelection('strike')"
       ></div>
       <div
         class="uk-icon item"
         [ngClass]="{
-          disabled: anchor.disabled,
-          selected: anchor.selected
+          disabled: link.disabled,
+          selected: link.selected
         }"
         uk-icon="icon: link; ratio: 1.2"
-        (click)="onLinkSelection()"
+        (click)="onTooltipSelection('link')"
       ></div>
       <div class="divider"></div>
       <div

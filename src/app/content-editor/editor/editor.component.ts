@@ -77,7 +77,7 @@ export class EditorComponent {
               targetComponentRef.instance.toLink(this.selectionString, this.selectionRange, selection.url);
               break;
             case 'toUnlink':
-              if (this.selectionAncestorId.includes('anchor')) {
+              if (this.selectionAncestorId.includes('link')) {
                 targetComponentRef.instance.toUnlink(this.selectionRange, this.selectionAncestorId);
               }
               else {
@@ -118,7 +118,7 @@ export class EditorComponent {
   //         case ancestorId?.includes('txt'):
   //           switch (true) {
   //             case ancestorId?.includes('Paragraph'):
-  //               if (ancestorId?.includes('anchor')) {
+  //               if (ancestorId?.includes('link')) {
   //                 this.tooltip.setConfig('onLinkedParagraph');
   //               }
   //               else {
@@ -141,7 +141,7 @@ export class EditorComponent {
   //           this.tooltip.placeForOptions();
   //           break;
   //         case ancestorId?.includes('ListItem'):
-  //           if (ancestorId?.includes('anchor')) {
+  //           if (ancestorId?.includes('link')) {
   //             this.tooltip.setConfig('onLinkedListItem');
   //           }
   //           else {
@@ -175,7 +175,7 @@ export class EditorComponent {
               case ancestorId?.includes('Paragraph'):
                 // If and else ifs mean that the selection is inside an element
                 // So only that element can be chosen and it's displayed as selected
-                if (ancestorId?.includes('anchor')) {
+                if (ancestorId?.includes('link')) {
                   // Allow link
                   // forbide others
                 }
@@ -216,7 +216,7 @@ export class EditorComponent {
             this.tooltip.placeForOptions();
             break;
           case ancestorId?.includes('ListItem'):
-            if (ancestorId?.includes('anchor')) {
+            if (ancestorId?.includes('link')) {
               this.tooltip.setConfig('onLinkedListItem');
             }
             else {

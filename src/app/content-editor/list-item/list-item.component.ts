@@ -146,7 +146,7 @@ export class ListItemComponent {
   createLinkNode(text: string, url: string) {
     const link = document.createElement('a');
     link.href = url;
-    link.id = `${this.id}-anchor-${this.childrenCount++}`;
+    link.id = `${this.id}-link-${this.childrenCount++}`;
     link.textContent = text;
     return link;
   }

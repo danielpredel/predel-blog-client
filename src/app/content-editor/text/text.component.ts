@@ -266,7 +266,7 @@ export class TextComponent {
   createLinkNode(text: string, url: string) {
     const link = document.createElement('a');
     link.href = url;
-    link.id = `${this.componentIds[3]}-anchor-${this.linksCount++}`;
+    link.id = `${this.componentIds[3]}-link-${this.linksCount++}`;
     link.textContent = text;
     return link;
   }
