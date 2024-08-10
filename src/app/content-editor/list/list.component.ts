@@ -59,7 +59,7 @@ export class ListComponent {
   addListItem(index: number, data: any = null) {
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
 
-    let liID = `${this.id}-lsi-${this.idService.getId()}`;
+    let liID = `${this.id}-ListItem-${this.idService.getId()}`;
 
     // Send the init data in case there's any
     setTimeout(() => {

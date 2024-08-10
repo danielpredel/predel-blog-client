@@ -140,7 +140,7 @@ export class EditorComponent {
   //           this.tooltip.setClientRect(this.selectionRange.getBoundingClientRect());
   //           this.tooltip.placeForOptions();
   //           break;
-  //         case ancestorId?.includes('lsi'):
+  //         case ancestorId?.includes('ListItem'):
   //           if (ancestorId?.includes('anchor')) {
   //             this.tooltip.setConfig('onLinkedListItem');
   //           }
@@ -215,7 +215,7 @@ export class EditorComponent {
             this.tooltip.setClientRect(this.selectionRange.getBoundingClientRect());
             this.tooltip.placeForOptions();
             break;
-          case ancestorId?.includes('lsi'):
+          case ancestorId?.includes('ListItem'):
             if (ancestorId?.includes('anchor')) {
               this.tooltip.setConfig('onLinkedListItem');
             }

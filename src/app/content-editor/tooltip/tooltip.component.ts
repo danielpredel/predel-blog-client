@@ -133,7 +133,7 @@ export class TooltipComponent {
             this.setClientRect(this.selectionRange.getBoundingClientRect());
             this.placeForOptions();
             break;
-          case ancestorId?.includes('lsi'):
+          case ancestorId?.includes('ListItem'):
             this.checkCommonAncestor(ancestorId);
             this.setClientRect(this.selectionRange.getBoundingClientRect());
             this.placeForOptions();
