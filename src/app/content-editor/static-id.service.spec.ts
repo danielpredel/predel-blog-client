@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { IdService } from './id.service';
+import { StaticIdService } from './static-id.service';
 
-describe('IdService', () => {
-  let service: IdService;
+describe('StaticIdService', () => {
+  let service: StaticIdService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(IdService);
+    service = TestBed.inject(StaticIdService);
   });
 
   it('should be created', () => {

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class IdService {
+export class StaticIdService {
   currentId: number = 1;
 
   constructor() { }
