@@ -197,25 +197,55 @@ export class TextComponent {
     }
   }
 
-  // Need changes here
   addContentAtEnd(data: any) {
     let target = this.getTarget();
     data.content.forEach((element: { type: string; text: string; url: string }) => {
-      if (element.type == 'text') {
+      if (this.elementType === 'PARAGRAPH') {
+        let node = null;
+        switch (element.type) {
+          case 'text':
+            node = this.nodeMakerService.createTextNode(element.text);
+            break;
+          case 'bold':
+            node = this.nodeMakerService.createBoldNode(element.text,
+              `${this.componentIds[3]}-bold-${this.childrenCount++}`);
+            break;
+          case 'italic':
+            node = this.nodeMakerService.createItalicNode(element.text,
+              `${this.componentIds[3]}-italic-${this.childrenCount++}`);
+            break;
+          case 'strike':
+            node = this.nodeMakerService.createStrikeNode(element.text,
+              `${this.componentIds[3]}-strike-${this.childrenCount++}`);
+            break;
+          case 'link':
+            node = this.nodeMakerService.createLinkNode(element.text, element.url,
+              `${this.componentIds[3]}-link-${this.childrenCount++}`);
+            break;
+        }
+        if (node) {
+          target?.nativeElement.appendChild(node);
+        }
+      }
+      else {
         let textNode = this.nodeMakerService.createTextNode(element.text);
         target?.nativeElement.appendChild(textNode);
       }
-      else if (element.type == 'link') {
-        if (this.elementType === 'PARAGRAPH') {
-          let linkNode = this.nodeMakerService.createLinkNode(element.text, element.url,
-            `${this.componentIds[3]}-link-${this.childrenCount++}`);
-          target?.nativeElement.appendChild(linkNode);
-        }
-        else {
-          let textNode = this.nodeMakerService.createTextNode(element.text);
-          target?.nativeElement.appendChild(textNode);
-        }
-      }
+      // if (element.type == 'text') {
+      //   let textNode = this.nodeMakerService.createTextNode(element.text);
+      //   target?.nativeElement.appendChild(textNode);
+      // }
+      // else if (element.type == 'link') {
+      //   if (this.elementType === 'PARAGRAPH') {
+      //     let linkNode = this.nodeMakerService.createLinkNode(element.text, element.url,
+      //       `${this.componentIds[3]}-link-${this.childrenCount++}`);
+      //     target?.nativeElement.appendChild(linkNode);
+      //   }
+      //   else {
+      //     let textNode = this.nodeMakerService.createTextNode(element.text);
+      //     target?.nativeElement.appendChild(textNode);
+      //   }
+      // }
     });
     target?.nativeElement.normalize();
   }
@@ -246,7 +276,6 @@ export class TextComponent {
     });
   }
 
-  // Need changes here
   getContentAfterCursor() {
     let content = null;
     const selection = window.getSelection();
@@ -263,9 +292,20 @@ export class TextComponent {
       childNodes?.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           let childElement = node as HTMLElement;
-          if (childElement.tagName === 'A') {
-            let linkElement = childElement as HTMLAnchorElement;
-            nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+          switch (childElement.tagName) {
+            case 'B':
+              nodes.push({ type: 'bold', text: childElement.textContent || '' });
+              break;
+            case 'I':
+              nodes.push({ type: 'italic', text: childElement.textContent || '' });
+              break;
+            case 'S':
+              nodes.push({ type: 'strike', text: childElement.textContent || '' });
+              break;
+            case 'A':
+              let linkElement = childElement as HTMLAnchorElement;
+              nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+              break;
           }
         }
         else if (node.nodeType === Node.TEXT_NODE) {
