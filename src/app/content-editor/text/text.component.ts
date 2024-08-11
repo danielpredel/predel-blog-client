@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { SpeedDialComponent } from "../speed-dial/speed-dial.component";
 import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
+import { NodeMakerService } from '../node-maker.service';
 
 @Component({
   selector: 'app-text',
@@ -26,11 +27,13 @@ export class TextComponent {
   componentBefore: string = 'NONE';
   componentIds: Array<string> = [];
   elementType: string = 'PARAGRAPH';
-  linksCount: number = 1;
+  childrenCount: number = 1;
 
   // Speed Dial Varibles
   showSpeedDial: boolean = true;
   text: string | undefined;
+
+  constructor(private nodeMakerService: NodeMakerService) { }
 
   // Event's Functions
   onKeyDown(event: KeyboardEvent) {
@@ -40,7 +43,7 @@ export class TextComponent {
       let lenght = target?.nativeElement.textContent?.length;
       if (lenght && lenght > 0) {
         let content = this.getContentAfterCursor();
-        this.removeEmptyLinks();
+        this.removeEmptyNodes();
         if (content) {
           this.addComponent.emit(content);
           this.hideSpeedDial();
@@ -120,6 +123,35 @@ export class TextComponent {
     this.changeComponent.emit(type);
   }
 
+  onTooltipSelection(selection: any) {
+    let target = this.getTarget();
+    if (selection.range) {
+      let ancestorElement = this.getCommonAncestorElement(selection.range);
+      if (target && target.nativeElement.contains(ancestorElement)) {
+        let operation = selection.operation;
+        switch (operation) {
+          case 'toTitle':
+            this.toTitle();
+            break;
+          case 'toSubtitle':
+            this.toSubtitle();
+            break;
+          case 'toParagraph':
+            this.toParagraph();
+            break;
+          case 'addNode':
+            this.addNode(selection);
+            // in this funtion verify if the target is a paragraph
+            break;
+          case 'removeNodes':
+            this.removeNodes(selection);
+            // in this funtion verify if the target is a paragraph
+            break;
+        }
+      }
+    }
+  }
+
   // Functions
   setId(ids: Array<string>) {
     this.componentIds = ids;
@@ -165,25 +197,91 @@ export class TextComponent {
     }
   }
 
+  // Need changes here
   addContentAtEnd(data: any) {
     let target = this.getTarget();
     data.content.forEach((element: { type: string; text: string; url: string }) => {
       if (element.type == 'text') {
-        let textNode = this.createTextNode(element.text);
+        let textNode = this.nodeMakerService.createTextNode(element.text);
         target?.nativeElement.appendChild(textNode);
       }
       else if (element.type == 'link') {
         if (this.elementType === 'PARAGRAPH') {
-          let linkNode = this.createLinkNode(element.text, element.url);
+          let linkNode = this.nodeMakerService.createLinkNode(element.text, element.url,
+            `${this.componentIds[3]}-link-${this.childrenCount++}`);
           target?.nativeElement.appendChild(linkNode);
         }
         else {
-          let textNode = this.createTextNode(element.text);
+          let textNode = this.nodeMakerService.createTextNode(element.text);
           target?.nativeElement.appendChild(textNode);
         }
       }
     });
     target?.nativeElement.normalize();
+  }
+
+  waitForTarget(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const checkTarget = () => {
+        let target;
+        switch (this.elementType) {
+          case 'TITLE':
+            target = this.editableTitle;
+            break;
+          case 'SUBTITLE':
+            target = this.editableSubtitle;
+            break;
+          default:
+            target = this.editableParagraph;
+            break;
+        }
+        if (target && target.nativeElement) {
+          resolve();
+        }
+        else {
+          setTimeout(checkTarget, 50);
+        }
+      }
+      checkTarget();
+    });
+  }
+
+  // Need changes here
+  getContentAfterCursor() {
+    let content = null;
+    const selection = window.getSelection();
+    const target = this.getTarget();
+    if (selection && selection.rangeCount > 0 && target) {
+      const range = selection.getRangeAt(0);
+      const afterRange = range.cloneRange();
+      afterRange.setStart(range.endContainer, range.endOffset);
+      afterRange.setEnd(target.nativeElement as Node, target.nativeElement.childNodes.length);
+
+      // Create objects:
+      let nodes = Array();
+      let childNodes = this.getChildNodes(afterRange);
+      childNodes?.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          let childElement = node as HTMLElement;
+          if (childElement.tagName === 'A') {
+            let linkElement = childElement as HTMLAnchorElement;
+            nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+          }
+        }
+        else if (node.nodeType === Node.TEXT_NODE) {
+          nodes.push({ type: 'text', text: node.textContent });
+        }
+      });
+
+      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+        content = {
+          type: this.elementType == 'TITLE' ? 'SUBTITLE' : 'PARAGRAPH',
+          content: nodes
+        }
+      }
+      afterRange.deleteContents();
+    }
+    return content;
   }
 
   getTarget() {
@@ -238,141 +336,57 @@ export class TextComponent {
     });
   }
 
-  toLink(text: string, range: Range, url: string) {
-    if (range && this.elementType == 'PARAGRAPH') {
-      const link = this.createLinkNode(text, url);
-      range.deleteContents();
-      range.insertNode(link);
-    }
-  }
-
-  toUnlink(range: Range, targetId: string = '') {
-    if (range) {
-      if (targetId != '') {
-        this.deleteSelectedLinks([targetId]);
+  addNode(selection: any) {
+    let range = selection.range;
+    if (this.editableParagraph && this.elementType == 'PARAGRAPH' && range) {
+      let node = null;
+      switch (selection.type) {
+        case 'bold':
+          node = this.nodeMakerService.createBoldNode(selection.text,
+            `${this.componentIds[3]}-bold-${this.childrenCount++}`);
+          break;
+        case 'italic':
+          node = this.nodeMakerService.createItalicNode(selection.text,
+            `${this.componentIds[3]}-italic-${this.childrenCount++}`);
+          break;
+        case 'strike':
+          node = this.nodeMakerService.createStrikeNode(selection.text,
+            `${this.componentIds[3]}-strike-${this.childrenCount++}`);
+          break;
+        case 'link':
+          node = this.nodeMakerService.createLinkNode(selection.text, selection.url,
+            `${this.componentIds[3]}-link-${this.childrenCount++}`);
+          break;
       }
-      else {
-        // Identify links inside the selection
-        let linkIds = this.getSelectedLinkIds(range);
-        
-        // Delete links inside the selection
-        if (linkIds.length > 0) {
-          this.deleteSelectedLinks(linkIds);
-        }
+      if (node) {
+        range.deleteContents();
+        range.insertNode(node);
       }
     }
   }
 
-  createLinkNode(text: string, url: string) {
-    const link = document.createElement('a');
-    link.href = url;
-    link.id = `${this.componentIds[3]}-link-${this.linksCount++}`;
-    link.textContent = text;
-    return link;
-  }
-
-  createTextNode(text: string) {
-    const textNode = document.createTextNode(text);
-    return textNode;
-  }
-
-  getSelectedLinkIds(range: Range) {
-    let linkIds = Array();
-    if (range) {
-      let childNodes = this.getChildNodes(range);
-      childNodes?.forEach(node => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          let childElement = node as HTMLElement;
-          if (childElement.tagName === 'A') {
-            linkIds.push(childElement.id);
-          }
-        }
-      });
-    }
-    return linkIds;
-  }
-
-  deleteSelectedLinks(linkIds: Array<string>) {
+  removeNodes(selection: any) {
+    let ids = selection.elementIds;
+    console.log(ids)
+    let tagName = selection.tagName;
     if (this.editableParagraph) {
       const nativeElement: HTMLElement = this.editableParagraph.nativeElement;
       const childNodes = nativeElement.childNodes;
       childNodes.forEach((node) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const elementNode = node as HTMLElement;
-          if (elementNode.tagName === 'A' && linkIds.includes(elementNode.id)) {
-            const textNode = this.createTextNode(elementNode.textContent || '');
+          if (elementNode.tagName === tagName && ids.includes(elementNode.id)) {
+            const textNode = this.nodeMakerService.createTextNode(elementNode.textContent || '');
             nativeElement.replaceChild(textNode, elementNode);
           }
         }
       });
       nativeElement.normalize();
+      this.removeEmptyNodes();
     }
   }
 
-  waitForTarget(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const checkTarget = () => {
-        let target;
-        switch (this.elementType) {
-          case 'TITLE':
-            target = this.editableTitle;
-            break;
-          case 'SUBTITLE':
-            target = this.editableSubtitle;
-            break;
-          default:
-            target = this.editableParagraph;
-            break;
-        }
-        if (target && target.nativeElement) {
-          resolve();
-        }
-        else {
-          setTimeout(checkTarget, 50);
-        }
-      }
-      checkTarget();
-    });
-  }
-
-  getContentAfterCursor() {
-    let content = null;
-    const selection = window.getSelection();
-    const target = this.getTarget();
-    if (selection && selection.rangeCount > 0 && target) {
-      const range = selection.getRangeAt(0);
-      const afterRange = range.cloneRange();
-      afterRange.setStart(range.endContainer, range.endOffset);
-      afterRange.setEnd(target.nativeElement as Node, target.nativeElement.childNodes.length);
-
-      // Create objects:
-      let nodes = Array();
-      let childNodes = this.getChildNodes(afterRange);
-      childNodes?.forEach(node => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          let childElement = node as HTMLElement;
-          if (childElement.tagName === 'A') {
-            let linkElement = childElement as HTMLAnchorElement;
-            nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
-          }
-        }
-        else if (node.nodeType === Node.TEXT_NODE) {
-          nodes.push({ type: 'text', text: node.textContent });
-        }
-      });
-
-      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-        content = {
-          type: this.elementType == 'TITLE' ? 'SUBTITLE' : 'PARAGRAPH',
-          content: nodes
-        }
-      }
-      afterRange.deleteContents();
-    }
-    return content;
-  }
-
-  removeEmptyLinks() {
+  removeEmptyNodes() {
     let target = this.getTarget();
     if (target) {
       if (target.nativeElement.innerText.length == 0) {
@@ -384,6 +398,11 @@ export class TextComponent {
     }
   }
 
+  getCommonAncestorElement(range: Range) {
+    const commonAncestor = range?.commonAncestorContainer as Element;
+    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
+  }
+
   getChildNodes(range: Range) {
     let childNodes = null;
     if (range) {
@@ -393,9 +412,4 @@ export class TextComponent {
     }
     return childNodes;
   }
-
-  // If the editor handles the selection
-  // It can identify the elements inside the range and also their Id's
-  // knowing this the Text and List components can recibe an array of id to delete instead of a range
-  
 }
