@@ -1,7 +1,7 @@
 import { Component, ComponentRef, EventEmitter, Output, ViewChild, ViewContainerRef } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { ListItemComponent } from '../list-item/list-item.component';
-import { IdService } from '../../id.service';
+import { StaticIdService } from '../static-id.service';
 
 @Component({
   selector: 'app-list',
@@ -28,7 +28,11 @@ export class ListComponent {
   private listItems: ComponentRef<ListItemComponent>[] = [];
   private listItemsIds: Array<string> = [];
 
-  constructor(private idService: IdService) { }
+  constructor(private idService: StaticIdService) { }
+
+  onTooltipSelection(selection: any) {
+
+  }
 
   renderNewList() {
     this.addListItem(0);
