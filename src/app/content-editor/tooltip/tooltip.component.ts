@@ -24,9 +24,8 @@ export class TooltipComponent {
   link = { disabled: false, selected: false };
 
   // Component type options
-  // This will always be available so there's no need for the disabled property
-  title = { disabled: false, selected: false };
-  subtitle = { disabled: false, selected: false };
+  title = { selected: false };
+  subtitle = { selected: false };
   stage: string = 'OPTIONS';
   clientRect: DOMRect | undefined;
 
@@ -49,7 +48,8 @@ export class TooltipComponent {
         const url = this.linkInput.nativeElement.textContent;
         if (url) {
           this.operation.emit({
-            operation: 'addLink',
+            operation: 'addNode',
+            type: 'link',
             ancestorId: this.ancestorId,
             range: this.selectionRange,
             text: this.selectionString,
@@ -67,15 +67,17 @@ export class TooltipComponent {
         if (!this.bold.disabled) {
           if (this.bold.selected) {
             this.operation.emit({
-              operation: 'removeBold',
+              operation: 'removeNodes',
+              tagName: 'B',
               ancestorId: this.ancestorId,
               range: this.selectionRange,
-              elementIds: this.elementIds
+              elementIds: this.getElemementIds('bold')
             });
           }
           else {
             this.operation.emit({
-              operation: 'addBold',
+              operation: 'addNode',
+              type: 'bold',
               ancestorId: this.ancestorId,
               range: this.selectionRange,
               text: this.selectionString
@@ -87,15 +89,17 @@ export class TooltipComponent {
         if (!this.italic.disabled) {
           if (this.italic.selected) {
             this.operation.emit({
-              operation: 'removeItalic',
+              operation: 'removeNodes',
+              tagName: 'I',
               ancestorId: this.ancestorId,
               range: this.selectionRange,
-              elementIds: this.elementIds
+              elementIds: this.getElemementIds('italic')
             });
           }
           else {
             this.operation.emit({
-              operation: 'addItalic',
+              operation: 'addNode',
+              type: 'italic',
               ancestorId: this.ancestorId,
               range: this.selectionRange,
               text: this.selectionString
@@ -107,15 +111,17 @@ export class TooltipComponent {
         if (!this.strike.disabled) {
           if (this.strike.selected) {
             this.operation.emit({
-              operation: 'removeStrike',
+              operation: 'removeNodes',
+              tagName: 'S',
               ancestorId: this.ancestorId,
               range: this.selectionRange,
-              elementIds: this.elementIds
+              elementIds: this.getElemementIds('strike')
             });
           }
           else {
             this.operation.emit({
-              operation: 'addStrike',
+              operation: 'addNode',
+              type: 'strike',
               ancestorId: this.ancestorId,
               range: this.selectionRange,
               text: this.selectionString
@@ -127,10 +133,11 @@ export class TooltipComponent {
         if (!this.link.disabled) {
           if (this.link.selected) {
             this.operation.emit({
-              operation: 'removeLink',
+              operation: 'removeNodes',
+              tagName: 'A',
               ancestorId: this.ancestorId,
-              elementIds: this.elementIds,
-              range: this.selectionRange
+              range: this.selectionRange,
+              elementIds: this.getElemementIds('link')
             });
           }
           else {
@@ -139,35 +146,31 @@ export class TooltipComponent {
         }
         break;
       case 'title':
-        if (!this.title.disabled) {
-          if (this.title.selected) {
-            this.operation.emit({
-              operation: 'toParagraph',
-              ancestorId: this.ancestorId
-            });
-          }
-          else {
-            this.operation.emit({
-              operation: 'toTitle',
-              ancestorId: this.ancestorId
-            });
-          }
+        if (this.title.selected) {
+          this.operation.emit({
+            operation: 'toParagraph',
+            ancestorId: this.ancestorId
+          });
+        }
+        else {
+          this.operation.emit({
+            operation: 'toTitle',
+            ancestorId: this.ancestorId
+          });
         }
         break;
       case 'subtitle':
-        if (!this.subtitle.disabled) {
-          if (this.subtitle.selected) {
-            this.operation.emit({
-              operation: 'toParagraph',
-              ancestorId: this.ancestorId
-            });
-          }
-          else {
-            this.operation.emit({
-              operation: 'toSubtitle',
-              ancestorId: this.ancestorId
-            });
-          }
+        if (this.subtitle.selected) {
+          this.operation.emit({
+            operation: 'toParagraph',
+            ancestorId: this.ancestorId
+          });
+        }
+        else {
+          this.operation.emit({
+            operation: 'toSubtitle',
+            ancestorId: this.ancestorId
+          });
         }
         break;
     }
@@ -246,6 +249,7 @@ export class TooltipComponent {
           this.setAllDisabled();
           let tagNames = [...new Set(selectedElements.tagNames)];
           tagNames.forEach(tagName => this.setSelected(tagName));
+          this.elementIds = selectedElements.ids;
         }
         break;
     }
@@ -298,7 +302,7 @@ export class TooltipComponent {
       }
     }, 100);
   }
-  
+
   restoreOptions() {
     this.restoreTextOptions();
     this.restoreComponentOptions();
@@ -392,5 +396,9 @@ export class TooltipComponent {
       childNodes = tempDiv.childNodes;
     }
     return childNodes;
+  }
+
+  getElemementIds(element: string) {
+    return this.elementIds.filter(id => id.includes(element));
   }
 }
