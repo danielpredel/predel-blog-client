@@ -31,7 +31,13 @@ export class ListComponent {
   constructor(private idService: StaticIdService) { }
 
   onTooltipSelection(selection: any) {
-
+    let listItemId = selection.ancestorId.substring(0, 34);
+    // lst-1234567890-ListItem-1234567890 -> 34
+    let index = this.listItemsIds.indexOf(listItemId);
+    if (index > -1) {
+      let componentRef = this.listItems[index];
+      componentRef.instance.onTooltipSelection(selection);
+    }
   }
 
   renderNewList() {
@@ -141,21 +147,23 @@ export class ListComponent {
     // }, 0);
   }
 
-  toLink(text: string, range: Range, url: string, listItemId: string) {
-    let index = this.listItemsIds.indexOf(listItemId);
-    if (index >= 0) {
-      this.listItems[index].instance.toLink(text, range, url);
-    }
-  }
 
-  toUnlink(range: Range, listItemId: string) {
-    let targetId = listItemId.substring(0, 29);
-    let index = this.listItemsIds.indexOf(targetId);
-    if (index >= 0) {
-      if (listItemId.includes('link')) {
-        this.listItems[index].instance.toUnlink(range, listItemId);
-      }
-      this.listItems[index].instance.toUnlink(range);
-    }
-  }
+  // Most likely to go
+  // toLink(text: string, range: Range, url: string, listItemId: string) {
+  //   let index = this.listItemsIds.indexOf(listItemId);
+  //   if (index >= 0) {
+  //     this.listItems[index].instance.toLink(text, range, url);
+  //   }
+  // }
+
+  // toUnlink(range: Range, listItemId: string) {
+  //   let targetId = listItemId.substring(0, 29);
+  //   let index = this.listItemsIds.indexOf(targetId);
+  //   if (index >= 0) {
+  //     if (listItemId.includes('link')) {
+  //       this.listItems[index].instance.toUnlink(range, listItemId);
+  //     }
+  //     this.listItems[index].instance.toUnlink(range);
+  //   }
+  // }
 }
