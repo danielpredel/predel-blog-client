@@ -141,14 +141,20 @@ export class TextComponent {
             break;
           case 'addNode':
             this.addNode(selection);
-            // in this funtion verify if the target is a paragraph
             break;
           case 'removeNodes':
             this.removeNodes(selection);
-            // in this funtion verify if the target is a paragraph
             break;
         }
       }
+    }
+  }
+
+  onPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const pastedContent = event.clipboardData?.getData('text/plain');
+    if (pastedContent) {
+      this.paste(pastedContent);
     }
   }
 
@@ -450,5 +456,24 @@ export class TextComponent {
       childNodes = tempDiv.childNodes;
     }
     return childNodes;
+  }
+
+  paste(text: string) {
+    let target = this.getTarget();
+    if (target) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(this.nodeMakerService.createTextNode(text));
+
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        this.removeEmptyNodes();
+        target.nativeElement.normalize();
+      }
+    }
   }
 }

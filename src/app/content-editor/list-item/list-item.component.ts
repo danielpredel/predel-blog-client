@@ -103,6 +103,14 @@ export class ListItemComponent {
       }
     }
   }
+  
+  onPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const pastedContent = event.clipboardData?.getData('text/plain');
+    if (pastedContent) {
+      this.paste(pastedContent);
+    }
+  }
 
   setId(id: string) {
     this.id = id;
@@ -290,5 +298,23 @@ export class ListItemComponent {
       return true;
     }
     return false;
+  }
+
+  paste(text: string) {
+    if (this.editableListItem) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(this.nodeMakerService.createTextNode(text));
+
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        this.removeEmptyNodes();
+        this.editableListItem.nativeElement.normalize();
+      }
+    }
   }
 }
