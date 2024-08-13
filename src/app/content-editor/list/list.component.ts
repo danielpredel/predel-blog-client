@@ -88,15 +88,24 @@ export class ListComponent {
     componentRef.instance.addListItem.subscribe((content) => {
       let index = this.listItems.indexOf(componentRef);
       let emitAddEvent = false;
-      if (this.listItems.length > 1 && index == this.listItems.length - 1) {
-        if (this.listItems[index - 1].instance.isEmpty() && this.listItems[index].instance.isEmpty()) {
+      if (this.listItems.length == 1) {
+        if (!content && this.listItems[index].instance.isEmpty()) {
+          this.changeComponent.emit();
+        }
+        else {
+          emitAddEvent = true;
+        }
+      }
+      else {
+        if (!content && this.listItems[index].instance.isEmpty()) {
+          this.removeListItem(index);
+          this.addComponent.emit();
+        }
+        else {
           emitAddEvent = true;
         }
       }
       if (emitAddEvent) {
-        this.addComponent.emit();
-      }
-      else {
         if (content) {
           this.addListItem(index + 1, content);
         }
