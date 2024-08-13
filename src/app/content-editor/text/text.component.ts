@@ -164,7 +164,9 @@ export class TextComponent {
   }
 
   setData(data: any) {
-    this.elementType = data.type;
+    if (data.type) {
+      this.elementType = data.type;
+    }
     this.waitForTarget().then(() => {
       this.addContentAtEnd(data);
     });
@@ -237,21 +239,6 @@ export class TextComponent {
         let textNode = this.nodeMakerService.createTextNode(element.text);
         target?.nativeElement.appendChild(textNode);
       }
-      // if (element.type == 'text') {
-      //   let textNode = this.nodeMakerService.createTextNode(element.text);
-      //   target?.nativeElement.appendChild(textNode);
-      // }
-      // else if (element.type == 'link') {
-      //   if (this.elementType === 'PARAGRAPH') {
-      //     let linkNode = this.nodeMakerService.createLinkNode(element.text, element.url,
-      //       `${this.componentIds[3]}-link-${this.childrenCount++}`);
-      //     target?.nativeElement.appendChild(linkNode);
-      //   }
-      //   else {
-      //     let textNode = this.nodeMakerService.createTextNode(element.text);
-      //     target?.nativeElement.appendChild(textNode);
-      //   }
-      // }
     });
     target?.nativeElement.normalize();
   }
@@ -345,6 +332,8 @@ export class TextComponent {
     }
     return target;
   }
+
+  getData() { }
 
   toTitle() {
     let target = this.getTarget();
