@@ -167,43 +167,6 @@ export class ListItemComponent {
     this.editableListItem?.nativeElement.normalize();
   }
 
-  // getContentAfterCursor() {
-  //   let content = null;
-  //   const selection = window.getSelection();
-  //   if (selection && selection.rangeCount > 0 && this.editableListItem) {
-  //     const range = selection.getRangeAt(0);
-  //     const afterRange = range.cloneRange();
-  //     afterRange.setStart(range.endContainer, range.endOffset);
-  //     afterRange.setEnd(this.editableListItem.nativeElement as Node,
-  //       this.editableListItem.nativeElement.childNodes.length);
-
-  //     // Create objects:
-  //     let nodes = Array();
-  //     let childNodes = this.getChildNodes(afterRange);
-  //     childNodes?.forEach(node => {
-  //       if (node.nodeType === Node.ELEMENT_NODE) {
-  //         let childElement = node as HTMLElement;
-  //         if (childElement.tagName === 'A') {
-  //           let linkElement = childElement as HTMLAnchorElement;
-  //           nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
-  //         }
-  //       }
-  //       else if (node.nodeType === Node.TEXT_NODE) {
-  //         nodes.push({ type: 'text', text: node.textContent });
-  //       }
-  //     });
-
-  //     if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-  //       content = {
-  //         type: 'LIST',
-  //         content: nodes
-  //       }
-  //     }
-  //     afterRange.deleteContents();
-  //   }
-  //   return content;
-  // }
-
   getContentAfterCursor() {
     let content = null;
     const selection = window.getSelection();
