@@ -139,11 +139,11 @@ export class ListComponent {
     component.instance.addListItem.unsubscribe();
     component.instance.deleteListItem.unsubscribe();
     this.listElement.remove(index);
-    // setTimeout(() => {
-    //   this.listItems[index - 1].instance.placeCursorAtEnd();
-    //   if (data) {
-    //     this.components[index - 1].instance.addContentAtEnd(data);
-    //   }
-    // }, 0);
+    setTimeout(() => {
+      this.listItems[index - 1].instance.placeCursorAtEnd();
+      if (data) {
+        this.listItems[index - 1].instance.addContentAtEnd(data);
+      }
+    }, 0);
   }
 }

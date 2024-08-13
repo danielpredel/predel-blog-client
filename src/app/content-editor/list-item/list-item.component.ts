@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { NodeMakerService } from '../node-maker.service';
 
 @Component({
@@ -30,22 +30,20 @@ export class ListItemComponent {
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      // let lenght = this.editableListItem?.nativeElement.textContent?.length;
-      this.addListItem.emit();
-      // if (lenght && lenght > 0) {
-      //   let content = this.getContentAfterCursor();
-      // // this.removeEmptyLinks();
-      //   this.removeEmptyNodes();
-      //   if (content) {
-      //     this.addListItem.emit(content);
-      //   }
-      //   else {
-      //     this.addListItem.emit();
-      //   }
-      // }
-      // else {
-      //   this.addListItem.emit();
-      // }
+      let lenght = this.editableListItem?.nativeElement.textContent?.length;
+      if (lenght && lenght > 0) {
+        let content = this.getContentAfterCursor();
+        this.removeEmptyNodes();
+        if (content) {
+          this.addListItem.emit(content);
+        }
+        else {
+          this.addListItem.emit();
+        }
+      }
+      else {
+        this.addListItem.emit();
+      }
     }
     else if (event.key === 'Backspace') {
       const selection = window.getSelection();
@@ -55,15 +53,13 @@ export class ListItemComponent {
           if (range.startOffset == 0 && range.endOffset == 0) {
             let lenght = this.editableListItem?.nativeElement.textContent?.length;
             if (lenght && lenght > 0) {
-              this.deleteListItem.emit();
-
-              // let content = this.getContentAfterCursor();
-              // if (content) {
-              //   this.deleteListItem.emit(content);
-              // }
-              // else {
-              //   this.deleteListItem.emit();
-              // }
+              let content = this.getContentAfterCursor();
+              if (content) {
+                this.deleteListItem.emit(content);
+              }
+              else {
+                this.deleteListItem.emit();
+              }
             }
             else {
               this.deleteListItem.emit();
@@ -103,7 +99,7 @@ export class ListItemComponent {
       }
     }
   }
-  
+
   onPaste(event: ClipboardEvent) {
     event.preventDefault();
     const pastedContent = event.clipboardData?.getData('text/plain');
@@ -117,9 +113,7 @@ export class ListItemComponent {
   }
 
   setData(data: any) {
-    if (data) {
-      // set data
-    }
+    this.addContentAtEnd(data);
   }
 
   focus() {
@@ -143,18 +137,72 @@ export class ListItemComponent {
   }
 
   addContentAtEnd(data: any) {
-    // data.content.forEach((element: { type: string; text: string; url: string }) => {
-    //   if (element.type == 'text') {
-    //     let textNode = this.createTextNode(element.text);
-    //     this.editableListItem?.nativeElement.appendChild(textNode);
-    //   }
-    //   else if (element.type == 'link') {
-    //     let linkNode = this.createLinkNode(element.text, element.url);
-    //     this.editableListItem?.nativeElement.appendChild(linkNode);
-    //   }
-    // });
-    // this.editableListItem?.nativeElement.normalize();
+    data.content.forEach((element: { type: string; text: string; url: string }) => {
+      let node = null;
+      switch (element.type) {
+        case 'text':
+          node = this.nodeMakerService.createTextNode(element.text);
+          break;
+        case 'bold':
+          node = this.nodeMakerService.createBoldNode(element.text,
+            `${this.id}-bold-${this.childrenCount++}`);
+          break;
+        case 'italic':
+          node = this.nodeMakerService.createItalicNode(element.text,
+            `${this.id}-italic-${this.childrenCount++}`);
+          break;
+        case 'strike':
+          node = this.nodeMakerService.createStrikeNode(element.text,
+            `${this.id}-strike-${this.childrenCount++}`);
+          break;
+        case 'link':
+          node = this.nodeMakerService.createLinkNode(element.text, element.url,
+            `${this.id}-link-${this.childrenCount++}`);
+          break;
+      }
+      if (node) {
+        this.editableListItem?.nativeElement.appendChild(node);
+      }
+    });
+    this.editableListItem?.nativeElement.normalize();
   }
+
+  // getContentAfterCursor() {
+  //   let content = null;
+  //   const selection = window.getSelection();
+  //   if (selection && selection.rangeCount > 0 && this.editableListItem) {
+  //     const range = selection.getRangeAt(0);
+  //     const afterRange = range.cloneRange();
+  //     afterRange.setStart(range.endContainer, range.endOffset);
+  //     afterRange.setEnd(this.editableListItem.nativeElement as Node,
+  //       this.editableListItem.nativeElement.childNodes.length);
+
+  //     // Create objects:
+  //     let nodes = Array();
+  //     let childNodes = this.getChildNodes(afterRange);
+  //     childNodes?.forEach(node => {
+  //       if (node.nodeType === Node.ELEMENT_NODE) {
+  //         let childElement = node as HTMLElement;
+  //         if (childElement.tagName === 'A') {
+  //           let linkElement = childElement as HTMLAnchorElement;
+  //           nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+  //         }
+  //       }
+  //       else if (node.nodeType === Node.TEXT_NODE) {
+  //         nodes.push({ type: 'text', text: node.textContent });
+  //       }
+  //     });
+
+  //     if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+  //       content = {
+  //         type: 'LIST',
+  //         content: nodes
+  //       }
+  //     }
+  //     afterRange.deleteContents();
+  //   }
+  //   return content;
+  // }
 
   getContentAfterCursor() {
     let content = null;
@@ -172,9 +220,20 @@ export class ListItemComponent {
       childNodes?.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           let childElement = node as HTMLElement;
-          if (childElement.tagName === 'A') {
-            let linkElement = childElement as HTMLAnchorElement;
-            nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+          switch (childElement.tagName) {
+            case 'B':
+              nodes.push({ type: 'bold', text: childElement.textContent || '' });
+              break;
+            case 'I':
+              nodes.push({ type: 'italic', text: childElement.textContent || '' });
+              break;
+            case 'S':
+              nodes.push({ type: 'strike', text: childElement.textContent || '' });
+              break;
+            case 'A':
+              let linkElement = childElement as HTMLAnchorElement;
+              nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+              break;
           }
         }
         else if (node.nodeType === Node.TEXT_NODE) {
@@ -184,7 +243,6 @@ export class ListItemComponent {
 
       if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
         content = {
-          type: 'LIST',
           content: nodes
         }
       }
@@ -197,6 +255,8 @@ export class ListItemComponent {
     const commonAncestor = range?.commonAncestorContainer as Element;
     return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
   }
+
+  getData() { }
 
   toTitle() {
     // get data, only text
