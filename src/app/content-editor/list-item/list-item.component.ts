@@ -148,79 +148,6 @@ export class ListItemComponent {
     // this.editableListItem?.nativeElement.normalize();
   }
 
-  // Most likely to go
-  // toLink(text: string, range: Range, url: string) {
-  //   if (range) {
-  //     const link = this.createLinkNode(text, url);
-  //     range.deleteContents();
-  //     range.insertNode(link);
-  //   }
-  // }
-
-  // toUnlink(range: Range, targetId: string = '') {
-  //   if (range) {
-  //     if (targetId != '') {
-  //       this.deleteSelectedLinks([targetId]);
-  //     }
-  //     else {
-  //       // Identify links inside the selection
-  //       let linkIds = this.getSelectedLinkIds(range);
-
-  //       // Delete links inside the selection
-  //       if (linkIds.length > 0) {
-  //         this.deleteSelectedLinks(linkIds);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // createLinkNode(text: string, url: string) {
-  //   const link = document.createElement('a');
-  //   link.href = url;
-  //   link.id = `${this.id}-link-${this.childrenCount++}`;
-  //   link.textContent = text;
-  //   return link;
-  // }
-
-  // createTextNode(text: string) {
-  //   const textNode = document.createTextNode(text);
-  //   return textNode;
-  // }
-
-  // getSelectedLinkIds(range: Range) {
-  //   let linkIds = Array();
-  //   if (range) {
-  //     let childNodes = this.getChildNodes(range);
-  //     childNodes?.forEach(node => {
-  //       if (node.nodeType === Node.ELEMENT_NODE) {
-  //         let childElement = node as HTMLElement;
-  //         if (childElement.tagName === 'A') {
-  //           linkIds.push(childElement.id);
-  //         }
-  //       }
-  //     });
-  //   }
-  //   return linkIds;
-  // }
-
-  // deleteSelectedLinks(linkIds: Array<string>) {
-  //   if (this.editableListItem) {
-  //     const nativeElement: HTMLElement = this.editableListItem.nativeElement;
-  //     const childNodes = nativeElement.childNodes;
-  //     childNodes.forEach((node) => {
-  //       if (node.nodeType === Node.ELEMENT_NODE) {
-  //         const elementNode = node as HTMLElement;
-  //         if (elementNode.tagName === 'A' && linkIds.includes(elementNode.id)) {
-  //           const textNode = this.createTextNode(elementNode.textContent || '');
-  //           nativeElement.replaceChild(textNode, elementNode);
-  //         }
-  //       }
-  //     });
-  //     nativeElement.normalize();
-  //   }
-  // }
-  // Most likely to go
-
   getContentAfterCursor() {
     let content = null;
     const selection = window.getSelection();
@@ -347,18 +274,6 @@ export class ListItemComponent {
       }
     }
   }
-
-  // Most likely to be renamed
-  // removeEmptyLinks() {
-  //   if (this.editableListItem) {
-  //     if (this.editableListItem.nativeElement.innerText.length == 0) {
-  //       const parent: HTMLElement = this.editableListItem.nativeElement;
-  //       while (parent.firstElementChild) {
-  //         parent.removeChild(parent.firstElementChild);
-  //       }
-  //     }
-  //   }
-  // }
 
   getChildNodes(range: Range) {
     let childNodes = null;

@@ -407,7 +407,6 @@ export class TextComponent {
 
   removeNodes(selection: any) {
     let ids = selection.elementIds;
-    console.log(ids)
     let tagName = selection.tagName;
     if (this.editableParagraph) {
       const nativeElement: HTMLElement = this.editableParagraph.nativeElement;
