@@ -149,13 +149,15 @@ export class TooltipComponent {
         if (this.title.selected) {
           this.operation.emit({
             operation: 'toParagraph',
-            ancestorId: this.ancestorId
+            ancestorId: this.ancestorId,
+            range: this.selectionRange
           });
         }
         else {
           this.operation.emit({
             operation: 'toTitle',
-            ancestorId: this.ancestorId
+            ancestorId: this.ancestorId,
+            range: this.selectionRange
           });
         }
         break;
@@ -163,13 +165,15 @@ export class TooltipComponent {
         if (this.subtitle.selected) {
           this.operation.emit({
             operation: 'toParagraph',
-            ancestorId: this.ancestorId
+            ancestorId: this.ancestorId,
+            range: this.selectionRange
           });
         }
         else {
           this.operation.emit({
             operation: 'toSubtitle',
-            ancestorId: this.ancestorId
+            ancestorId: this.ancestorId,
+            range: this.selectionRange
           });
         }
         break;
