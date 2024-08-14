@@ -21,7 +21,6 @@ export class ListComponent {
   @ViewChild('listElement', { read: ViewContainerRef, static: true }) listElement!: ViewContainerRef;
 
   // Local Varibles
-  componentBefore: string = 'NONE';
   id: string = '';
   ordered: boolean = false;
 
@@ -60,10 +59,6 @@ export class ListComponent {
     if (data) {
       // set data
     }
-  }
-
-  setComponentBefore(type: string) {
-    this.componentBefore = type;
   }
 
   addListItem(index: number, data: any = null) {
