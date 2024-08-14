@@ -169,6 +169,10 @@ export class ListItemComponent {
 
   getContentAfterCursor() {
     let content = null;
+
+    this.removeEmptyNodes();
+    this.editableListItem?.nativeElement.normalize();
+
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0 && this.editableListItem) {
       const range = selection.getRangeAt(0);
@@ -178,8 +182,49 @@ export class ListItemComponent {
         this.editableListItem.nativeElement.childNodes.length);
 
       // Create objects:
-      let nodes = Array();
       let childNodes = this.getChildNodes(afterRange);
+      if (childNodes) {
+        let nodes = this.getContentNodes(childNodes);
+
+        if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+          content = {
+            content: nodes
+          }
+        }
+      }
+      afterRange.deleteContents();
+    }
+    return content;
+  }
+
+  getCommonAncestorElement(range: Range) {
+    const commonAncestor = range?.commonAncestorContainer as Element;
+    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
+  }
+
+  getData() {
+    let content = null;
+
+    this.removeEmptyNodes();
+    this.editableListItem?.nativeElement.normalize();
+
+    let childNodes = this.editableListItem?.nativeElement.childNodes;
+
+    if (childNodes) {
+      let nodes = this.getContentNodes(childNodes);
+
+      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+        content = {
+          content: nodes
+        }
+      }
+    }
+    return content;
+  }
+
+  getContentNodes(childNodes: NodeListOf<ChildNode>) {
+    let nodes = Array();
+    if (childNodes) {
       childNodes?.forEach(node => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           let childElement = node as HTMLElement;
@@ -203,23 +248,9 @@ export class ListItemComponent {
           nodes.push({ type: 'text', text: node.textContent });
         }
       });
-
-      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-        content = {
-          content: nodes
-        }
-      }
-      afterRange.deleteContents();
     }
-    return content;
+    return nodes;
   }
-
-  getCommonAncestorElement(range: Range) {
-    const commonAncestor = range?.commonAncestorContainer as Element;
-    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
-  }
-
-  getData() { }
 
   toTitle() {
     // get data, only text

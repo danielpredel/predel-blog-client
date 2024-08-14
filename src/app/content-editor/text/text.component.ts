@@ -273,6 +273,10 @@ export class TextComponent {
     let content = null;
     const selection = window.getSelection();
     const target = this.getTarget();
+
+    this.removeEmptyNodes();
+    target?.nativeElement.normalize();
+
     if (selection && selection.rangeCount > 0 && target) {
       const range = selection.getRangeAt(0);
       const afterRange = range.cloneRange();
@@ -280,36 +284,14 @@ export class TextComponent {
       afterRange.setEnd(target.nativeElement as Node, target.nativeElement.childNodes.length);
 
       // Create objects:
-      let nodes = Array();
       let childNodes = this.getChildNodes(afterRange);
-      childNodes?.forEach(node => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          let childElement = node as HTMLElement;
-          switch (childElement.tagName) {
-            case 'B':
-              nodes.push({ type: 'bold', text: childElement.textContent || '' });
-              break;
-            case 'I':
-              nodes.push({ type: 'italic', text: childElement.textContent || '' });
-              break;
-            case 'S':
-              nodes.push({ type: 'strike', text: childElement.textContent || '' });
-              break;
-            case 'A':
-              let linkElement = childElement as HTMLAnchorElement;
-              nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
-              break;
+      if (childNodes) {
+        let nodes = this.getContentNodes(childNodes);
+  
+        if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+          content = {
+            content: nodes
           }
-        }
-        else if (node.nodeType === Node.TEXT_NODE) {
-          nodes.push({ type: 'text', text: node.textContent });
-        }
-      });
-
-      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-        content = {
-          type: this.elementType == 'TITLE' ? 'SUBTITLE' : 'PARAGRAPH',
-          content: nodes
         }
       }
       afterRange.deleteContents();
@@ -333,7 +315,56 @@ export class TextComponent {
     return target;
   }
 
-  getData() { }
+  getData() {
+    let content = null;
+    let target = this.getTarget();
+
+    this.removeEmptyNodes();
+    target?.nativeElement.normalize();
+
+    let childNodes = target?.nativeElement.childNodes;
+
+    if (childNodes) {
+      let nodes = this.getContentNodes(childNodes);
+
+      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+        content = {
+          content: nodes
+        }
+      }
+    }
+    return content;
+  }
+
+  getContentNodes(childNodes: NodeListOf<ChildNode>) {
+    let nodes = Array();
+    if (childNodes) {
+      childNodes?.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          let childElement = node as HTMLElement;
+          switch (childElement.tagName) {
+            case 'B':
+              nodes.push({ type: 'bold', text: childElement.textContent || '' });
+              break;
+            case 'I':
+              nodes.push({ type: 'italic', text: childElement.textContent || '' });
+              break;
+            case 'S':
+              nodes.push({ type: 'strike', text: childElement.textContent || '' });
+              break;
+            case 'A':
+              let linkElement = childElement as HTMLAnchorElement;
+              nodes.push({ type: 'link', text: linkElement.textContent || '', url: linkElement.href });
+              break;
+          }
+        }
+        else if (node.nodeType === Node.TEXT_NODE) {
+          nodes.push({ type: 'text', text: node.textContent });
+        }
+      });
+    }
+    return nodes;
+  }
 
   toTitle() {
     let target = this.getTarget();
