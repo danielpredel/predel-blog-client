@@ -67,21 +67,30 @@ export class EditorComponent {
     this.components[0].instance.toTitle();
   }
 
-  setComponentBefore(index: number) {
-    switch (this.components[index - 1].componentType) {
-      case TextComponent:
-        this.components[index].instance.setComponentBefore('TEXT');
-        break;
-      case ListComponent:
-        this.components[index].instance.setComponentBefore('LIST');
-        break;
-      // case ImageComponent:
-      //   this.components[index].instance.setComponentBefore('IMAGE');
-      //   break;
-      // case CodeSnippetComponent:
-      //   this.components[index].instance.setComponentBefore('CODE-SNIPPET');
-      //   break;
-    }
+  updateComponentBefore() {
+    this.components.forEach((componentRef, index) => {
+      if (componentRef.componentType !== ListComponent) {
+        if (index > 0) {
+          switch (this.components[index - 1].componentType) {
+            case TextComponent:
+              this.components[index].instance.updateComponentBefore('TEXT');
+              break;
+            case ListComponent:
+              this.components[index].instance.updateComponentBefore('LIST');
+              break;
+            // case ImageComponent:
+            //   this.components[index].instance.updateComponentBefore('IMAGE');
+            //   break;
+            // case CodeSnippetComponent:
+            //   this.components[index].instance.updateComponentBefore('CODE-SNIPPET');
+            //   break;
+          }
+        }
+        else {
+          this.components[index].instance.updateComponentBefore('NONE');
+        }
+      }
+    });
   }
 
   addTextComponent(index: number, data: any = null) {
@@ -97,12 +106,6 @@ export class EditorComponent {
     // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.setId(ids);
-      if (index > 0) {
-        this.setComponentBefore(index);
-      }
-      if (index < this.components.length - 1) {
-        this.components[index + 1].instance.setComponentBefore('TEXT');
-      }
       if (data) {
         componentRef.instance.setData(data);
       }
@@ -122,6 +125,7 @@ export class EditorComponent {
       else {
         this.addTextComponent(index + 1);
       }
+      this.updateComponentBefore();
     });
 
     componentRef.instance.deleteComponent.subscribe((content) => {
@@ -132,11 +136,13 @@ export class EditorComponent {
       else {
         this.removeTextComponent(index);
       }
+      this.updateComponentBefore();
     });
 
     componentRef.instance.changeComponent.subscribe((componentType) => {
       let index = this.components.indexOf(componentRef);
       this.changeTextComponent(index, componentType);
+      this.updateComponentBefore();
     });
 
     componentRef.instance.focused.subscribe(() => {
@@ -205,12 +211,6 @@ export class EditorComponent {
       if (type == 'OL') {
         componentRef.instance.changeTypeToOrdered();
       }
-      if (index > 0) {
-        this.setComponentBefore(index);
-      }
-      if (index < this.components.length - 1) {
-        this.components[index + 1].instance.setComponentBefore('LIST');
-      }
       if (data) {
         componentRef.instance.setData(data);
       }
@@ -233,11 +233,13 @@ export class EditorComponent {
       else {
         this.addTextComponent(index + 1);
       }
+      this.updateComponentBefore();
     });
 
-    componentRef.instance.changeComponent.subscribe((componentType) => {
+    componentRef.instance.changeComponent.subscribe(() => {
       let index = this.components.indexOf(componentRef);
       this.changeListComponent(index);
+      this.updateComponentBefore();
     });
 
     componentRef.instance.focused.subscribe(() => {
