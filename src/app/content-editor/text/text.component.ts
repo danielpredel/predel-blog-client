@@ -172,7 +172,7 @@ export class TextComponent {
     });
   }
 
-  setComponentBefore(type: string) {
+  updateComponentBefore(type: string) {
     this.componentBefore = type;
   }
 
