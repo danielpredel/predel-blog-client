@@ -45,7 +45,7 @@ export class TextComponent {
         let content = this.getContentAfterCursor();
         this.removeEmptyNodes();
         if (content) {
-          this.addComponent.emit(content);
+          this.addComponent.emit({content});
           this.hideSpeedDial();
         }
         else {
@@ -168,7 +168,9 @@ export class TextComponent {
       this.elementType = data.type;
     }
     this.waitForTarget().then(() => {
-      this.addContentAtEnd(data);
+      if (data) {
+        this.addContentAtEnd(data.content);
+      }
     });
   }
 
@@ -206,41 +208,43 @@ export class TextComponent {
   }
 
   addContentAtEnd(data: any) {
-    let target = this.getTarget();
-    data.content.forEach((element: { type: string; text: string; url: string }) => {
-      if (this.elementType === 'PARAGRAPH') {
-        let node = null;
-        switch (element.type) {
-          case 'text':
-            node = this.nodeMakerService.createTextNode(element.text);
-            break;
-          case 'bold':
-            node = this.nodeMakerService.createBoldNode(element.text,
-              `${this.componentIds[3]}-bold-${this.childrenCount++}`);
-            break;
-          case 'italic':
-            node = this.nodeMakerService.createItalicNode(element.text,
-              `${this.componentIds[3]}-italic-${this.childrenCount++}`);
-            break;
-          case 'strike':
-            node = this.nodeMakerService.createStrikeNode(element.text,
-              `${this.componentIds[3]}-strike-${this.childrenCount++}`);
-            break;
-          case 'link':
-            node = this.nodeMakerService.createLinkNode(element.text, element.url,
-              `${this.componentIds[3]}-link-${this.childrenCount++}`);
-            break;
+    if (data) {
+      let target = this.getTarget();
+      data.content.forEach((element: { type: string; text: string; url: string }) => {
+        if (this.elementType === 'PARAGRAPH') {
+          let node = null;
+          switch (element.type) {
+            case 'text':
+              node = this.nodeMakerService.createTextNode(element.text);
+              break;
+            case 'bold':
+              node = this.nodeMakerService.createBoldNode(element.text,
+                `${this.componentIds[3]}-bold-${this.childrenCount++}`);
+              break;
+            case 'italic':
+              node = this.nodeMakerService.createItalicNode(element.text,
+                `${this.componentIds[3]}-italic-${this.childrenCount++}`);
+              break;
+            case 'strike':
+              node = this.nodeMakerService.createStrikeNode(element.text,
+                `${this.componentIds[3]}-strike-${this.childrenCount++}`);
+              break;
+            case 'link':
+              node = this.nodeMakerService.createLinkNode(element.text, element.url,
+                `${this.componentIds[3]}-link-${this.childrenCount++}`);
+              break;
+          }
+          if (node) {
+            target?.nativeElement.appendChild(node);
+          }
         }
-        if (node) {
-          target?.nativeElement.appendChild(node);
+        else {
+          let textNode = this.nodeMakerService.createTextNode(element.text);
+          target?.nativeElement.appendChild(textNode);
         }
-      }
-      else {
-        let textNode = this.nodeMakerService.createTextNode(element.text);
-        target?.nativeElement.appendChild(textNode);
-      }
-    });
-    target?.nativeElement.normalize();
+      });
+      target?.nativeElement.normalize();
+    }
   }
 
   waitForTarget(): Promise<void> {
@@ -287,7 +291,7 @@ export class TextComponent {
       let childNodes = this.getChildNodes(afterRange);
       if (childNodes) {
         let nodes = this.getContentNodes(childNodes);
-  
+
         if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
           content = {
             content: nodes
