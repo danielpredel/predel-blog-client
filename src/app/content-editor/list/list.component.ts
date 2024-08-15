@@ -29,6 +29,7 @@ export class ListComponent {
 
   constructor(private idService: StaticIdService) { }
 
+  // Event Functions
   onTooltipSelection(selection: any) {
     let listItemId = selection.ancestorId.substring(0, 34);
     // lst-1234567890-ListItem-1234567890 -> 34
@@ -39,18 +40,7 @@ export class ListComponent {
     }
   }
 
-  renderNewList() {
-    this.addListItem(0);
-  }
-
-  changeTypeToOrdered() {
-    this.ordered = true;
-  }
-
-  isOrdered() {
-    return this.ordered;
-  }
-
+  // Setters
   setId(id: string) {
     this.id = id;
   }
@@ -63,7 +53,35 @@ export class ListComponent {
     }
   }
 
-  // blur mode: doesn't focus the new added component
+  setDataAtEnd(data: any) {
+
+  }
+
+  // Getters
+  getListType() {
+    return this.ordered ? 'OL' : 'UL';
+  }
+
+  // Funtions
+  renderNewList() {
+    this.addListItem(0);
+  }
+
+  placeCursorAtEnd() {
+
+  }
+
+  // List Type Functions
+  changeTypeToOrdered() {
+    this.ordered = true;
+  }
+
+  isOrdered() {
+    return this.ordered;
+  }
+
+  // List Item Functions
+  // silence mode: doesn't focus the new added component
   addListItem(index: number, data: any = null) {
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
 
@@ -150,20 +168,8 @@ export class ListComponent {
     setTimeout(() => {
       this.listItems[index - 1].instance.placeCursorAtEnd();
       if (data) {
-        this.listItems[index - 1].instance.addContentAtEnd(data);
+        this.listItems[index - 1].instance.setDataAtEnd(data);
       }
     }, 0);
-  }
-
-  getListType() {
-    return this.ordered ? 'OL' : 'UL';
-  }
-
-  placeCursorAtEnd() {
-
-  }
-
-  addContentAtEnd(data: any) {
-
   }
 }

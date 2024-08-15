@@ -35,14 +35,14 @@ export class TextComponent {
 
   constructor(private nodeMakerService: NodeMakerService) { }
 
-  // Event's Functions
+  // Event Functions
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
       let target = this.getTarget();
       let lenght = target?.nativeElement.textContent?.length;
       if (lenght && lenght > 0) {
-        let content = this.getContentAfterCursor();
+        let content = this.getDataAfterCursor();
         this.removeEmptyNodes();
         if (content) {
           this.addComponent.emit({content});
@@ -67,7 +67,7 @@ export class TextComponent {
             let target = this.getTarget();
             let lenght = target?.nativeElement.textContent?.length;
             if (lenght && lenght > 0) {
-              let content = this.getContentAfterCursor();
+              let content = this.getDataAfterCursor();
               if (content) {
                 this.deleteComponent.emit(content);
               }
@@ -158,7 +158,7 @@ export class TextComponent {
     }
   }
 
-  // Functions
+  // Setters
   setId(ids: Array<string>) {
     this.componentIds = ids;
   }
@@ -169,45 +169,12 @@ export class TextComponent {
     }
     this.waitForTarget().then(() => {
       if (data) {
-        this.addContentAtEnd(data.content);
+        this.setDataAtEnd(data.content);
       }
     });
   }
 
-  updateComponentBefore(type: string) {
-    this.componentBefore = type;
-  }
-
-  hideSpeedDial() {
-    if (this.showSpeedDial) {
-      this.speedDial.closeMenu();
-    }
-    this.showSpeedDial = false;
-  }
-
-  focus() {
-    let target = this.getTarget();
-    if (target) {
-      target.nativeElement.focus();
-    }
-  }
-
-  placeCursorAtEnd(): void {
-    let target = this.getTarget();
-    if (target) {
-      const element = target.nativeElement;
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(element);
-      range.collapse(false);
-      if (selection) {
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-  }
-
-  addContentAtEnd(data: any) {
+  setDataAtEnd(data: any) {
     if (data) {
       let target = this.getTarget();
       data.content.forEach((element: { type: string; text: string; url: string }) => {
@@ -247,33 +214,33 @@ export class TextComponent {
     }
   }
 
-  waitForTarget(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const checkTarget = () => {
-        let target;
-        switch (this.elementType) {
-          case 'TITLE':
-            target = this.editableTitle;
-            break;
-          case 'SUBTITLE':
-            target = this.editableSubtitle;
-            break;
-          default:
-            target = this.editableParagraph;
-            break;
-        }
-        if (target && target.nativeElement) {
-          resolve();
-        }
-        else {
-          setTimeout(checkTarget, 50);
-        }
-      }
-      checkTarget();
-    });
+  setComponentBefore(type: string) {
+    this.componentBefore = type;
   }
 
-  getContentAfterCursor() {
+  // Getters
+  getData() {
+    let content = null;
+    let target = this.getTarget();
+
+    this.removeEmptyNodes();
+    target?.nativeElement.normalize();
+
+    let childNodes = target?.nativeElement.childNodes;
+
+    if (childNodes) {
+      let nodes = this.getContentNodes(childNodes);
+
+      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+        content = {
+          content: nodes
+        }
+      }
+    }
+    return content;
+  }
+
+  getDataAfterCursor() {
     let content = null;
     const selection = window.getSelection();
     const target = this.getTarget();
@@ -319,25 +286,14 @@ export class TextComponent {
     return target;
   }
 
-  getData() {
-    let content = null;
-    let target = this.getTarget();
-
-    this.removeEmptyNodes();
-    target?.nativeElement.normalize();
-
-    let childNodes = target?.nativeElement.childNodes;
-
-    if (childNodes) {
-      let nodes = this.getContentNodes(childNodes);
-
-      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-        content = {
-          content: nodes
-        }
-      }
+  getChildNodes(range: Range) {
+    let childNodes = null;
+    if (range) {
+      const tempDiv = document.createElement('div');
+      tempDiv.appendChild(range.cloneContents());
+      childNodes = tempDiv.childNodes;
     }
-    return content;
+    return childNodes;
   }
 
   getContentNodes(childNodes: NodeListOf<ChildNode>) {
@@ -370,6 +326,69 @@ export class TextComponent {
     return nodes;
   }
 
+  getCommonAncestorElement(range: Range) {
+    const commonAncestor = range?.commonAncestorContainer as Element;
+    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
+  }
+
+  // Speed Dial Functions
+  hideSpeedDial() {
+    if (this.showSpeedDial) {
+      this.speedDial.closeMenu();
+    }
+    this.showSpeedDial = false;
+  }
+
+  // HTMLElement Funtions
+  focus() {
+    let target = this.getTarget();
+    if (target) {
+      target.nativeElement.focus();
+    }
+  }
+
+  placeCursorAtEnd(): void {
+    let target = this.getTarget();
+    if (target) {
+      const element = target.nativeElement;
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(element);
+      range.collapse(false);
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  }
+
+  waitForTarget(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const checkTarget = () => {
+        let target;
+        switch (this.elementType) {
+          case 'TITLE':
+            target = this.editableTitle;
+            break;
+          case 'SUBTITLE':
+            target = this.editableSubtitle;
+            break;
+          default:
+            target = this.editableParagraph;
+            break;
+        }
+        if (target && target.nativeElement) {
+          resolve();
+        }
+        else {
+          setTimeout(checkTarget, 50);
+        }
+      }
+      checkTarget();
+    });
+  }
+
+  // ElementType Functions
   toTitle() {
     let target = this.getTarget();
     this.text = target?.nativeElement.innerText;
@@ -406,6 +425,7 @@ export class TextComponent {
     });
   }
 
+  // Text Node Functions
   addNode(selection: any) {
     let range = selection.range;
     if (this.editableParagraph && this.elementType == 'PARAGRAPH' && range) {
@@ -467,21 +487,7 @@ export class TextComponent {
     }
   }
 
-  getCommonAncestorElement(range: Range) {
-    const commonAncestor = range?.commonAncestorContainer as Element;
-    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
-  }
-
-  getChildNodes(range: Range) {
-    let childNodes = null;
-    if (range) {
-      const tempDiv = document.createElement('div');
-      tempDiv.appendChild(range.cloneContents());
-      childNodes = tempDiv.childNodes;
-    }
-    return childNodes;
-  }
-
+  // Clipboard Functions
   paste(text: string) {
     let target = this.getTarget();
     if (target) {

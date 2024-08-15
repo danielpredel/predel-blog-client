@@ -34,7 +34,7 @@ export class EditorComponent {
     this.renderNewPost();
   }
 
-  // Event's functions
+  // Event Functions
   onMouseUp() {
     const selection = window.getSelection();
     if (selection && selection.toString().length > 0) {
@@ -45,10 +45,6 @@ export class EditorComponent {
   onMouseDown() {
     this.tooltip.hide();
     this.hideWindowSelection();
-  }
-
-  hideWindowSelection() {
-    window.getSelection()?.removeAllRanges();
   }
 
   onTooltipSelection(selection: any) {
@@ -62,37 +58,44 @@ export class EditorComponent {
     }
   }
 
-  renderNewPost() {
-    this.addTextComponent(0);
-    this.components[0].instance.toTitle();
-  }
-
-  updateComponentBefore() {
+  // Setters
+  setComponentBefore() {
     this.components.forEach((componentRef, index) => {
       if (componentRef.componentType !== ListComponent) {
         if (index > 0) {
           switch (this.components[index - 1].componentType) {
             case TextComponent:
-              this.components[index].instance.updateComponentBefore('TEXT');
+              this.components[index].instance.setComponentBefore('TEXT');
               break;
             case ListComponent:
-              this.components[index].instance.updateComponentBefore('LIST');
+              this.components[index].instance.setComponentBefore('LIST');
               break;
             // case ImageComponent:
-            //   this.components[index].instance.updateComponentBefore('IMAGE');
+            //   this.components[index].instance.setComponentBefore('IMAGE');
             //   break;
             // case CodeSnippetComponent:
-            //   this.components[index].instance.updateComponentBefore('CODE-SNIPPET');
+            //   this.components[index].instance.setComponentBefore('CODE-SNIPPET');
             //   break;
           }
         }
         else {
-          this.components[index].instance.updateComponentBefore('NONE');
+          this.components[index].instance.setComponentBefore('NONE');
         }
       }
     });
   }
 
+  // Functions
+  hideWindowSelection() {
+    window.getSelection()?.removeAllRanges();
+  }
+
+  renderNewPost() {
+    this.addTextComponent(0);
+    this.components[0].instance.toTitle();
+  }
+
+  // Text Component Functions
   addTextComponent(index: number, data: any = null) {
     const componentRef = this.container.createComponent(TextComponent, { index });
 
@@ -125,7 +128,7 @@ export class EditorComponent {
       else {
         this.addTextComponent(index + 1);
       }
-      this.updateComponentBefore();
+      this.setComponentBefore();
     });
 
     componentRef.instance.deleteComponent.subscribe((content) => {
@@ -136,13 +139,13 @@ export class EditorComponent {
       else {
         this.removeTextComponent(index);
       }
-      this.updateComponentBefore();
+      this.setComponentBefore();
     });
 
     componentRef.instance.changeComponent.subscribe((componentType) => {
       let index = this.components.indexOf(componentRef);
       this.changeTextComponent(index, componentType);
-      this.updateComponentBefore();
+      this.setComponentBefore();
     });
 
     componentRef.instance.focused.subscribe(() => {
@@ -172,7 +175,7 @@ export class EditorComponent {
       // but for image, it only focus the image
       this.components[index - 1].instance.placeCursorAtEnd();
       if (data) {
-        this.components[index - 1].instance.addContentAtEnd(data);
+        this.components[index - 1].instance.setDataAtEnd(data);
       }
     }, 0);
   }
@@ -200,6 +203,7 @@ export class EditorComponent {
     }
   }
 
+  // List Component Functions
   addListComponent(index: number, type: string, data: Array<any> = []) {
     const componentRef = this.container.createComponent(ListComponent, { index });
     let id = this.idService.getId();
@@ -233,13 +237,13 @@ export class EditorComponent {
       else {
         this.addTextComponent(index + 1);
       }
-      this.updateComponentBefore();
+      this.setComponentBefore();
     });
 
     componentRef.instance.changeComponent.subscribe((content) => {
       let index = this.components.indexOf(componentRef);
       this.changeListComponent(index, content);
-      this.updateComponentBefore();
+      this.setComponentBefore();
     });
 
     componentRef.instance.focused.subscribe(() => {

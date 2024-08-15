@@ -26,13 +26,13 @@ export class ListItemComponent {
 
   constructor(private nodeMakerService: NodeMakerService) { }
 
-  // Event's functions
+  // Event functions
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
       let lenght = this.editableListItem?.nativeElement.textContent?.length;
       if (lenght && lenght > 0) {
-        let content = this.getContentAfterCursor();
+        let content = this.getDataAfterCursor();
         this.removeEmptyNodes();
         if (content) {
           this.addListItem.emit(content);
@@ -93,35 +93,16 @@ export class ListItemComponent {
     }
   }
 
+  // Setters
   setId(id: string) {
     this.id = id;
   }
 
   setData(data: any) {
-    this.addContentAtEnd(data);
+    this.setDataAtEnd(data);
   }
 
-  focus() {
-    if (this.editableListItem) {
-      this.editableListItem.nativeElement.focus();
-    }
-  }
-
-  placeCursorAtEnd(): void {
-    if (this.editableListItem) {
-      const element = this.editableListItem.nativeElement;
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(element);
-      range.collapse(false);
-      if (selection) {
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-  }
-
-  addContentAtEnd(data: any) {
+  setDataAtEnd(data: any) {
     data.content.forEach((element: { type: string; text: string; url: string }) => {
       let node = null;
       switch (element.type) {
@@ -152,7 +133,28 @@ export class ListItemComponent {
     this.editableListItem?.nativeElement.normalize();
   }
 
-  getContentAfterCursor() {
+  // Getters
+  getData() {
+    let content = null;
+
+    this.removeEmptyNodes();
+    this.editableListItem?.nativeElement.normalize();
+
+    let childNodes = this.editableListItem?.nativeElement.childNodes;
+
+    if (childNodes) {
+      let nodes = this.getContentNodes(childNodes);
+
+      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+        content = {
+          content: nodes
+        }
+      }
+    }
+    return content;
+  }
+
+  getDataAfterCursor() {
     let content = null;
 
     this.removeEmptyNodes();
@@ -182,29 +184,14 @@ export class ListItemComponent {
     return content;
   }
 
-  getCommonAncestorElement(range: Range) {
-    const commonAncestor = range?.commonAncestorContainer as Element;
-    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
-  }
-
-  getData() {
-    let content = null;
-
-    this.removeEmptyNodes();
-    this.editableListItem?.nativeElement.normalize();
-
-    let childNodes = this.editableListItem?.nativeElement.childNodes;
-
-    if (childNodes) {
-      let nodes = this.getContentNodes(childNodes);
-
-      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-        content = {
-          content: nodes
-        }
-      }
+  getChildNodes(range: Range) {
+    let childNodes = null;
+    if (range) {
+      const tempDiv = document.createElement('div');
+      tempDiv.appendChild(range.cloneContents());
+      childNodes = tempDiv.childNodes;
     }
-    return content;
+    return childNodes;
   }
 
   getContentNodes(childNodes: NodeListOf<ChildNode>) {
@@ -237,6 +224,33 @@ export class ListItemComponent {
     return nodes;
   }
 
+  getCommonAncestorElement(range: Range) {
+    const commonAncestor = range?.commonAncestorContainer as Element;
+    return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
+  }
+
+  // HTMLElement Funtions
+  focus() {
+    if (this.editableListItem) {
+      this.editableListItem.nativeElement.focus();
+    }
+  }
+
+  placeCursorAtEnd(): void {
+    if (this.editableListItem) {
+      const element = this.editableListItem.nativeElement;
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(element);
+      range.collapse(false);
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  }
+
+  // ChangeComponent Event Functions
   toTitle() {
     // get data, only text
     // emit event
@@ -253,6 +267,7 @@ export class ListItemComponent {
     this.changeListItem.emit({ component, data });
   }
 
+  // Text Node Functions
   addNode(selection: any) {
     let range = selection.range;
     if (this.editableListItem && range) {
@@ -313,16 +328,7 @@ export class ListItemComponent {
     }
   }
 
-  getChildNodes(range: Range) {
-    let childNodes = null;
-    if (range) {
-      const tempDiv = document.createElement('div');
-      tempDiv.appendChild(range.cloneContents());
-      childNodes = tempDiv.childNodes;
-    }
-    return childNodes;
-  }
-
+  // Functions
   isEmpty() {
     if (this.editableListItem && this.editableListItem.nativeElement.innerText.length == 0) {
       return true;
