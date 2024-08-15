@@ -55,12 +55,15 @@ export class ListComponent {
     this.id = id;
   }
 
-  setData(data: any) {
+  setData(data: Array<any>) {
     if (data) {
-      // set data
+      data.forEach((element, index) => {
+        this.addListItem(index, element);
+      });
     }
   }
 
+  // blur mode: doesn't focus the new added component
   addListItem(index: number, data: any = null) {
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
 
@@ -110,21 +113,22 @@ export class ListComponent {
       }
     });
 
-    componentRef.instance.deleteListItem.subscribe((content) => {
+    componentRef.instance.deleteListItem.subscribe(() => {
       let index = this.listItems.indexOf(componentRef);
-      if (this.listItems.length == 1) {
-        if (content) {
-          this.changeComponent.emit(content);
-        }
-        else {
-          this.changeComponent.emit();
-        }
+      let listType = this.getListType();
+      let data = Array();
+      for (let i = index; i < this.listItems.length; i++) {
+        data.push({ content: this.listItems[i].instance.getData() });
       }
-      if (content) {
-        this.removeListItem(index, content);
+      if (index == 0) {
+        this.changeComponent.emit({ listType, data });
+        // The editor will delete the list component
       }
       else {
-        this.removeListItem(index);
+        for (let i = this.listItems.length - 1; i == index; i--) {
+          this.removeListItem(i);
+        }
+        this.splitComponent.emit({ listType, data });
       }
     });
 
@@ -149,5 +153,17 @@ export class ListComponent {
         this.listItems[index - 1].instance.addContentAtEnd(data);
       }
     }, 0);
+  }
+
+  getListType() {
+    return this.ordered ? 'OL' : 'UL';
+  }
+
+  placeCursorAtEnd() {
+
+  }
+
+  addContentAtEnd(data: any) {
+
   }
 }
