@@ -200,7 +200,7 @@ export class EditorComponent {
     }
   }
 
-  addListComponent(index: number, type: string, data: any = null) {
+  addListComponent(index: number, type: string, data: Array<any> = []) {
     const componentRef = this.container.createComponent(ListComponent, { index });
     let id = this.idService.getId();
     let listId = `lst-${id}`;
@@ -211,7 +211,7 @@ export class EditorComponent {
       if (type == 'OL') {
         componentRef.instance.changeTypeToOrdered();
       }
-      if (data) {
+      if (data.length > 0) {
         componentRef.instance.setData(data);
       }
       else {
@@ -236,9 +236,9 @@ export class EditorComponent {
       this.updateComponentBefore();
     });
 
-    componentRef.instance.changeComponent.subscribe(() => {
+    componentRef.instance.changeComponent.subscribe((content) => {
       let index = this.components.indexOf(componentRef);
-      this.changeListComponent(index);
+      this.changeListComponent(index, content);
       this.updateComponentBefore();
     });
 
@@ -252,17 +252,33 @@ export class EditorComponent {
     });
   }
 
-  changeListComponent(index: number, data: any = null) {
+  changeListComponent(index: number, content: any) {
     const component = this.components.splice(index, 1)[0];
     this.componentsIds.splice(index, 1);
     component.instance.addComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
     component.instance.focused.unsubscribe();
+
+    // Delete the component
     this.container.remove(index);
-    if (data) {
-      this.addTextComponent(index, data);
+
+    // Split array
+    if (content) {
+      if (content.data.length > 0) {
+        if (content.data.length > 1) {
+          let data = content?.data as Array<any>;
+          let list = data.slice(1);
+          let listType = content?.listType;
+          this.addTextComponent(index, data[0]);
+          this.addListComponent(index + 1, listType, list);
+        }
+        else {
+          let data = content?.data as Array<any>;
+          this.addTextComponent(index, data[0]);
+        }
+      }
     }
-    else {
+    else{
       this.addTextComponent(index);
     }
   }
