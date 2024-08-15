@@ -51,19 +51,7 @@ export class ListItemComponent {
         if (selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           if (range.startOffset == 0 && range.endOffset == 0) {
-            let lenght = this.editableListItem?.nativeElement.textContent?.length;
-            if (lenght && lenght > 0) {
-              let content = this.getContentAfterCursor();
-              if (content) {
-                this.deleteListItem.emit(content);
-              }
-              else {
-                this.deleteListItem.emit();
-              }
-            }
-            else {
-              this.deleteListItem.emit();
-            }
+            this.deleteListItem.emit();
           }
         }
       }
@@ -85,9 +73,6 @@ export class ListItemComponent {
             break;
           case 'toSubtitle':
             this.toSubtitle();
-            break;
-          case 'toParagraph':
-            this.toParagraph();
             break;
           case 'addNode':
             this.addNode(selection);
@@ -266,15 +251,6 @@ export class ListItemComponent {
     let component = 'Subtitle';
     let data = null;
     this.changeListItem.emit({ component, data });
-  }
-
-  toParagraph() {
-    // get data
-    // emit event
-    let component = 'Paragraph';
-    let data = null;
-    this.changeListItem.emit({ component, data });
-
   }
 
   addNode(selection: any) {
