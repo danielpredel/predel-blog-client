@@ -91,12 +91,11 @@ export class EditorComponent {
   }
 
   renderNewPost() {
-    this.addTextComponent(0, []);
-    this.components[0].instance.toTitle();
+    this.addTextComponent(0, [], 'TITLE');
   }
 
   // Text Component Functions
-  addTextComponent(index: number, data: Array<any>) {
+  addTextComponent(index: number, data: Array<any> = [], elemenentType: string = 'PARAGRAPH') {
     const componentRef = this.container.createComponent(TextComponent, { index });
 
     let id = this.idService.getId();
@@ -109,6 +108,9 @@ export class EditorComponent {
     // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.setId(ids);
+      if (elemenentType != 'PARAGRAPH') {
+        componentRef.instance.setElementType(elemenentType);
+      }
       componentRef.instance.setData(data);
     }, 0);
 
@@ -194,7 +196,6 @@ export class EditorComponent {
     const componentRef = this.container.createComponent(ListComponent, { index });
     let id = this.idService.getId();
     let listId = `lst-${id}`;
-
     // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.setId(listId);
@@ -224,42 +225,73 @@ export class EditorComponent {
     // Delete the component
     this.container.remove(index);
 
-    // Split array
     if (content) {
-      if (content.data.length > 0) {
-        if (content.data.length > 1) {
-          let data = content?.data as Array<any>;
-          let list = data.slice(1);
+      let data = content?.data as Array<any>;
+      if (data.length > 0) {
+        let textData = data[0];
+        if (data.length > 1) {
+          let listData = data.slice(1);
           let listType = content?.listType;
-          this.addTextComponent(index, data[0]);
-          this.addListComponent(index + 1, listType, list);
+          if (content.elementType) {
+            this.addTextComponent(index, textData, content.elemenentType);
+          }
+          else {
+            this.addTextComponent(index, textData);
+          }
+          this.addListComponent(index + 1, listType, listData);
         }
         else {
-          let data = content?.data as Array<any>;
-          this.addTextComponent(index, data[0]);
+          this.addTextComponent(index, textData);
         }
       }
     }
     else {
-      this.addTextComponent(index, []);
+      this.addTextComponent(index);
+    }
+  }
+
+  splitListComponent(index: number, content: any) {
+    if (content) {
+      let data = content?.data as Array<any>;
+      if (data.length > 0) {
+        let textData = data[0];
+        if (data.length > 1) {
+          let listData = data.slice(1);
+          let listType = content?.listType;
+          if (content.elementType) {
+            this.addTextComponent(index + 1, textData, content.elemenentType);
+          }
+          else {
+            this.addTextComponent(index + 1, textData);
+          }
+          this.addListComponent(index + 2, listType, listData);
+        }
+        else {
+          this.addTextComponent(index + 1, textData);
+        }
+      }
+    }
+    else {
+      this.addTextComponent(index + 1);
     }
   }
 
   subscribeListComponentEvents(componentRef: ComponentRef<ListComponent>) {
-    componentRef.instance.addComponent.subscribe((content) => {
+    componentRef.instance.addComponent.subscribe(() => {
       let index = this.components.indexOf(componentRef);
-      if (content) {
-        this.addTextComponent(index + 1, content);
-      }
-      else {
-        // this.addTextComponent(index + 1);
-      }
+      this.addTextComponent(index + 1);
       this.setComponentBefore();
     });
 
     componentRef.instance.changeComponent.subscribe((content) => {
       let index = this.components.indexOf(componentRef);
       this.changeListComponent(index, content);
+      this.setComponentBefore();
+    });
+
+    componentRef.instance.splitComponent.subscribe((content) => {
+      let index = this.components.indexOf(componentRef);
+      this.splitListComponent(index, content);
       this.setComponentBefore();
     });
 
