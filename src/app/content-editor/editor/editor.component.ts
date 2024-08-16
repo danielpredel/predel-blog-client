@@ -91,12 +91,12 @@ export class EditorComponent {
   }
 
   renderNewPost() {
-    this.addTextComponent(0);
+    this.addTextComponent(0, []);
     this.components[0].instance.toTitle();
   }
 
   // Text Component Functions
-  addTextComponent(index: number, data: any = null) {
+  addTextComponent(index: number, data: Array<any>) {
     const componentRef = this.container.createComponent(TextComponent, { index });
 
     let id = this.idService.getId();
@@ -109,75 +109,12 @@ export class EditorComponent {
     // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.setId(ids);
-      if (data) {
-        componentRef.instance.setData(data);
-      }
+      componentRef.instance.setData(data);
     }, 0);
 
     this.components.splice(index, 0, componentRef);
     this.componentsIds.splice(index, 0, ids[0]);
     this.subscribeTextComponentEvents(componentRef);
-  }
-
-  subscribeTextComponentEvents(componentRef: ComponentRef<TextComponent>) {
-    componentRef.instance.addComponent.subscribe((content) => {
-      let index = this.components.indexOf(componentRef);
-      if (content) {
-        this.addTextComponent(index + 1, content);
-      }
-      else {
-        this.addTextComponent(index + 1);
-      }
-      this.setComponentBefore();
-    });
-
-    componentRef.instance.deleteComponent.subscribe((content) => {
-      let index = this.components.indexOf(componentRef);
-      if (content) {
-        this.removeTextComponent(index, content);
-      }
-      else {
-        this.removeTextComponent(index);
-      }
-      this.setComponentBefore();
-    });
-
-    componentRef.instance.changeComponent.subscribe((componentType) => {
-      let index = this.components.indexOf(componentRef);
-      this.changeTextComponent(index, componentType);
-      this.setComponentBefore();
-    });
-
-    componentRef.instance.focused.subscribe(() => {
-      let index = this.components.indexOf(componentRef);
-      if (this.lastFocusedComponent < this.container.length
-        && this.components[this.lastFocusedComponent].componentType === TextComponent) {
-        this.components[this.lastFocusedComponent].instance.hideSpeedDial();
-      }
-      this.lastFocusedComponent = index;
-    });
-
-    setTimeout(() => {
-      componentRef.instance.focus();
-    }, 0);
-  }
-
-  removeTextComponent(index: number, data: any = null) {
-    const component = this.components.splice(index, 1)[0];
-    this.componentsIds.splice(index, 1);
-    component.instance.addComponent.unsubscribe();
-    component.instance.deleteComponent.unsubscribe();
-    component.instance.changeComponent.unsubscribe();
-    component.instance.focused.unsubscribe();
-    this.container.remove(index);
-    setTimeout(() => {
-      // For text and list components will be allowed to place the cursor at the end and add data
-      // but for image, it only focus the image
-      this.components[index - 1].instance.placeCursorAtEnd();
-      if (data) {
-        this.components[index - 1].instance.setDataAtEnd(data);
-      }
-    }, 0);
   }
 
   changeTextComponent(index: number, componentType: string) {
@@ -203,6 +140,55 @@ export class EditorComponent {
     }
   }
 
+  removeTextComponent(index: number, data: Array<any>) {
+    const component = this.components.splice(index, 1)[0];
+    this.componentsIds.splice(index, 1);
+    component.instance.addComponent.unsubscribe();
+    component.instance.deleteComponent.unsubscribe();
+    component.instance.changeComponent.unsubscribe();
+    component.instance.focused.unsubscribe();
+    this.container.remove(index);
+    setTimeout(() => {
+      // For text and list components will be allowed to place the cursor at the end and add data
+      // but for image, it only focus the image
+      this.components[index - 1].instance.placeCursorAtEnd();
+      this.components[index - 1].instance.setDataAtEnd(data);
+    }, 0);
+  }
+
+  subscribeTextComponentEvents(componentRef: ComponentRef<TextComponent>) {
+    componentRef.instance.addComponent.subscribe((data) => {
+      let index = this.components.indexOf(componentRef);
+      this.addTextComponent(index + 1, data);
+      this.setComponentBefore();
+    });
+
+    componentRef.instance.changeComponent.subscribe((componentType) => {
+      let index = this.components.indexOf(componentRef);
+      this.changeTextComponent(index, componentType);
+      this.setComponentBefore();
+    });
+
+    componentRef.instance.deleteComponent.subscribe((data) => {
+      let index = this.components.indexOf(componentRef);
+      this.removeTextComponent(index, data);
+      this.setComponentBefore();
+    });
+
+    componentRef.instance.focused.subscribe(() => {
+      let index = this.components.indexOf(componentRef);
+      if (this.lastFocusedComponent < this.container.length
+        && this.components[this.lastFocusedComponent].componentType === TextComponent) {
+        this.components[this.lastFocusedComponent].instance.hideSpeedDial();
+      }
+      this.lastFocusedComponent = index;
+    });
+
+    setTimeout(() => {
+      componentRef.instance.focus();
+    }, 0);
+  }
+
   // List Component Functions
   addListComponent(index: number, type: string, data: Array<any> = []) {
     const componentRef = this.container.createComponent(ListComponent, { index });
@@ -226,34 +212,6 @@ export class EditorComponent {
     this.components.splice(index, 0, componentRef);
     this.componentsIds.splice(index, 0, listId);
     this.subscribeListComponentEvents(componentRef);
-  }
-
-  subscribeListComponentEvents(componentRef: ComponentRef<ListComponent>) {
-    componentRef.instance.addComponent.subscribe((content) => {
-      let index = this.components.indexOf(componentRef);
-      if (content) {
-        this.addTextComponent(index + 1, content);
-      }
-      else {
-        this.addTextComponent(index + 1);
-      }
-      this.setComponentBefore();
-    });
-
-    componentRef.instance.changeComponent.subscribe((content) => {
-      let index = this.components.indexOf(componentRef);
-      this.changeListComponent(index, content);
-      this.setComponentBefore();
-    });
-
-    componentRef.instance.focused.subscribe(() => {
-      let index = this.components.indexOf(componentRef);
-      if (this.lastFocusedComponent < this.container.length
-        && this.components[this.lastFocusedComponent].componentType === TextComponent) {
-        this.components[this.lastFocusedComponent].instance.hideSpeedDial();
-      }
-      this.lastFocusedComponent = index;
-    });
   }
 
   changeListComponent(index: number, content: any) {
@@ -282,8 +240,36 @@ export class EditorComponent {
         }
       }
     }
-    else{
-      this.addTextComponent(index);
+    else {
+      this.addTextComponent(index, []);
     }
+  }
+
+  subscribeListComponentEvents(componentRef: ComponentRef<ListComponent>) {
+    componentRef.instance.addComponent.subscribe((content) => {
+      let index = this.components.indexOf(componentRef);
+      if (content) {
+        this.addTextComponent(index + 1, content);
+      }
+      else {
+        // this.addTextComponent(index + 1);
+      }
+      this.setComponentBefore();
+    });
+
+    componentRef.instance.changeComponent.subscribe((content) => {
+      let index = this.components.indexOf(componentRef);
+      this.changeListComponent(index, content);
+      this.setComponentBefore();
+    });
+
+    componentRef.instance.focused.subscribe(() => {
+      let index = this.components.indexOf(componentRef);
+      if (this.lastFocusedComponent < this.container.length
+        && this.components[this.lastFocusedComponent].componentType === TextComponent) {
+        this.components[this.lastFocusedComponent].instance.hideSpeedDial();
+      }
+      this.lastFocusedComponent = index;
+    });
   }
 }

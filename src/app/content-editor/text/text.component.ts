@@ -12,8 +12,8 @@ import { NodeMakerService } from '../node-maker.service';
 })
 export class TextComponent {
   // Event Emitters
-  @Output() addComponent = new EventEmitter();
-  @Output() deleteComponent = new EventEmitter();
+  @Output() addComponent = new EventEmitter<Array<any>>();
+  @Output() deleteComponent = new EventEmitter<Array<any>>();
   @Output() changeComponent = new EventEmitter<string>();
   @Output() focused = new EventEmitter();
 
@@ -39,24 +39,8 @@ export class TextComponent {
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      let target = this.getTarget();
-      let lenght = target?.nativeElement.textContent?.length;
-      if (lenght && lenght > 0) {
-        let content = this.getDataAfterCursor();
-        this.removeEmptyNodes();
-        if (content) {
-          this.addComponent.emit({content});
-          this.hideSpeedDial();
-        }
-        else {
-          this.addComponent.emit();
-          this.hideSpeedDial();
-        }
-      }
-      else {
-        this.addComponent.emit();
-        this.hideSpeedDial();
-      }
+      let data = this.getDataAfterCursor();
+      this.addComponent.emit(data);
     }
     else if (event.key === 'Backspace') {
       const selection = window.getSelection();
@@ -64,20 +48,8 @@ export class TextComponent {
         if (selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           if (range.startOffset == 0 && range.endOffset == 0) {
-            let target = this.getTarget();
-            let lenght = target?.nativeElement.textContent?.length;
-            if (lenght && lenght > 0) {
-              let content = this.getDataAfterCursor();
-              if (content) {
-                this.deleteComponent.emit(content);
-              }
-              else {
-                this.deleteComponent.emit();
-              }
-            }
-            else {
-              this.deleteComponent.emit();
-            }
+            let data = this.getDataAfterCursor();
+            this.deleteComponent.emit(data);
           }
         }
       }
@@ -163,55 +135,54 @@ export class TextComponent {
     this.componentIds = ids;
   }
 
-  setData(data: any) {
-    if (data.type) {
-      this.elementType = data.type;
-    }
+  setElementType(type: string) {
+    this.elementType = type;
+  }
+
+  setData(data: Array<any>) {
     this.waitForTarget().then(() => {
-      if (data) {
-        this.setDataAtEnd(data.content);
+      if (data.length > 0) {
+        this.setDataAtEnd(data);
       }
     });
   }
 
-  setDataAtEnd(data: any) {
-    if (data) {
-      let target = this.getTarget();
-      data.content.forEach((element: { type: string; text: string; url: string }) => {
-        if (this.elementType === 'PARAGRAPH') {
-          let node = null;
-          switch (element.type) {
-            case 'text':
-              node = this.nodeMakerService.createTextNode(element.text);
-              break;
-            case 'bold':
-              node = this.nodeMakerService.createBoldNode(element.text,
-                `${this.componentIds[3]}-bold-${this.childrenCount++}`);
-              break;
-            case 'italic':
-              node = this.nodeMakerService.createItalicNode(element.text,
-                `${this.componentIds[3]}-italic-${this.childrenCount++}`);
-              break;
-            case 'strike':
-              node = this.nodeMakerService.createStrikeNode(element.text,
-                `${this.componentIds[3]}-strike-${this.childrenCount++}`);
-              break;
-            case 'link':
-              node = this.nodeMakerService.createLinkNode(element.text, element.url,
-                `${this.componentIds[3]}-link-${this.childrenCount++}`);
-              break;
-          }
-          if (node) {
-            target?.nativeElement.appendChild(node);
-          }
+  setDataAtEnd(data: Array<any>) {
+    let target = this.getTarget();
+    data.forEach((element: { type: string; text: string; url: string }) => {
+      if (this.elementType === 'PARAGRAPH') {
+        let node = null;
+        switch (element.type) {
+          case 'text':
+            node = this.nodeMakerService.createTextNode(element.text);
+            break;
+          case 'bold':
+            node = this.nodeMakerService.createBoldNode(element.text,
+              `${this.componentIds[3]}-bold-${this.childrenCount++}`);
+            break;
+          case 'italic':
+            node = this.nodeMakerService.createItalicNode(element.text,
+              `${this.componentIds[3]}-italic-${this.childrenCount++}`);
+            break;
+          case 'strike':
+            node = this.nodeMakerService.createStrikeNode(element.text,
+              `${this.componentIds[3]}-strike-${this.childrenCount++}`);
+            break;
+          case 'link':
+            node = this.nodeMakerService.createLinkNode(element.text, element.url,
+              `${this.componentIds[3]}-link-${this.childrenCount++}`);
+            break;
         }
-        else {
-          let textNode = this.nodeMakerService.createTextNode(element.text);
-          target?.nativeElement.appendChild(textNode);
+        if (node) {
+          target?.nativeElement.appendChild(node);
         }
-      });
-      target?.nativeElement.normalize();
-    }
+      }
+      else {
+        let textNode = this.nodeMakerService.createTextNode(element.text);
+        target?.nativeElement.appendChild(textNode);
+      }
+    });
+    target?.nativeElement.normalize();
   }
 
   setComponentBefore(type: string) {
@@ -219,8 +190,8 @@ export class TextComponent {
   }
 
   // Getters
-  getData() {
-    let content = null;
+  getData(): Array<any> {
+    let data = Array();
     let target = this.getTarget();
 
     this.removeEmptyNodes();
@@ -229,19 +200,13 @@ export class TextComponent {
     let childNodes = target?.nativeElement.childNodes;
 
     if (childNodes) {
-      let nodes = this.getContentNodes(childNodes);
-
-      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-        content = {
-          content: nodes
-        }
-      }
+      data = this.getContentNodes(childNodes);
     }
-    return content;
+    return data;
   }
 
-  getDataAfterCursor() {
-    let content = null;
+  getDataAfterCursor(): Array<any> {
+    let data = Array();
     const selection = window.getSelection();
     const target = this.getTarget();
 
@@ -257,17 +222,11 @@ export class TextComponent {
       // Create objects:
       let childNodes = this.getChildNodes(afterRange);
       if (childNodes) {
-        let nodes = this.getContentNodes(childNodes);
-
-        if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-          content = {
-            content: nodes
-          }
-        }
+        data = this.getContentNodes(childNodes);
       }
       afterRange.deleteContents();
     }
-    return content;
+    return data;
   }
 
   getTarget() {
