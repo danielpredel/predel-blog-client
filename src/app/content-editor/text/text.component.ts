@@ -200,7 +200,11 @@ export class TextComponent {
     let childNodes = target?.nativeElement.childNodes;
 
     if (childNodes) {
-      data = this.getContentNodes(childNodes);
+      let nodes = this.getContentNodes(childNodes);
+
+      if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+        data = nodes;
+      }
     }
     return data;
   }
@@ -222,7 +226,11 @@ export class TextComponent {
       // Create objects:
       let childNodes = this.getChildNodes(afterRange);
       if (childNodes) {
-        data = this.getContentNodes(childNodes);
+        let nodes = this.getContentNodes(childNodes);
+
+        if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
+          data = nodes;
+        }
       }
       afterRange.deleteContents();
     }
