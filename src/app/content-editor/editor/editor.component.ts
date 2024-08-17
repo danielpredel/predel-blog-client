@@ -122,8 +122,8 @@ export class EditorComponent {
   changeTextComponent(index: number, componentType: string) {
     const component = this.components.splice(index, 1)[0];
     this.componentsIds.splice(index, 1);
-    component.instance.deleteComponent.unsubscribe();
     component.instance.addComponent.unsubscribe();
+    component.instance.deleteComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
     component.instance.focused.unsubscribe();
     this.container.remove(index);
@@ -220,6 +220,7 @@ export class EditorComponent {
     this.componentsIds.splice(index, 1);
     component.instance.addComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
+    component.instance.splitComponent.unsubscribe();
     component.instance.focused.unsubscribe();
 
     // Delete the component

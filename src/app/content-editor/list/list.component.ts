@@ -106,6 +106,8 @@ export class ListComponent {
     this.listItemsIds.splice(index, 1);
     component.instance.addListItem.unsubscribe();
     component.instance.deleteListItem.unsubscribe();
+    component.instance.changeListItem.unsubscribe();
+    component.instance.focused.unsubscribe();
     this.listElement.remove(index);
   }
 
@@ -148,7 +150,6 @@ export class ListComponent {
       else {
         for (let i = this.listItems.length - 1; i == index; i--) {
           this.removeListItem(i);
-          console.log('Remove li: ' + i);
         }
         this.splitComponent.emit({ listType, data, elementType });
       }
