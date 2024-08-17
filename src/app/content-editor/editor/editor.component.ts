@@ -192,7 +192,7 @@ export class EditorComponent {
   }
 
   // List Component Functions
-  addListComponent(index: number, type: string, data: Array<any> = []) {
+  addListComponent(index: number, type: string, data: Array<any> = [], renderMode: boolean = false) {
     const componentRef = this.container.createComponent(ListComponent, { index });
     let id = this.idService.getId();
     let listId = `lst-${id}`;
@@ -203,7 +203,7 @@ export class EditorComponent {
         componentRef.instance.changeTypeToOrdered();
       }
       if (data.length > 0) {
-        componentRef.instance.setData(data);
+        componentRef.instance.setData(data, renderMode);
       }
       else {
         componentRef.instance.renderNewList();
@@ -238,7 +238,7 @@ export class EditorComponent {
           else {
             this.addTextComponent(index, textData);
           }
-          this.addListComponent(index + 1, listType, listData);
+          this.addListComponent(index + 1, listType, listData, true);
         }
         else {
           this.addTextComponent(index, textData);
@@ -264,7 +264,7 @@ export class EditorComponent {
           else {
             this.addTextComponent(index + 1, textData);
           }
-          this.addListComponent(index + 2, listType, listData);
+          this.addListComponent(index + 2, listType, listData, true);
         }
         else {
           this.addTextComponent(index + 1, textData);

@@ -44,10 +44,10 @@ export class ListComponent {
     this.id = id;
   }
 
-  setData(data: Array<any>) {
+  setData(data: Array<any>, renderMode: boolean = false) {
     if (data.length > 0) {
       data.forEach((element, index) => {
-        this.addListItem(index, element);
+        this.addListItem(index, element, renderMode);
       });
     }
   }
@@ -83,7 +83,7 @@ export class ListComponent {
 
   // List Item Functions
   // silence mode: doesn't focus the new added component
-  addListItem(index: number, data: Array<any> = []) {
+  addListItem(index: number, data: Array<any> = [], renderMode: boolean = false) {
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
 
     let liID = `${this.id}-ListItem-${this.idService.getId()}`;
@@ -98,7 +98,7 @@ export class ListComponent {
 
     this.listItems.splice(index, 0, componentRef);
     this.listItemsIds.splice(index, 0, liID);
-    this.suscribeListItemEvents(componentRef);
+    this.suscribeListItemEvents(componentRef, renderMode);
   }
 
   removeListItem(index: number) {
@@ -109,7 +109,7 @@ export class ListComponent {
     this.listElement.remove(index);
   }
 
-  suscribeListItemEvents(componentRef: ComponentRef<ListItemComponent>) {
+  suscribeListItemEvents(componentRef: ComponentRef<ListItemComponent>, renderMode: boolean = false) {
     componentRef.instance.addListItem.subscribe((data) => {
       let index = this.listItems.indexOf(componentRef);
       let emitAddEvent = false;
@@ -176,8 +176,10 @@ export class ListComponent {
       this.focused.emit();
     });
 
-    setTimeout(() => {
-      componentRef.instance.focus();
-    }, 0);
+    if (!renderMode) {
+      setTimeout(() => {
+        componentRef.instance.focus();
+      }, 0);
+    }
   }
 }
