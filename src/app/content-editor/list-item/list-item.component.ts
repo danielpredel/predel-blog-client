@@ -10,9 +10,9 @@ import { NodeMakerService } from '../node-maker.service';
 })
 export class ListItemComponent {
   // Event Emitters
-  @Output() addListItem = new EventEmitter();
+  @Output() addListItem = new EventEmitter<Array<any>>();
   @Output() deleteListItem = new EventEmitter();
-  @Output() changeListItem = new EventEmitter();
+  @Output() changeListItem = new EventEmitter<string>();
   @Output() focused = new EventEmitter();
 
   // DOM Manipulation Variables
@@ -30,20 +30,8 @@ export class ListItemComponent {
   onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      let lenght = this.editableListItem?.nativeElement.textContent?.length;
-      if (lenght && lenght > 0) {
-        let content = this.getDataAfterCursor();
-        this.removeEmptyNodes();
-        if (content) {
-          this.addListItem.emit(content);
-        }
-        else {
-          this.addListItem.emit();
-        }
-      }
-      else {
-        this.addListItem.emit();
-      }
+      let data = this.getDataAfterCursor();
+      this.addListItem.emit(data);
     }
     else if (event.key === 'Backspace') {
       const selection = window.getSelection();
@@ -98,12 +86,16 @@ export class ListItemComponent {
     this.id = id;
   }
 
-  setData(data: any) {
-    this.setDataAtEnd(data);
+  // Should receive an Array
+  setData(data: Array<any>) {
+    if (data.length > 0) {
+      this.setDataAtEnd(data);
+    }
   }
 
-  setDataAtEnd(data: any) {
-    data.content.forEach((element: { type: string; text: string; url: string }) => {
+  // Should receive an Array
+  setDataAtEnd(data: Array<any>) {
+    data.forEach((element: { type: string; text: string; url: string }) => {
       let node = null;
       switch (element.type) {
         case 'text':
@@ -134,8 +126,8 @@ export class ListItemComponent {
   }
 
   // Getters
-  getData() {
-    let content = null;
+  getData(): Array<any> {
+    let data = Array();
 
     this.removeEmptyNodes();
     this.editableListItem?.nativeElement.normalize();
@@ -144,18 +136,16 @@ export class ListItemComponent {
 
     if (childNodes) {
       let nodes = this.getContentNodes(childNodes);
-
+      
       if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-        content = {
-          content: nodes
-        }
+        data = nodes;
       }
     }
-    return content;
+    return data;
   }
 
-  getDataAfterCursor() {
-    let content = null;
+  getDataAfterCursor(): Array<any> {
+    let data = Array();
 
     this.removeEmptyNodes();
     this.editableListItem?.nativeElement.normalize();
@@ -174,14 +164,12 @@ export class ListItemComponent {
         let nodes = this.getContentNodes(childNodes);
 
         if (!(nodes.length == 1 && nodes[0].text.length == 0)) {
-          content = {
-            content: nodes
-          }
+          data = nodes;
         }
       }
       afterRange.deleteContents();
     }
-    return content;
+    return data;
   }
 
   getChildNodes(range: Range) {
@@ -252,19 +240,13 @@ export class ListItemComponent {
 
   // ChangeComponent Event Functions
   toTitle() {
-    // get data, only text
-    // emit event
-    let component = 'Title';
-    let data = null;
-    this.changeListItem.emit({ component, data });
+    let elementType = 'TITLE';
+    this.changeListItem.emit(elementType);
   }
 
   toSubtitle() {
-    // get data, only text
-    // emit event
-    let component = 'Subtitle';
-    let data = null;
-    this.changeListItem.emit({ component, data });
+    let elementType = 'SUBTITLE';
+    this.changeListItem.emit(elementType);
   }
 
   // Text Node Functions
