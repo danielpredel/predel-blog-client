@@ -54,13 +54,23 @@ export class ListComponent {
 
   // Should receive an Array
   setDataAtEnd(data: Array<any>) {
-    // At the first element of the data at the end of the last item
-    // And then add new list items with the rest ot element
+    let index = this.listItems.length - 1;
+    if (index >= 0) {
+      this.listItems[index].instance.setData(data);
+    }
   }
 
   // Getters
   getListType() {
     return this.ordered ? 'OL' : 'UL';
+  }
+
+  getData(): Array<any> {
+    let data = Array();
+    this.listItems.forEach(listItem => {
+      data.push(listItem.instance.getData())
+    });
+    return data;
   }
 
   // Funtions
@@ -69,7 +79,10 @@ export class ListComponent {
   }
 
   placeCursorAtEnd() {
-
+    let index = this.listItems.length - 1;
+    if (index >= 0) {
+      this.listItems[index].instance.placeCursorAtEnd();
+    }
   }
 
   // List Type Functions

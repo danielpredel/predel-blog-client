@@ -151,10 +151,27 @@ export class EditorComponent {
     component.instance.focused.unsubscribe();
     this.container.remove(index);
     setTimeout(() => {
-      // For text and list components will be allowed to place the cursor at the end and add data
-      // but for image, it only focus the image
-      this.components[index - 1].instance.placeCursorAtEnd();
-      this.components[index - 1].instance.setDataAtEnd(data);
+      // if (component.instance.getComponentBefore() === 'LIST') {
+      if (this.components[index - 1].componentType === ListComponent) {
+        let mixLists = false;
+        if (index < this.components.length) {
+          if (this.components[index].componentType === ListComponent) {
+            mixLists = true;
+          }
+        }
+
+        if (mixLists) {
+          let listData = this.removeListComponent(index);
+        }
+        else {
+          this.components[index - 1].instance.placeCursorAtEnd();
+          this.components[index - 1].instance.setDataAtEnd(data);
+        }
+      }
+      else {
+        this.components[index - 1].instance.placeCursorAtEnd();
+        this.components[index - 1].instance.setDataAtEnd(data);
+      }
     }, 0);
   }
 
@@ -304,5 +321,20 @@ export class EditorComponent {
       }
       this.lastFocusedComponent = index;
     });
+  }
+
+  removeListComponent(index: number): Array<Array<any>> {
+    const component = this.components.splice(index, 1)[0];
+    this.componentsIds.splice(index, 1);
+    component.instance.addComponent.unsubscribe();
+    component.instance.changeComponent.unsubscribe();
+    component.instance.splitComponent.unsubscribe();
+    component.instance.focused.unsubscribe();
+
+    // Delete the component
+    this.container.remove(index);
+
+    let data = component.instance.getData();
+    return data;
   }
 }
