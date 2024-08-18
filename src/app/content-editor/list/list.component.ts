@@ -148,7 +148,7 @@ export class ListComponent {
         this.changeComponent.emit({ listType, data, elementType });
       }
       else {
-        for (let i = this.listItems.length - 1; i == index; i--) {
+        for (let i = this.listItems.length - 1; i >= index; i--) {
           this.removeListItem(i);
         }
         this.splitComponent.emit({ listType, data, elementType });
