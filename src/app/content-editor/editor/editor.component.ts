@@ -95,7 +95,7 @@ export class EditorComponent {
   }
 
   // Text Component Functions
-  addTextComponent(index: number, data: Array<any> = [], elemenentType: string = 'PARAGRAPH') {
+  addTextComponent(index: number, data: Array<any> = [], elementType: string = 'PARAGRAPH') {
     const componentRef = this.container.createComponent(TextComponent, { index });
 
     let id = this.idService.getId();
@@ -108,8 +108,8 @@ export class EditorComponent {
     // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.setId(ids);
-      if (elemenentType != 'PARAGRAPH') {
-        componentRef.instance.setElementType(elemenentType);
+      if (elementType != 'PARAGRAPH') {
+        componentRef.instance.setElementType(elementType);
       }
       componentRef.instance.setData(data);
     }, 0);
@@ -234,7 +234,7 @@ export class EditorComponent {
           let listData = data.slice(1);
           let listType = content?.listType;
           if (content.elementType) {
-            this.addTextComponent(index, textData, content.elemenentType);
+            this.addTextComponent(index, textData, content.elementType);
           }
           else {
             this.addTextComponent(index, textData);
@@ -260,7 +260,7 @@ export class EditorComponent {
           let listData = data.slice(1);
           let listType = content?.listType;
           if (content.elementType) {
-            this.addTextComponent(index + 1, textData, content.elemenentType);
+            this.addTextComponent(index + 1, textData, content.elementType);
           }
           else {
             this.addTextComponent(index + 1, textData);
