@@ -162,6 +162,9 @@ export class EditorComponent {
 
         if (mixLists) {
           let listData = this.removeListComponent(index);
+          this.components[index - 1].instance.placeCursorAtEnd();
+          this.components[index - 1].instance.setDataAtEnd(data);
+          this.components[index - 1].instance.mixList(listData);
         }
         else {
           this.components[index - 1].instance.placeCursorAtEnd();

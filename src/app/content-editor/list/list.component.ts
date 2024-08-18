@@ -74,6 +74,13 @@ export class ListComponent {
   }
 
   // Funtions
+  mixList(data: Array<any>) {
+    let index = this.listItems.length;
+    data.forEach(listItem => {
+      this.addListItem(index++, listItem, true);
+    })
+  }
+
   renderNewList() {
     this.addListItem(0);
   }
