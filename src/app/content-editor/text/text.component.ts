@@ -48,8 +48,13 @@ export class TextComponent {
         if (selection.rangeCount > 0) {
           const range = selection.getRangeAt(0);
           if (range.startOffset == 0 && range.endOffset == 0) {
-            let data = this.getDataAfterCursor();
-            this.deleteComponent.emit(data);
+            if (this.componentBefore === 'TEXT' || this.componentBefore === 'LIST') {
+              let data = this.getDataAfterCursor();
+              this.deleteComponent.emit(data);
+            }
+            else {
+              // emit focus before
+            }
           }
         }
       }
@@ -296,6 +301,10 @@ export class TextComponent {
   getCommonAncestorElement(range: Range) {
     const commonAncestor = range?.commonAncestorContainer as Element;
     return commonAncestor?.nodeType !== 1 ? commonAncestor?.parentElement : commonAncestor;
+  }
+
+  getComponentBefore(): string {
+    return this.componentBefore;
   }
 
   // Speed Dial Functions
