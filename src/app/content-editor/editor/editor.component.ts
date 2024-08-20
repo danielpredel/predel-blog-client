@@ -201,6 +201,10 @@ export class EditorComponent {
             this.addListComponent(index, componentType);
             break;
           case 'BOTH':
+            this.components[index - 1].instance.addListItem(-1);
+            let data = this.removeListComponent(index);
+            console.log(data)
+            this.components[index - 1].instance.mixList(data);
             break;
           case 'ABOVE':
             this.components[index - 1].instance.addListItem(-1);
@@ -216,6 +220,9 @@ export class EditorComponent {
             this.addListComponent(index, componentType);
             break;
           case 'BOTH':
+            this.components[index - 1].instance.addListItem(-1);
+            let data = this.removeListComponent(index);
+            this.components[index - 1].instance.mixList(data);
             break;
           case 'ABOVE':
             this.components[index - 1].instance.addListItem(-1);
