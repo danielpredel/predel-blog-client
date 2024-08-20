@@ -85,6 +85,70 @@ export class EditorComponent {
     });
   }
 
+  // Getters
+  getMixListOperation(index: number, componentType: string = 'TEXT'): string {
+    let type = 'NONE';
+
+    if (componentType == 'UL' || componentType == 'OL' || componentType == 'TEXT') {
+      let listAbove = 'NONE';
+      let listBelow = 'NONE';
+      if (index > 0) {
+        if (this.components[index - 1].componentType === ListComponent) {
+          listAbove = this.components[index - 1].instance.getListType();
+        }
+      }
+      if (index + 1 < this.components.length) {
+        if (this.components[index + 1].componentType === ListComponent) {
+          listBelow = this.components[index + 1].instance.getListType();
+        }
+      }
+
+      let operation = this.getMixListType(listAbove, componentType, listBelow);
+      if (operation) {
+        return operation;
+      }
+      else {
+        return 'NONE';
+      }
+    }
+
+    return type;
+  }
+
+  getMixListType(listAbove: string, componentType: string, listBelow: string) {
+    const clave = listAbove + componentType + listBelow;
+    const combinaciones = new Map([
+      ['OLOLOL', 'BOTH'],
+      ['OLOLUL', 'ABOVE'],
+      ['OLOLNONE', 'ABOVE'],
+      ['OLULOL', 'NONE'],
+      ['OLULUL', 'BELOW'],
+      ['OLULNONE', 'NONE'],
+      ['OLTEXTOL', 'BOTH'],
+      ['OLTEXTUL', 'ABOVE'],
+      ['OLTEXTNONE', 'ABOVE'],
+      ['ULOLOL', 'BELOW'],
+      ['ULOLUL', 'NONE'],
+      ['ULOLNONE', 'NONE'],
+      ['ULULOL', 'ABOVE'],
+      ['ULULUL', 'BOTH'],
+      ['ULULNONE', 'ABOVE'],
+      ['ULTEXTOL', 'ABOVE'],
+      ['ULTEXTUL', 'BOTH'],
+      ['ULTEXTNONE', 'ABOVE'],
+      ['NONEOLOL', 'BELOW'],
+      ['NONEOLUL', 'NONE'],
+      ['NONEOLNONE', 'NONE'],
+      ['NONEULOL', 'NONE'],
+      ['NONEULUL', 'BELOW'],
+      ['NONEULNONE', 'NONE'],
+      ['NONETEXTOL', 'NONE'],
+      ['NONETEXTUL', 'NONE'],
+      ['NONETEXTNONE', 'NONE']
+    ])
+    return combinaciones.get(clave);
+  }
+
   // Functions
   hideWindowSelection() {
     window.getSelection()?.removeAllRanges();
@@ -120,20 +184,46 @@ export class EditorComponent {
   }
 
   changeTextComponent(index: number, componentType: string) {
+    let operation = this.getMixListOperation(index, componentType);
     const component = this.components.splice(index, 1)[0];
     this.componentsIds.splice(index, 1);
     component.instance.addComponent.unsubscribe();
     component.instance.deleteComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
     component.instance.focused.unsubscribe();
+
     this.container.remove(index);
 
     switch (componentType) {
       case 'UL':
-        this.addListComponent(index, componentType);
+        switch (operation) {
+          case 'NONE':
+            this.addListComponent(index, componentType);
+            break;
+          case 'BOTH':
+            break;
+          case 'ABOVE':
+            this.components[index - 1].instance.addListItem(-1);
+            break;
+          case 'BELOW':
+            this.components[index].instance.addListItem(0);
+            break;
+        }
         break;
       case 'OL':
-        this.addListComponent(index, componentType);
+        switch (operation) {
+          case 'NONE':
+            this.addListComponent(index, componentType);
+            break;
+          case 'BOTH':
+            break;
+          case 'ABOVE':
+            this.components[index - 1].instance.addListItem(-1);
+            break;
+          case 'BELOW':
+            this.components[index].instance.addListItem(0);
+            break;
+        }
         break;
       case 'IMAGE':
         break;
@@ -143,38 +233,45 @@ export class EditorComponent {
   }
 
   removeTextComponent(index: number, data: Array<any>) {
+    let mixListType = this.getMixListOperation(index);
     const component = this.components.splice(index, 1)[0];
     this.componentsIds.splice(index, 1);
     component.instance.addComponent.unsubscribe();
     component.instance.deleteComponent.unsubscribe();
     component.instance.changeComponent.unsubscribe();
     component.instance.focused.unsubscribe();
+
+
     this.container.remove(index);
     setTimeout(() => {
-      // if (component.instance.getComponentBefore() === 'LIST') {
-      if (this.components[index - 1].componentType === ListComponent) {
-        let mixLists = false;
-        if (index < this.components.length) {
-          if (this.components[index].componentType === ListComponent) {
-            mixLists = true;
-          }
-        }
+      // if (this.components[index - 1].componentType === ListComponent) {
+      //   let mixLists = false;
+      //   if (index < this.components.length) {
+      //     if (this.components[index].componentType === ListComponent) {
+      //       if ((this.components[index - 1].instance.isOrdered()
+      //         && this.components[index].instance.isOrdered())
+      //         || (!this.components[index - 1].instance.isOrdered()
+      //           && !this.components[index].instance.isOrdered())) {
+      //         mixLists = true;
+      //       }
+      //     }
+      //   }
 
-        if (mixLists) {
-          let listData = this.removeListComponent(index);
-          this.components[index - 1].instance.placeCursorAtEnd();
-          this.components[index - 1].instance.setDataAtEnd(data);
-          this.components[index - 1].instance.mixList(listData);
-        }
-        else {
-          this.components[index - 1].instance.placeCursorAtEnd();
-          this.components[index - 1].instance.setDataAtEnd(data);
-        }
-      }
-      else {
-        this.components[index - 1].instance.placeCursorAtEnd();
-        this.components[index - 1].instance.setDataAtEnd(data);
-      }
+      //   if (mixLists) {
+      //     let listData = this.removeListComponent(index);
+      //     this.components[index - 1].instance.placeCursorAtEnd();
+      //     this.components[index - 1].instance.setDataAtEnd(data);
+      //     this.components[index - 1].instance.mixList(listData);
+      //   }
+      //   else {
+      //     this.components[index - 1].instance.placeCursorAtEnd();
+      //     this.components[index - 1].instance.setDataAtEnd(data);
+      //   }
+      // }
+      // else {
+      //   this.components[index - 1].instance.placeCursorAtEnd();
+      //   this.components[index - 1].instance.setDataAtEnd(data);
+      // }
     }, 0);
   }
 

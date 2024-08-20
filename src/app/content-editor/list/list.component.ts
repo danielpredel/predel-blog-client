@@ -104,6 +104,9 @@ export class ListComponent {
   // List Item Functions
   // silence mode: doesn't focus the new added component
   addListItem(index: number, data: Array<any> = [], renderMode: boolean = false) {
+    if(index == -1){
+      index = this.listItems.length;
+    }
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
 
     let liID = `${this.id}-ListItem-${this.idService.getId()}`;
