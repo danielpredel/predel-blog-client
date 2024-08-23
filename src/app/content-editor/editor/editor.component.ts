@@ -240,7 +240,7 @@ export class EditorComponent {
   }
 
   removeTextComponent(index: number, data: Array<any>) {
-    let mixListType = this.getMixListOperation(index);
+    let operation = this.getMixListOperation(index);
     const component = this.components.splice(index, 1)[0];
     this.componentsIds.splice(index, 1);
     component.instance.addComponent.unsubscribe();
@@ -248,37 +248,24 @@ export class EditorComponent {
     component.instance.changeComponent.unsubscribe();
     component.instance.focused.unsubscribe();
 
-
     this.container.remove(index);
     setTimeout(() => {
-      // if (this.components[index - 1].componentType === ListComponent) {
-      //   let mixLists = false;
-      //   if (index < this.components.length) {
-      //     if (this.components[index].componentType === ListComponent) {
-      //       if ((this.components[index - 1].instance.isOrdered()
-      //         && this.components[index].instance.isOrdered())
-      //         || (!this.components[index - 1].instance.isOrdered()
-      //           && !this.components[index].instance.isOrdered())) {
-      //         mixLists = true;
-      //       }
-      //     }
-      //   }
-
-      //   if (mixLists) {
-      //     let listData = this.removeListComponent(index);
-      //     this.components[index - 1].instance.placeCursorAtEnd();
-      //     this.components[index - 1].instance.setDataAtEnd(data);
-      //     this.components[index - 1].instance.mixList(listData);
-      //   }
-      //   else {
-      //     this.components[index - 1].instance.placeCursorAtEnd();
-      //     this.components[index - 1].instance.setDataAtEnd(data);
-      //   }
-      // }
-      // else {
-      //   this.components[index - 1].instance.placeCursorAtEnd();
-      //   this.components[index - 1].instance.setDataAtEnd(data);
-      // }
+      switch (operation) {
+        case 'NONE':
+          this.components[index - 1].instance.placeCursorAtEnd();
+          this.components[index - 1].instance.setDataAtEnd(data);
+          break;
+        case 'BOTH':
+          let listData = this.removeListComponent(index);
+          this.components[index - 1].instance.placeCursorAtEnd();
+          this.components[index - 1].instance.setDataAtEnd(data);
+          this.components[index - 1].instance.mixList(listData);
+          break;
+        case 'ABOVE':
+          this.components[index - 1].instance.placeCursorAtEnd();
+          this.components[index - 1].instance.setDataAtEnd(data);
+          break;
+      }
     }, 0);
   }
 

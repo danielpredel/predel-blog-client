@@ -104,7 +104,7 @@ export class ListComponent {
   // List Item Functions
   // silence mode: doesn't focus the new added component
   addListItem(index: number, data: Array<any> = [], renderMode: boolean = false) {
-    if(index == -1){
+    if (index == -1) {
       index = this.listItems.length;
     }
     const componentRef = this.listElement.createComponent(ListItemComponent, { index });
@@ -137,26 +137,42 @@ export class ListComponent {
   suscribeListItemEvents(componentRef: ComponentRef<ListItemComponent>, renderMode: boolean = false) {
     componentRef.instance.addListItem.subscribe((data) => {
       let index = this.listItems.indexOf(componentRef);
-      let emitAddEvent = false;
-      if (this.listItems.length == 1) {
+      if (index == 0) {
         if (data.length == 0 && this.listItems[index].instance.isEmpty()) {
-          this.changeComponent.emit();
+          let listType = this.getListType();
+          let data = this.getData();
+          this.changeComponent.emit({ listType, data });
         }
         else {
-          emitAddEvent = true;
+          this.addListItem(index + 1, data);
         }
       }
       else {
-        if (data.length == 0 && this.listItems[index].instance.isEmpty()) {
-          this.removeListItem(index);
-          this.addComponent.emit();
+        if (index + 1 == this.listItems.length) {
+          if (data.length == 0 && this.listItems[index].instance.isEmpty()) {
+            this.removeListItem(index);
+            this.addComponent.emit();
+          }
+          else {
+            this.addListItem(index + 1, data);
+          }
         }
         else {
-          emitAddEvent = true;
+          if (data.length == 0 && this.listItems[index].instance.isEmpty()) {
+            let listType = this.getListType();
+            let data = Array();
+            for (let i = index; i < this.listItems.length; i++) {
+              data.push(this.listItems[i].instance.getData());
+            }
+            for (let i = this.listItems.length - 1; i >= index; i--) {
+              this.removeListItem(i);
+            }
+            this.splitComponent.emit({ listType, data });
+          }
+          else {
+            this.addListItem(index + 1, data);
+          }
         }
-      }
-      if (emitAddEvent) {
-        this.addListItem(index + 1, data);
       }
     });
 
