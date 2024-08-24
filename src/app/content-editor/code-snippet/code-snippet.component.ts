@@ -2,12 +2,11 @@ import { NgClass, NgFor, NgSwitch, NgSwitchCase } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import hljs from 'highlight.js';
 import { NodeMakerService } from '../node-maker.service';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-code-snippet',
   standalone: true,
-  imports: [NgSwitch, NgSwitchCase, NgFor, NgClass, FormsModule],
+  imports: [NgSwitch, NgSwitchCase, NgFor, NgClass],
   templateUrl: './code-snippet.component.html',
   styleUrl: './code-snippet.component.css'
 })
