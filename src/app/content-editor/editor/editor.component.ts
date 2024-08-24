@@ -435,7 +435,7 @@ export class EditorComponent {
   }
 
   // Image Component Functions
-  addImageComponent(index: number, data: any = null){
+  addImageComponent(index: number, data: any = null) {
     const componentRef = this.container.createComponent(ImageComponent, { index });
     // let id = this.idService.getId();
     // let imageId = `img-${id}`;
@@ -457,27 +457,50 @@ export class EditorComponent {
   }
 
   // Code Snippet Component Functions
-  addCodeSnippetComponent(index: number, data: any = null){
+  addCodeSnippetComponent(index: number, data: any = null) {
     const componentRef = this.container.createComponent(CodeSnippetComponent, { index });
     let id = this.idService.getId();
-    // let listId = `lst-${id}`;
+    let codeSnippetId = `cds-${id}`;
     // Send the init data in case there's any
     setTimeout(() => {
+      componentRef.instance.setId(codeSnippetId);
+      if (data) {
+        componentRef.instance.setData(data);
+      }
       componentRef.instance.highlightCode();
-      // componentRef.instance.setId(listId);
-    //   if (type == 'OL') {
-    //     componentRef.instance.changeTypeToOrdered();
-    //   }
-    //   if (data.length > 0) {
-    //     componentRef.instance.setData(data, renderMode);
-    //   }
-    //   else {
-    //     componentRef.instance.renderNewList();
-    //   }
     }, 0);
 
-    // this.components.splice(index, 0, componentRef);
-    // this.componentsIds.splice(index, 0, listId);
-    // this.subscribeListComponentEvents(componentRef);
+    this.components.splice(index, 0, componentRef);
+    this.componentsIds.splice(index, 0, codeSnippetId);
+    this.subscribeCodeSnippetComponentEvents(componentRef);
+  }
+
+  changeCodeSnippetComponent(index: number) {
+    const component = this.components.splice(index, 1)[0];
+    this.componentsIds.splice(index, 1);
+    component.instance.changeComponent.unsubscribe();
+    component.instance.focused.unsubscribe();
+
+    // Delete the component
+    this.container.remove(index);
+
+    this.addTextComponent(index);
+  }
+
+  subscribeCodeSnippetComponentEvents(componentRef: ComponentRef<CodeSnippetComponent>) {
+    componentRef.instance.changeComponent.subscribe(() => {
+      let index = this.components.indexOf(componentRef);
+      this.changeCodeSnippetComponent(index);
+      this.setComponentBefore();
+    });
+
+    componentRef.instance.focused.subscribe(() => {
+      let index = this.components.indexOf(componentRef);
+      if (this.lastFocusedComponent < this.container.length
+        && this.components[this.lastFocusedComponent].componentType === TextComponent) {
+        this.components[this.lastFocusedComponent].instance.hideSpeedDial();
+      }
+      this.lastFocusedComponent = index;
+    });
   }
 }

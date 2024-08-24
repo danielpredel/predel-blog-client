@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgSwitch, NgSwitchCase } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import hljs from 'highlight.js';
 import { NodeMakerService } from '../node-maker.service';
 
@@ -11,6 +11,11 @@ import { NodeMakerService } from '../node-maker.service';
   styleUrl: './code-snippet.component.css'
 })
 export class CodeSnippetComponent {
+  // Event Emitters
+  @Output() changeComponent = new EventEmitter();
+  @Output() focusComponent = new EventEmitter<string>();
+  @Output() focused = new EventEmitter();
+
   @ViewChild('codeSnippet', { read: ElementRef }) codeSnippet: ElementRef<HTMLElement> | undefined;
   languages: Array<any> = [
     { name: 'Bash', class: 'language-bash' },
@@ -35,6 +40,8 @@ export class CodeSnippetComponent {
     { name: 'YAML', class: 'language-yaml' }
   ];
   selectedLanguage: any = { name: 'Javascript', class: 'language-javascript' };
+  componentBefore: string = 'NONE';
+  id: string = '';
 
   constructor(private nodeMakerService: NodeMakerService) { }
 
@@ -42,25 +49,46 @@ export class CodeSnippetComponent {
     this.highlightCode();
   }
 
+  onFocus() {
+    this.focused.emit();
+  }
+
   onKeydown(event: KeyboardEvent) {
-    // event.preventDefault();
-    // console.log(event.key)
     if (event.key === "ArrowRight") {
       const selection = window.getSelection();
       const range = selection?.getRangeAt(0);
       if (selection && range) {
-
-        // Obtiene el nodo donde está el cursor
         const cursorNode = range.endContainer;
         const cursorOffset = range.endOffset;
-
-        // Verifica si el cursor está al final del texto
         if (cursorNode.nodeType === Node.TEXT_NODE && cursorOffset === cursorNode.textContent?.length) {
-          console.log('Cursor al final del nodo de texto, flecha derecha presionada.');
-          // Añade aquí tu lógica adicional
+          this.focusComponent.emit('AFTER');
         } else if (cursorNode.nodeType === Node.ELEMENT_NODE && cursorOffset === cursorNode.childNodes.length) {
-          console.log('Cursor al final del elemento, flecha derecha presionada.');
-          // Añade aquí tu lógica adicional
+          this.focusComponent.emit('AFTER');
+        }
+      }
+    }
+    else if (event.key === 'ArrowLeft') {
+      const selection = window.getSelection();
+      if (selection) {
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          if (range.startOffset == 0 && range.endOffset == 0) {
+            if (this.componentBefore !== 'NONE') {
+              this.focusComponent.emit('BEFORE');
+            }
+          }
+        }
+      }
+    }
+    else if (event.key === 'Backspace') {
+      const selection = window.getSelection();
+      if (selection) {
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          let text = this.codeSnippet?.nativeElement.textContent || '';
+          if (range.startOffset == 0 && range.endOffset == 0 && text?.length == 0) {
+            this.changeComponent.emit();
+          }
         }
       }
     }
@@ -79,6 +107,29 @@ export class CodeSnippetComponent {
     setTimeout(() => {
       this.highlightCode();
     }, 100);
+  }
+
+  setData(data: any) {
+    this.selectedLanguage = data.language;
+    if (this.codeSnippet?.nativeElement) {
+      this.codeSnippet.nativeElement.innerHTML = data.code;
+    }
+  }
+
+  setComponentBefore(componentBefore: string) {
+    this.componentBefore = componentBefore;
+  }
+
+  setId(id: string) {
+    this.id = id;
+  }
+
+  getData() {
+    let code = this.codeSnippet?.nativeElement.textContent || this.codeSnippet?.nativeElement.innerText || '';
+    let data = {
+      language: this.selectedLanguage,
+      code: code
+    }
   }
 
   highlightCode() {

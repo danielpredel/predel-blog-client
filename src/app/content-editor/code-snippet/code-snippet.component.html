@@ -1,10 +1,11 @@
-<div class="code-snippet-container">
+<div class="code-snippet-container" [id]="id">
   <pre>
     <code #codeSnippet
     [ngClass]="selectedLanguage.class"
     contenteditable="true"
     spellcheck="false"
     (blur)="onBlur()"
+    (focus)="onFocus()"
     (keydown)="onKeydown($event)"
     (paste)="onPaste($event)"></code>
   </pre>
