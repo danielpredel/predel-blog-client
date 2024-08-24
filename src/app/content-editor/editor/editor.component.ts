@@ -161,6 +161,7 @@ export class EditorComponent {
 
   // Text Component Functions
   addTextComponent(index: number, data: Array<any> = [], elementType: string = 'PARAGRAPH') {
+    console.log(elementType)
     const componentRef = this.container.createComponent(TextComponent, { index });
 
     let id = this.idService.getId();
@@ -204,7 +205,6 @@ export class EditorComponent {
           case 'BOTH':
             this.components[index - 1].instance.addListItem(-1);
             let data = this.removeListComponent(index);
-            console.log(data)
             this.components[index - 1].instance.mixList(data);
             break;
           case 'ABOVE':
@@ -343,19 +343,15 @@ export class EditorComponent {
       let data = content?.data as Array<any>;
       if (data.length > 0) {
         let textData = data[0];
+        let elementType = content?.elementType;
         if (data.length > 1) {
           let listData = data.slice(1);
           let listType = content?.listType;
-          if (content.elementType) {
-            this.addTextComponent(index, textData, content.elementType);
-          }
-          else {
-            this.addTextComponent(index, textData);
-          }
+          this.addTextComponent(index, textData, elementType);
           this.addListComponent(index + 1, listType, listData, true);
         }
         else {
-          this.addTextComponent(index, textData);
+          this.addTextComponent(index, textData, elementType);
         }
       }
     }
@@ -369,19 +365,15 @@ export class EditorComponent {
       let data = content?.data as Array<any>;
       if (data.length > 0) {
         let textData = data[0];
+        let elementType = content?.elementType;
         if (data.length > 1) {
           let listData = data.slice(1);
           let listType = content?.listType;
-          if (content.elementType) {
-            this.addTextComponent(index + 1, textData, content.elementType);
-          }
-          else {
-            this.addTextComponent(index + 1, textData);
-          }
+          this.addTextComponent(index + 1, textData, elementType);
           this.addListComponent(index + 2, listType, listData, true);
         }
         else {
-          this.addTextComponent(index + 1, textData);
+          this.addTextComponent(index + 1, textData, elementType);
         }
       }
     }
@@ -398,6 +390,7 @@ export class EditorComponent {
     });
 
     componentRef.instance.changeComponent.subscribe((content) => {
+      console.log('Content: ', content)
       let index = this.components.indexOf(componentRef);
       this.changeListComponent(index, content);
       this.setComponentBefore();
