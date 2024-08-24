@@ -5,6 +5,7 @@ import { NgClass, NgIf, NgStyle } from '@angular/common';
 import { TooltipComponent } from "../tooltip/tooltip.component";
 import { ImageComponent } from "../image/image.component";
 import { StaticIdService } from '../static-id.service';
+import { CodeSnippetComponent } from '../code-snippet/code-snippet.component';
 
 @Component({
   selector: 'app-editor',
@@ -70,12 +71,12 @@ export class EditorComponent {
             case ListComponent:
               this.components[index].instance.setComponentBefore('LIST');
               break;
-            // case ImageComponent:
-            //   this.components[index].instance.setComponentBefore('IMAGE');
-            //   break;
-            // case CodeSnippetComponent:
-            //   this.components[index].instance.setComponentBefore('CODE-SNIPPET');
-            //   break;
+            case ImageComponent:
+              this.components[index].instance.setComponentBefore('IMAGE');
+              break;
+            case CodeSnippetComponent:
+              this.components[index].instance.setComponentBefore('CODE-SNIPPET');
+              break;
           }
         }
         else {
@@ -235,6 +236,7 @@ export class EditorComponent {
       case 'IMAGE':
         break;
       case 'CODE-SNIPPET':
+        this.addCodeSnippetComponent(index);
         break;
     }
   }
@@ -430,5 +432,52 @@ export class EditorComponent {
 
     let data = component.instance.getData();
     return data;
+  }
+
+  // Image Component Functions
+  addImageComponent(index: number, data: any = null){
+    const componentRef = this.container.createComponent(ImageComponent, { index });
+    // let id = this.idService.getId();
+    // let imageId = `img-${id}`;
+
+    // // Send the init data in case there's any
+    // setTimeout(() => {
+    //   componentRef.instance.setId(imageId);
+    //   if (data.length > 0) {
+    //     componentRef.instance.setData(data, renderMode);
+    //   }
+    //   else {
+    //     componentRef.instance.renderNewList();
+    //   }
+    // }, 0);
+
+    // this.components.splice(index, 0, componentRef);
+    // this.componentsIds.splice(index, 0, listId);
+    // this.subscribeListComponentEvents(componentRef);
+  }
+
+  // Code Snippet Component Functions
+  addCodeSnippetComponent(index: number, data: any = null){
+    const componentRef = this.container.createComponent(CodeSnippetComponent, { index });
+    let id = this.idService.getId();
+    // let listId = `lst-${id}`;
+    // Send the init data in case there's any
+    setTimeout(() => {
+      componentRef.instance.highlightCode();
+      // componentRef.instance.setId(listId);
+    //   if (type == 'OL') {
+    //     componentRef.instance.changeTypeToOrdered();
+    //   }
+    //   if (data.length > 0) {
+    //     componentRef.instance.setData(data, renderMode);
+    //   }
+    //   else {
+    //     componentRef.instance.renderNewList();
+    //   }
+    }, 0);
+
+    // this.components.splice(index, 0, componentRef);
+    // this.componentsIds.splice(index, 0, listId);
+    // this.subscribeListComponentEvents(componentRef);
   }
 }

@@ -1,1 +1,28 @@
-<p>code-snippet works!</p>
+<div class="code-snippet-container">
+  <pre>
+    <code #codeSnippet
+    [ngClass]="selectedLanguage.class"
+    contenteditable="true"
+    spellcheck="false"
+    (blur)="onBlur()"
+    (keydown)="onKeydown($event)"
+    (paste)="onPaste($event)"></code>
+  </pre>
+
+  <div class="uk-margin dropdown-container" uk-margin>
+    <div class="uk-inline">
+      <a class="uk-icon-button uk-margin-small-right" uk-icon="menu"></a>
+      <div uk-dropdown="animation: slide-top; animate-out: true; duration: 700">
+        <ul class="uk-nav uk-dropdown-nav dropdown-scroll">
+          <li *ngFor="let language of languages">
+            <a
+              (click)="setLanguage(language)"
+              [ngClass]="{ 'uk-text-primary': language.class === selectedLanguage.class }"
+              >{{ language.name }}</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
