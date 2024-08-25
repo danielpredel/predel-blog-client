@@ -1,10 +1,10 @@
 import { Component, ComponentRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { ListComponent } from '../list/list.component';
-import { TextComponent } from "../text/text.component";
 import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { TooltipComponent } from "../tooltip/tooltip.component";
-import { ImageComponent } from "../image/image.component";
 import { StaticIdService } from '../static-id.service';
+import { TooltipComponent } from "../tooltip/tooltip.component";
+import { TextComponent } from "../text/text.component";
+import { ListComponent } from '../list/list.component';
+import { ImageComponent } from "../image/image.component";
 import { CodeSnippetComponent } from '../code-snippet/code-snippet.component';
 
 @Component({
@@ -161,7 +161,6 @@ export class EditorComponent {
 
   // Text Component Functions
   addTextComponent(index: number, data: Array<any> = [], elementType: string = 'PARAGRAPH') {
-    console.log(elementType)
     const componentRef = this.container.createComponent(TextComponent, { index });
 
     let id = this.idService.getId();
@@ -185,7 +184,8 @@ export class EditorComponent {
     this.subscribeTextComponentEvents(componentRef);
   }
 
-  changeTextComponent(index: number, componentType: string) {
+  changeTextComponent(index: number, data: any) {
+    let componentType = data.type;
     let operation = this.getMixListOperation(index, componentType);
     const component = this.components.splice(index, 1)[0];
     this.componentsIds.splice(index, 1);
@@ -234,6 +234,9 @@ export class EditorComponent {
         }
         break;
       case 'IMAGE':
+        let src = data.src;
+        let alt = data.alt;
+        this.addImageComponent(index, { src, alt });
         break;
       case 'CODE-SNIPPET':
         this.addCodeSnippetComponent(index);
@@ -278,9 +281,9 @@ export class EditorComponent {
       this.setComponentBefore();
     });
 
-    componentRef.instance.changeComponent.subscribe((componentType) => {
+    componentRef.instance.changeComponent.subscribe((data) => {
       let index = this.components.indexOf(componentRef);
-      this.changeTextComponent(index, componentType);
+      this.changeTextComponent(index, data);
       this.setComponentBefore();
     });
 
@@ -390,7 +393,6 @@ export class EditorComponent {
     });
 
     componentRef.instance.changeComponent.subscribe((content) => {
-      console.log('Content: ', content)
       let index = this.components.indexOf(componentRef);
       this.changeListComponent(index, content);
       this.setComponentBefore();
@@ -428,25 +430,24 @@ export class EditorComponent {
   }
 
   // Image Component Functions
-  addImageComponent(index: number, data: any = null) {
+  addImageComponent(index: number, data: any) {
     const componentRef = this.container.createComponent(ImageComponent, { index });
-    // let id = this.idService.getId();
-    // let imageId = `img-${id}`;
+    let id = this.idService.getId();
+    let imageId = `img-${id}`;
 
-    // // Send the init data in case there's any
-    // setTimeout(() => {
-    //   componentRef.instance.setId(imageId);
-    //   if (data.length > 0) {
-    //     componentRef.instance.setData(data, renderMode);
-    //   }
-    //   else {
-    //     componentRef.instance.renderNewList();
-    //   }
-    // }, 0);
+    // Send the init data in case there's any
+    setTimeout(() => {
+      componentRef.instance.setId(imageId);
+      componentRef.instance.setData(data);
+    }, 0);
 
-    // this.components.splice(index, 0, componentRef);
-    // this.componentsIds.splice(index, 0, listId);
-    // this.subscribeListComponentEvents(componentRef);
+    this.components.splice(index, 0, componentRef);
+    this.componentsIds.splice(index, 0, imageId);
+    this.subscribeImageComponentEvents(componentRef);
+  }
+
+  subscribeImageComponentEvents(componentRef: ComponentRef<ImageComponent>) {
+
   }
 
   // Code Snippet Component Functions
