@@ -43,6 +43,7 @@ export class TextComponent {
       this.addComponent.emit(data);
     }
     else if (event.key === 'Backspace') {
+      // Logic has to change for focus events and delete event 
       const selection = window.getSelection();
       if (selection) {
         if (selection.rangeCount > 0) {
@@ -62,6 +63,12 @@ export class TextComponent {
   }
 
   onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Backspace') {
+      let length = this.getTarget()?.nativeElement.textContent?.length;
+      if (length === 0) {
+        this.showSpeedDial = true;
+      }
+    }
     let target = this.getTarget();
     if (target) {
       const text = target.nativeElement.textContent?.trim() || '';
@@ -70,10 +77,10 @@ export class TextComponent {
       }
       if (text.length == 1) {
         if (text == '*' && event.code == 'Space') {
-          this.changeComponent.emit({ type: 'UL'});
+          this.changeComponent.emit({ type: 'UL' });
         }
         if (text == '+' && event.code == 'Space') {
-          this.changeComponent.emit({ type: 'OL'});
+          this.changeComponent.emit({ type: 'OL' });
         }
       }
     }
