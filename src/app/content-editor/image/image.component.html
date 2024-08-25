@@ -1,45 +1,18 @@
-<!-- This is a button toggling the modal -->
-<!-- <button class="uk-button uk-button-default uk-margin-small-right" type="button">
-  Open
-</button> -->
-
-<!-- This is the modal -->
-<div uk-modal>
-  <div class="uk-modal-dialog uk-modal-body">
-    <form>
-      <fieldset class="uk-fieldset">
-        <legend class="uk-legend">Image</legend>
-        <div class="uk-margin">
-          <label class="uk-form-label" for="form-stacked-text">Image Source</label>
-          <input
-            class="uk-input"
-            type="text"
-            placeholder="https://image-url.example"
-            aria-label="Input"
-          />
-        </div>
-        <div class="uk-margin">
-          <label class="uk-form-label" for="form-stacked-text"
-            >Alternative Text</label
-          >
-          <input
-            class="uk-input"
-            type="text"
-            placeholder="A text that describes the image"
-            aria-label="Input"
-          />
-        </div>
-      </fieldset>
-    </form>
-    <p class="uk-text-right">
-      <button class="uk-button uk-button-default uk-modal-close" type="button">
-        Cancel
-      </button>
-      <button class="uk-button uk-button-primary" type="button">Save</button>
-    </p>
+<div class="image-container">
+  <div class="uk-container">
+    <img [src]="src" [alt]="alt" class="uk-width-1-1 uk-align-center" />
   </div>
-</div>
-
-<div class="uk-container">
-  <img [src]="src" [alt]="alt" class="uk-width-1-1 uk-align-center" />
+  <caption class="uk-text-meta uk-text-center image-caption">
+  </caption>
+  <div class="uk-margin dropdown-container" uk-margin>
+    <div class="uk-inline">
+      <a class="uk-icon-button uk-margin-small-right" uk-icon="menu"></a>
+      <div uk-dropdown="animation: slide-top; animate-out: true; duration: 700">
+        <ul class="uk-nav uk-dropdown-nav dropdown-scroll">
+          <li><a>Change Image URL</a></li>
+          <li><a>Change Alt Text</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>

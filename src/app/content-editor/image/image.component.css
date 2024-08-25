@@ -1,0 +1,16 @@
+.image-container {
+  position: relative;
+}
+
+.dropdown-container {
+  position: absolute;
+  top: 0;
+  left: -50px;
+  z-index: 1;
+}
+
+.image-caption {
+  position: absolute;
+  width: 100%;
+  padding: 10px;
+}
