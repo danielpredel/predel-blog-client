@@ -14,7 +14,7 @@ export class TextComponent {
   // Event Emitters
   @Output() addComponent = new EventEmitter<Array<any>>();
   @Output() deleteComponent = new EventEmitter<Array<any>>();
-  @Output() changeComponent = new EventEmitter<string>();
+  @Output() changeComponent = new EventEmitter<any>();
   @Output() focused = new EventEmitter();
 
   // DOM Manipulation Variables
@@ -70,10 +70,10 @@ export class TextComponent {
       }
       if (text.length == 1) {
         if (text == '*' && event.code == 'Space') {
-          this.changeComponent.emit('UL');
+          this.changeComponent.emit({ type: 'UL'});
         }
         if (text == '+' && event.code == 'Space') {
-          this.changeComponent.emit('OL');
+          this.changeComponent.emit({ type: 'OL'});
         }
       }
     }
@@ -96,8 +96,8 @@ export class TextComponent {
     }
   }
 
-  onSpeedSelection(type: string) {
-    this.changeComponent.emit(type);
+  onSpeedSelection(data: any) {
+    this.changeComponent.emit(data);
   }
 
   onTooltipSelection(selection: any) {
