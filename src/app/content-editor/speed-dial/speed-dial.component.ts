@@ -33,7 +33,7 @@ export class SpeedDialComponent {
 
   // Form validation
   urlImageValidator(control: FormControl): { [key: string]: any } | null {
-    const pattern = /^(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|png|gif|bmp|svg|webp)$/;
+    const pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.(?:jpg|jpeg|png|gif|bmp|svg|webp)$/;
     if (!pattern.test(control.value)) {
       return { urlError: 'URL Error' };
     }
