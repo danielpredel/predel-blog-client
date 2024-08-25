@@ -1,18 +1,101 @@
-<div class="image-container">
+<div [id]="id" class="image-container">
   <div class="uk-container">
     <img [src]="src" [alt]="alt" class="uk-width-1-1 uk-align-center" />
   </div>
-  <caption class="uk-text-meta uk-text-center image-caption">
-  </caption>
+  <caption class="uk-text-meta uk-text-center image-caption"></caption>
   <div class="uk-margin dropdown-container" uk-margin>
     <div class="uk-inline">
       <a class="uk-icon-button uk-margin-small-right" uk-icon="menu"></a>
-      <div uk-dropdown="animation: slide-top; animate-out: true; duration: 700">
+      <div uk-dropdown="mode: click; animation: slide-top; animate-out: true; duration: 700">
         <ul class="uk-nav uk-dropdown-nav dropdown-scroll">
-          <li><a>Change Image URL</a></li>
-          <li><a>Change Alt Text</a></li>
+          <li><a [attr.uk-toggle]="'target: #' + id + 'src-modal'">Change Image URL</a></li>
+          <li><a [attr.uk-toggle]="'target: #' + id + 'alt-modal'">Change Alt Text</a></li>
         </ul>
       </div>
+    </div>
+  </div>
+</div>
+
+<div [id]="id + 'src-modal'" uk-modal>
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Image</h2>
+    </div>
+    <div class="uk-modal-body">
+      <form [formGroup]="srcForm" class="uk-form-stacked">
+        <div class="uk-margin">
+          <label class="uk-form-label" for="image-url">URL</label>
+          <div class="uk-form-controls">
+            <input
+              formControlName="src"
+              class="uk-input"
+              [ngClass]="{
+                'uk-form-danger': !srcForm.get('src')?.valid,
+                'uk-form-success': srcForm.get('src')?.valid
+              }"
+              id="image-url"
+              type="text"
+              placeholder="https://image-example.com"
+            />
+          </div>
+          <div
+            *ngIf="srcForm.get('src')?.hasError('required')"
+            class="uk-text-meta uk-text-danger"
+          >
+            La URL es obligatoria.
+          </div>
+          <div
+            *ngIf="srcForm.get('src')?.hasError('urlError')"
+            class="uk-text-meta uk-text-danger"
+          >
+            URL inválida, solo formatos jpg, jpeg, png, webp y svg
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="uk-modal-footer uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close" type="button">
+        Cancel
+      </button>
+      <button
+        class="uk-button uk-button-primary uk-modal-close"
+        type="button"
+        [disabled]="!srcForm.valid"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<div [id]="id + 'alt-modal'" uk-modal>
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Image</h2>
+    </div>
+    <div class="uk-modal-body">
+      <form [formGroup]="altForm" class="uk-form-stacked">
+        <div class="uk-margin">
+          <label class="uk-form-label" for="image-alt">Alt Text</label>
+          <div class="uk-form-controls">
+            <input
+              formControlName="alt"
+              class="uk-input"
+              id="image-alt"
+              type="text"
+              placeholder="Describing text for the image (Optional)"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="uk-modal-footer uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close" type="button">
+        Cancel
+      </button>
+      <button class="uk-button uk-button-primary uk-modal-close" type="button">
+        Add
+      </button>
     </div>
   </div>
 </div>
