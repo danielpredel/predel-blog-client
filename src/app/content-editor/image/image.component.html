@@ -61,6 +61,7 @@
         class="uk-button uk-button-primary uk-modal-close"
         type="button"
         [disabled]="!srcForm.valid"
+        (click)="setSrc()"
       >
         Save
       </button>
@@ -93,7 +94,7 @@
       <button class="uk-button uk-button-default uk-modal-close" type="button">
         Cancel
       </button>
-      <button class="uk-button uk-button-primary uk-modal-close" type="button">
+      <button class="uk-button uk-button-primary uk-modal-close" type="button" (click)="setAlt()">
         Add
       </button>
     </div>

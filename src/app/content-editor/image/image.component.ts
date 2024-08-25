@@ -31,13 +31,23 @@ export class ImageComponent {
   setData(data: any) {
     this.src = data.src;
     this.alt = data.alt;
-    
+
     this.srcForm.get('src')?.setValue(this.src);
     this.altForm.get('alt')?.setValue(this.alt);
   }
 
   setComponentBefore(type: string) {
     this.componentBefore = type;
+  }
+
+  setSrc() {
+    if (this.srcForm.valid) {
+      this.src = this.srcForm.get('src')?.value || '';
+    }
+  }
+
+  setAlt() {
+    this.alt = this.altForm.get('alt')?.value || '';
   }
 
   // Form validation
