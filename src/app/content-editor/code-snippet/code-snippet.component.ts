@@ -171,4 +171,18 @@ export class CodeSnippetComponent {
       }
     }
   }
+
+  placeCursorAtEnd(): void {
+    if (this.codeSnippet) {
+      const element = this.codeSnippet.nativeElement;
+      const range = document.createRange();
+      const selection = window.getSelection();
+      range.selectNodeContents(element);
+      range.collapse(false);
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  }
 }

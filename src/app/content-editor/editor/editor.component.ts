@@ -187,14 +187,16 @@ export class EditorComponent {
   changeTextComponent(index: number, data: any) {
     let componentType = data.type;
     let operation = this.getMixListOperation(index, componentType);
-    const component = this.components.splice(index, 1)[0];
-    this.componentsIds.splice(index, 1);
-    component.instance.addComponent.unsubscribe();
-    component.instance.deleteComponent.unsubscribe();
-    component.instance.changeComponent.unsubscribe();
-    component.instance.focused.unsubscribe();
+    if (componentType === 'UL' || componentType === 'OL') {
+      const component = this.components.splice(index, 1)[0];
+      this.componentsIds.splice(index, 1);
+      component.instance.addComponent.unsubscribe();
+      component.instance.deleteComponent.unsubscribe();
+      component.instance.changeComponent.unsubscribe();
+      component.instance.focused.unsubscribe();
 
-    this.container.remove(index);
+      this.container.remove(index);
+    }
 
     switch (componentType) {
       case 'UL':
