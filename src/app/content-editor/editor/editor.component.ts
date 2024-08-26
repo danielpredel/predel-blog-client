@@ -463,7 +463,8 @@ export class EditorComponent {
       if (data) {
         componentRef.instance.setData(data);
       }
-      else{
+      else {
+        this.components[index + 1].instance.hideSpeedDial();
         componentRef.instance.placeCursorAtEnd();
       }
       componentRef.instance.highlightCode();
