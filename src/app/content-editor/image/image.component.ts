@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
@@ -10,6 +10,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
   styleUrl: './image.component.css'
 })
 export class ImageComponent {
+  @Output() changeComponent = new EventEmitter();
   src: string = '';
   alt: string = '';
   caption: string = '';

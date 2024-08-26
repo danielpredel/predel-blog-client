@@ -448,8 +448,22 @@ export class EditorComponent {
     this.subscribeImageComponentEvents(componentRef);
   }
 
-  subscribeImageComponentEvents(componentRef: ComponentRef<ImageComponent>) {
+  changeImageComponent(index: number) {
+    const component = this.components.splice(index, 1)[0];
+    this.componentsIds.splice(index, 1);
+    component.instance.changeComponent.unsubscribe();
 
+    // Delete the component
+    this.container.remove(index);
+    this.addTextComponent(index);
+  }
+
+  subscribeImageComponentEvents(componentRef: ComponentRef<ImageComponent>) {
+    componentRef.instance.changeComponent.subscribe(() => {
+      let index = this.components.indexOf(componentRef);
+      this.changeImageComponent(index);
+      this.setComponentBefore();
+    });
   }
 
   // Code Snippet Component Functions
