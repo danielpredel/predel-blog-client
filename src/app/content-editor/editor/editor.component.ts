@@ -463,6 +463,9 @@ export class EditorComponent {
       if (data) {
         componentRef.instance.setData(data);
       }
+      else{
+        componentRef.instance.placeCursorAtEnd();
+      }
       componentRef.instance.highlightCode();
     }, 0);
 
