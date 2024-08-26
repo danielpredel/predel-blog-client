@@ -21,6 +21,8 @@ code {
 
 .code-snippet-container {
   position: relative;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .dropdown-container{

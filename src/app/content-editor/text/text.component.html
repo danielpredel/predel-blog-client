@@ -3,6 +3,7 @@
     <h1
       *ngSwitchCase="'TITLE'"
       #editableTitle
+      class="title"
       [id]="componentIds[1]"
       [contentEditable]="true"
       (keydown)="onKeyDown($event)"
@@ -13,6 +14,7 @@
     <h3
       *ngSwitchCase="'SUBTITLE'"
       #editableSubtitle
+      class="subtitle"
       [id]="componentIds[2]"
       [contentEditable]="true"
       (keydown)="onKeyDown($event)"
@@ -23,6 +25,7 @@
     <p
       *ngSwitchDefault
       #editableParagraph
+      class="paragraph"
       [id]="componentIds[3]"
       [contentEditable]="true"
       (keydown)="onKeyDown($event)"

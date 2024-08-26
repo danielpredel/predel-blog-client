@@ -2,7 +2,12 @@ ul.o-list {
   list-style: decimal;
 }
 
-ul{
+ul {
   border: none;
   outline: none;
+}
+
+.list {
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
