@@ -1,6 +1,6 @@
 /* tooltip */
 .full-div {
-  min-height: 100vh;
+  min-height: 70vh;
   width: 100%;
   padding-top: 50px;
   padding-bottom: 50px;
@@ -56,4 +56,9 @@
 .divider {
   height: 20px;
   border: 1px solid #888;
+}
+
+.editor{
+  min-height: 60vh;
+  margin-bottom: 20px;
 }
