@@ -23,6 +23,8 @@ export class NodeMakerService {
   createBoldNode(text: string, id: string) {
     const node = document.createElement('b');
     node.id = id;
+    node.className = "uk-text-bolder";
+    node.classList.add("uk-text-emphasis");
     node.textContent = text;
     return node;
   }
