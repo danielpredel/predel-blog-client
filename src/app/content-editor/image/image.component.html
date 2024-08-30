@@ -63,13 +63,13 @@
             *ngIf="srcForm.get('src')?.hasError('required')"
             class="uk-text-meta uk-text-danger"
           >
-            La URL es obligatoria.
+            The URL is required
           </div>
           <div
             *ngIf="srcForm.get('src')?.hasError('urlError')"
             class="uk-text-meta uk-text-danger"
           >
-            URL inválida, solo formatos jpg, jpeg, png, webp y svg
+            Invalid URL, only jpg, jpeg, png, webp and svg formats
           </div>
         </div>
       </form>
