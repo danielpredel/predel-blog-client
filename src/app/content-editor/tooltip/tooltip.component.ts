@@ -276,9 +276,10 @@ export class TooltipComponent {
   placeForOptions() {
     this.stage = 'OPTIONS';
     if (this.clientRect) {
+      const scrollPosition = window.scrollY;
       this.left = this.clientRect.right - (this.clientRect.right - this.clientRect.left) / 2
         - this.tooltip.nativeElement.offsetWidth / 2;
-      this.top = this.clientRect.top - 45;
+      this.top = this.clientRect.top - 45 + scrollPosition;
       this.show();
     }
   }
@@ -286,9 +287,10 @@ export class TooltipComponent {
   placeForLinkInput() {
     this.stage = 'LINK-INPUT';
     if (this.clientRect) {
+      const scrollPosition = window.scrollY;
       this.left = this.clientRect.right - (this.clientRect.right - this.clientRect.left) / 2
         - this.tooltip.nativeElement.offsetWidth / 2;
-      this.top = this.clientRect.top - 45;
+      this.top = this.clientRect.top - 45 + scrollPosition;
       this.show();
     }
   }
