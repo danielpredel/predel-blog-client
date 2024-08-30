@@ -25,11 +25,13 @@ export class ImageComponent {
     alt: new FormControl('')
   });
 
+  // Setters
   setId(id: string) {
     this.id = id;
   }
 
   setData(data: any) {
+    console.log(data)
     this.src = data.src;
     this.alt = data.alt;
 
@@ -49,6 +51,11 @@ export class ImageComponent {
 
   setAlt() {
     this.alt = this.altForm.get('alt')?.value || '';
+  }
+
+  // Getters
+  getData() {
+    return { src: this.src, alt: this.alt, caption: this.caption };
   }
 
   // Form validation
