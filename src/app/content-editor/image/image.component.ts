@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
@@ -10,10 +10,10 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
   styleUrl: './image.component.css'
 })
 export class ImageComponent {
+  @ViewChild('caption', { read: ElementRef }) capptionElement: ElementRef<HTMLElement> | undefined;
   @Output() changeComponent = new EventEmitter();
   src: string = '';
   alt: string = '';
-  caption: string = '';
   id: string = '';
   componentBefore: string = 'NONE';
 
@@ -33,6 +33,9 @@ export class ImageComponent {
   setData(data: any) {
     this.src = data.src;
     this.alt = data.alt;
+    if (this.capptionElement) {
+      this.capptionElement.nativeElement.textContent = data.caption || '';
+    }
 
     this.srcForm.get('src')?.setValue(this.src);
     this.altForm.get('alt')?.setValue(this.alt);
@@ -54,7 +57,9 @@ export class ImageComponent {
 
   // Getters
   getData() {
-    return { src: this.src, alt: this.alt, caption: this.caption };
+    let caption = this.capptionElement?.nativeElement.textContent || '';
+    return { src: this.src, alt: this.alt, caption };
+    // return { src: this.src, alt: this.alt, caption: this.caption };
   }
 
   // Form validation

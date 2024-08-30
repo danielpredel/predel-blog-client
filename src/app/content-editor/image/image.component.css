@@ -11,8 +11,17 @@
   z-index: 1;
 }
 
+.figure img {
+  max-width: 100%;
+  padding: 0px;
+  margin-bottom: 10px;
+}
+
 .image-caption {
-  position: absolute;
-  width: 100%;
-  padding: 10px;
+  border: none;
+  outline: none;
+}
+
+.image-caption:empty::before {
+  content: attr(data-placeholder);
 }
