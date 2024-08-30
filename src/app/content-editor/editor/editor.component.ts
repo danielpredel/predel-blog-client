@@ -150,6 +150,29 @@ export class EditorComponent {
     return combinaciones.get(clave);
   }
 
+  getData() {
+    let data = Array();
+    this.components.forEach(component => {
+      let type = '';
+      switch (component.componentType) {
+        case TextComponent:
+          type = component.instance.getElementType();
+          break;
+        case ListComponent:
+          type = component.instance.getListType();
+          break;
+        case ImageComponent:
+          type = 'IMAGE';
+          break;
+        case CodeSnippetComponent:
+          type = 'CODE-SNIPPET';
+          break;
+      }
+      data.push({ type, data: component.instance.getData() });
+    });
+    return data;
+  }
+
   // Functions
   hideWindowSelection() {
     window.getSelection()?.removeAllRanges();
@@ -157,6 +180,15 @@ export class EditorComponent {
 
   renderNewPost() {
     this.addTextComponent(0, [], 'TITLE');
+  }
+
+  saveAsDraft() {
+    let data = this.getData();
+  }
+
+  publish() {
+    let data = this.getData();
+    console.log(data);
   }
 
   // Text Component Functions

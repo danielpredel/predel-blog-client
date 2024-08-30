@@ -31,7 +31,6 @@ export class ImageComponent {
   }
 
   setData(data: any) {
-    console.log(data)
     this.src = data.src;
     this.alt = data.alt;
 
