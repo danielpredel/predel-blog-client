@@ -1,3 +1,74 @@
-<p>meta works!</p>
+<div
+  class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
+>
+  <form [formGroup]="form" class="uk-form-stacked form-new">
+    <fieldset class="uk-fieldset">
+      <legend class="uk-legend">New Post</legend>
 
-<button (click)="toEditor()">Go to editor</button>
+      <div class="uk-margin">
+        <label class="uk-form-label" for="title">Title</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="title"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger': !form.get('title')?.valid,
+              'uk-form-success': form.get('title')?.valid
+            }"
+            id="title"
+            type="text"
+            placeholder="The Story Name ..."
+          />
+        </div>
+        <div
+          *ngIf="form.get('title')?.hasError('required')"
+          class="uk-text-meta uk-text-danger"
+        >
+          The Title is required
+        </div>
+      </div>
+
+      <div class="uk-margin">
+        <label class="uk-form-label" for="image">Cover Image URL</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="image"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger': !form.get('image')?.valid,
+              'uk-form-success': form.get('image')?.valid
+            }"
+            id="image"
+            type="text"
+            placeholder="https://image-example.com"
+          />
+        </div>
+        <div
+          *ngIf="form.get('image')?.hasError('required')"
+          class="uk-text-meta uk-text-danger"
+        >
+          The Image is required
+        </div>
+        <div
+          *ngIf="form.get('image')?.hasError('urlError')"
+          class="uk-text-meta uk-text-danger"
+        >
+          Invalid URL, only jpg, jpeg, png, webp and svg formats
+        </div>
+      </div>
+    </fieldset>
+  </form>
+  <div class="uk-clearfix">
+    <div class="uk-float-right">
+      <button
+        class="uk-button uk-button-primary"
+        [disabled]="!form.valid"
+        (click)="onSubmit()"
+      >
+        Create Post
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- <button (click)="toEditor()">Go to editor</button> -->
