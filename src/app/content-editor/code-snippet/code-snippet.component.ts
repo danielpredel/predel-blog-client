@@ -102,6 +102,7 @@ export class CodeSnippetComponent {
     }
   }
 
+  // Setters
   setLanguage(language: any) {
     this.selectedLanguage = language;
     setTimeout(() => {
@@ -124,12 +125,14 @@ export class CodeSnippetComponent {
     this.id = id;
   }
 
+  // Getters
   getData() {
     let code = this.codeSnippet?.nativeElement.textContent || this.codeSnippet?.nativeElement.innerText || '';
     let data = {
       language: this.selectedLanguage,
       code: code
     }
+    return data;
   }
 
   highlightCode() {
