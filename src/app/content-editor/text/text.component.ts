@@ -314,6 +314,10 @@ export class TextComponent {
     return this.componentBefore;
   }
 
+  getElementType(){
+    return this.elementType;
+  }
+
   // Speed Dial Functions
   hideSpeedDial() {
     if (this.showSpeedDial) {
