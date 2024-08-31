@@ -2,6 +2,7 @@ import { NgClass, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PostService } from '../../shared/services/post.service';
 
 @Component({
   selector: 'app-meta',
@@ -11,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './meta.component.css'
 })
 export class MetaComponent {
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private postService: PostService) { }
 
   form = new FormGroup({
     image: new FormControl('', [Validators.required, this.urlImageValidator]),
@@ -29,13 +30,20 @@ export class MetaComponent {
 
   onSubmit() {
     if (this.form.valid) {
-      console.log(this.form.get('title')?.value)
-      console.log(this.form.get('image')?.value)
-      // this.selection.emit({ type: 'IMAGE', src: this.form.get('src')?.value, alt: this.form.get('alt')?.value });
+      const title = this.form.get('title')?.value || '';
+      const image = this.form.get('image')?.value || '';
+      this.postService.createPost(title, image).subscribe({
+        next: (response) => {
+          this.toEditor(response.postId)
+        },
+        error: (error) => {
+          alert('Error al crear el usuario:' + error);  // Manejo del error
+        }
+      });
     }
   }
 
-  toEditor() {
-    this.router.navigate(['../12345'], { relativeTo: this.activatedRoute });
+  toEditor(postId: string) {
+    this.router.navigate([`../${postId}`], { relativeTo: this.activatedRoute });
   }
 }
