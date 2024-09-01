@@ -51,8 +51,10 @@
               formControlName="src"
               class="uk-input"
               [ngClass]="{
-                'uk-form-danger': !srcForm.get('src')?.valid,
-                'uk-form-success': srcForm.get('src')?.valid
+                'uk-form-danger':
+                  !srcForm.get('src')?.valid && srcForm.get('src')?.touched,
+                'uk-form-success':
+                  srcForm.get('src')?.valid && srcForm.get('src')?.touched
               }"
               id="image-url"
               type="text"
@@ -60,13 +62,13 @@
             />
           </div>
           <div
-            *ngIf="srcForm.get('src')?.hasError('required')"
+            *ngIf="srcForm.get('src')?.hasError('required')  && srcForm.get('src')?.touched"
             class="uk-text-meta uk-text-danger"
           >
             The URL is required
           </div>
           <div
-            *ngIf="srcForm.get('src')?.hasError('urlError')"
+            *ngIf="srcForm.get('src')?.hasError('urlError')  && srcForm.get('src')?.touched"
             class="uk-text-meta uk-text-danger"
           >
             Invalid URL, only jpg, jpeg, png, webp and svg formats

@@ -18,7 +18,7 @@ export class ImageComponent {
   componentBefore: string = 'NONE';
 
   srcForm = new FormGroup({
-    src: new FormControl('', [Validators.required, this.urlImageValidator])
+    src: new FormControl('', { validators: [Validators.required, this.urlImageValidator], updateOn: 'change' })
   });
 
   altForm = new FormGroup({
@@ -59,7 +59,6 @@ export class ImageComponent {
   getData() {
     let caption = this.capptionElement?.nativeElement.textContent || '';
     return { src: this.src, alt: this.alt, caption };
-    // return { src: this.src, alt: this.alt, caption: this.caption };
   }
 
   // Form validation

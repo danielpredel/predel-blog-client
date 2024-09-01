@@ -14,7 +14,7 @@ export class SpeedDialComponent {
   @Output() selection = new EventEmitter<any>();
 
   imageForm = new FormGroup({
-    src: new FormControl('', [Validators.required, this.urlImageValidator]),
+    src: new FormControl('', { validators: [Validators.required, this.urlImageValidator], updateOn: 'change' }),
     alt: new FormControl('')
   });
 
@@ -41,9 +41,12 @@ export class SpeedDialComponent {
   }
 
   onSubmit() {
-    this.closeMenu();
     if (this.imageForm.valid) {
+      this.closeMenu();
       this.selection.emit({ type: 'IMAGE', src: this.imageForm.get('src')?.value, alt: this.imageForm.get('alt')?.value });
+    }
+    else {
+      this.imageForm.markAllAsTouched();
     }
   }
 }
