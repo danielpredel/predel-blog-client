@@ -1,10 +1,13 @@
 <div
   class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
 >
-  <form [formGroup]="form" class="uk-form-stacked form-new">
+  <form
+    [formGroup]="form"
+    class="uk-form-stacked form-new"
+    (ngSubmit)="onSubmit()"
+  >
     <fieldset class="uk-fieldset">
       <legend class="uk-legend">New Post</legend>
-
       <div class="uk-margin">
         <label class="uk-form-label" for="title">Title</label>
         <div class="uk-form-controls">
@@ -12,8 +15,10 @@
             formControlName="title"
             class="uk-input"
             [ngClass]="{
-              'uk-form-danger': !form.get('title')?.valid,
-              'uk-form-success': form.get('title')?.valid
+              'uk-form-danger':
+                !form.get('title')?.valid && form.get('title')?.touched,
+              'uk-form-success':
+                form.get('title')?.valid && form.get('title')?.touched
             }"
             id="title"
             type="text"
@@ -21,13 +26,15 @@
           />
         </div>
         <div
-          *ngIf="form.get('title')?.hasError('required')"
+          *ngIf="
+            form.get('title')?.hasError('required') &&
+            form.get('title')?.touched
+          "
           class="uk-text-meta uk-text-danger"
         >
           The Title is required
         </div>
       </div>
-
       <div class="uk-margin">
         <label class="uk-form-label" for="image">Cover Image URL</label>
         <div class="uk-form-controls">
@@ -35,8 +42,10 @@
             formControlName="image"
             class="uk-input"
             [ngClass]="{
-              'uk-form-danger': !form.get('image')?.valid,
-              'uk-form-success': form.get('image')?.valid
+              'uk-form-danger':
+                !form.get('image')?.valid && form.get('image')?.touched,
+              'uk-form-success':
+                form.get('image')?.valid && form.get('image')?.touched
             }"
             id="image"
             type="text"
@@ -44,31 +53,32 @@
           />
         </div>
         <div
-          *ngIf="form.get('image')?.hasError('required')"
+          *ngIf="
+            form.get('image')?.hasError('required') &&
+            form.get('image')?.touched
+          "
           class="uk-text-meta uk-text-danger"
         >
           The Image is required
         </div>
         <div
-          *ngIf="form.get('image')?.hasError('urlError')"
+          *ngIf="
+            form.get('image')?.hasError('urlError') &&
+            form.get('image')?.touched
+          "
           class="uk-text-meta uk-text-danger"
         >
           Invalid URL, only jpg, jpeg, png, webp and svg formats
         </div>
       </div>
     </fieldset>
-  </form>
-  <div class="uk-clearfix">
-    <div class="uk-float-right">
-      <button
-        class="uk-button uk-button-primary"
-        [disabled]="!form.valid"
-        (click)="onSubmit()"
-      >
-        Create Post
-      </button>
-    </div>
-  </div>
-</div>
 
-<!-- <button (click)="toEditor()">Go to editor</button> -->
+    <div class="uk-clearfix">
+      <div class="uk-float-right">
+        <button class="uk-button uk-button-primary" type="submit">
+          Create Post
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

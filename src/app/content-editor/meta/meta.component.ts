@@ -15,9 +15,9 @@ export class MetaComponent {
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private postService: PostService) { }
 
   form = new FormGroup({
-    image: new FormControl('', [Validators.required, this.urlImageValidator]),
-    title: new FormControl('', Validators.required)
-  });
+    image: new FormControl('', { validators: [Validators.required, this.urlImageValidator], updateOn: 'blur' }),
+    title: new FormControl('', { validators: Validators.required, updateOn: 'blur' })
+  }, { updateOn: 'submit' });
 
   // Form validation
   urlImageValidator(control: FormControl): { [key: string]: any } | null {
@@ -40,6 +40,9 @@ export class MetaComponent {
           alert('Error al crear el usuario:' + error);  // Manejo del error
         }
       });
+    }
+    else {
+      this.form.markAllAsTouched();
     }
   }
 
