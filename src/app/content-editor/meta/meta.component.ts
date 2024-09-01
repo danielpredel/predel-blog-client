@@ -15,8 +15,8 @@ export class MetaComponent {
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private postService: PostService) { }
 
   form = new FormGroup({
-    image: new FormControl('', { validators: [Validators.required, this.urlImageValidator], updateOn: 'blur' }),
-    title: new FormControl('', { validators: Validators.required, updateOn: 'blur' })
+    image: new FormControl('', { validators: [Validators.required, this.urlImageValidator], updateOn: 'change' }),
+    title: new FormControl('', { validators: Validators.required, updateOn: 'change' })
   }, { updateOn: 'submit' });
 
   // Form validation
@@ -37,7 +37,7 @@ export class MetaComponent {
           this.toEditor(response.postId)
         },
         error: (error) => {
-          alert('Error al crear el usuario:' + error);  // Manejo del error
+          alert('Error al crear el post:' + error);
         }
       });
     }
