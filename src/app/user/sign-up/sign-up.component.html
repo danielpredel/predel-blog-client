@@ -1,0 +1,323 @@
+<div
+  class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
+>
+  <form
+    [formGroup]="form"
+    class="uk-form-stacked form-sign-up"
+    (ngSubmit)="onSubmit()"
+  >
+    <fieldset class="uk-fieldset">
+      <legend class="uk-legend">Sign Up</legend>
+      <!-- name -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="name">Name</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="name"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger':
+                !form.get('name')?.valid && form.get('name')?.touched,
+              'uk-form-success':
+                form.get('name')?.valid && form.get('name')?.touched
+            }"
+            id="name"
+            type="text"
+            placeholder="John"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('name')?.hasError('required') && form.get('name')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The name is required
+        </div>
+        <div
+          *ngIf="
+            form.get('name')?.hasError('whitespaceError') &&
+            form.get('name')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The name cannot contain only whitespace characters
+        </div>
+        <div
+          *ngIf="
+            form.get('name')?.hasError('minlength') && form.get('name')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The name must be at least 2 characters long
+        </div>
+        <div
+          *ngIf="
+            form.get('name')?.hasError('maxlength') && form.get('name')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The name cannot exceed 20 characters
+        </div>
+      </div>
+      <!-- lastname -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="lastname">Last Name</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="lastname"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger':
+                !form.get('lastname')?.valid && form.get('lastname')?.touched,
+              'uk-form-success':
+                form.get('lastname')?.valid && form.get('lastname')?.touched
+            }"
+            id="lastname"
+            type="text"
+            placeholder="Doe"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('lastname')?.hasError('required') &&
+            form.get('lastname')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The last name is required
+        </div>
+        <div
+          *ngIf="
+            form.get('lastname')?.hasError('whitespaceError') &&
+            form.get('lastname')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The last name cannot contain only whitespace characters
+        </div>
+        <div
+          *ngIf="
+            form.get('lastname')?.hasError('minlength') &&
+            form.get('lastname')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The last name must be at least 2 characters long
+        </div>
+        <div
+          *ngIf="
+            form.get('lastname')?.hasError('maxlength') &&
+            form.get('lastname')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The last name cannot exceed 30 characters
+        </div>
+      </div>
+      <!-- profile Image -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="image">Profile Image URL</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="image"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger':
+                !form.get('image')?.valid && form.get('image')?.touched,
+              'uk-form-success':
+                form.get('image')?.valid && form.get('image')?.touched
+            }"
+            id="image"
+            type="text"
+            placeholder="https://image-example.jpg"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('image')?.hasError('required') &&
+            form.get('image')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The Image is required
+        </div>
+        <div
+          *ngIf="
+            form.get('image')?.hasError('urlError') &&
+            form.get('image')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          Invalid URL, only jpg, jpeg, png, webp and svg formats
+        </div>
+      </div>
+      <!-- email -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="email">Email</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="email"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger':
+                !form.get('email')?.valid && form.get('email')?.touched,
+              'uk-form-success':
+                form.get('email')?.valid && form.get('email')?.touched
+            }"
+            id="email"
+            type="email"
+            placeholder="myemail@example.com"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('required') &&
+            form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The email is required
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('email') && form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          Please enter a valid email address
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('emailDomainError') &&
+            form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          Only google.com and outlook.com domains are allowed
+        </div>
+      </div>
+      <!-- password -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="password">Password</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="password"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger':
+                !form.get('password')?.valid && form.get('password')?.touched,
+              'uk-form-success':
+                form.get('password')?.valid && form.get('password')?.touched
+            }"
+            id="password"
+            type="password"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('password')?.hasError('required') &&
+            form.get('password')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The password is required
+        </div>
+        <div
+          *ngIf="
+            form.get('password')?.hasError('minlength') &&
+            form.get('password')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The password must be at least 8 characters long
+        </div>
+        <div
+          *ngIf="
+            form.get('password')?.hasError('minusError') &&
+            form.get('password')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The password must contain at least two lowercase letters
+        </div>
+        <div
+          *ngIf="
+            form.get('password')?.hasError('mayusError') &&
+            form.get('password')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The password must contain at least two uppercase letters
+        </div>
+        <div
+          *ngIf="
+            form.get('password')?.hasError('digitsError') &&
+            form.get('password')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The password must contain at least two digits
+        </div>
+        <div
+          *ngIf="
+            form.get('password')?.hasError('symbolsError') &&
+            form.get('password')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The password must contain at least two symbols
+        </div>
+      </div>
+      <!-- confirm password -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="confirmPassword"
+          >Confirm Password</label
+        >
+        <div class="uk-form-controls">
+          <input
+            formControlName="confirmPassword"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger':
+                (!form.get('confirmPassword')?.valid && form.get('confirmPassword')?.touched)
+                || (!form.get('password')?.valid && form.get('password')?.touched)
+                || form.errors?.['passwordMismatch'],
+              'uk-form-success':
+                form.get('confirmPassword')?.valid && form.get('confirmPassword')?.touched
+                && form.get('password')?.valid && form.get('password')?.touched
+                && !form.errors?.['passwordMismatch']
+            }"
+            id="confirmPassword"
+            type="password"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('confirmPassword')?.hasError('required') &&
+            form.get('confirmPassword')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The confirmation password is required
+        </div>
+        <div
+          *ngIf="
+            form.errors?.['passwordMismatch'] &&
+            form.get('confirmPassword')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The passwords don't match
+        </div>
+      </div>
+    </fieldset>
+    <div class="uk-clearfix">
+      <div class="uk-float-right">
+        <button class="uk-button uk-button-primary" type="submit">
+          Create Post
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
