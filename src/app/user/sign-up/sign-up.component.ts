@@ -33,7 +33,8 @@ export class SignUpComponent {
     // check unique email in API
     email: new FormControl('', {
       validators: [Validators.required, Validators.email, this.validatorService.emailDomain],
-      updateOn: 'change'
+      asyncValidators: [this.validatorService.availableEmail()],
+      updateOn: 'blur'
     }),
     password: new FormControl('', {
       validators: [Validators.required, Validators.minLength(8),

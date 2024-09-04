@@ -196,6 +196,24 @@
         >
           Only google.com and outlook.com domains are allowed
         </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('emailTaken') &&
+            form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          This email is already in use. Please choose a different one
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('emailError') &&
+            form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          An error occurred while validating the email. Please try again later
+        </div>
       </div>
       <!-- password -->
       <div class="uk-margin">
