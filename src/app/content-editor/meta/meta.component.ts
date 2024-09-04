@@ -2,8 +2,8 @@ import { NgClass, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PostService } from '../../shared/services/post.service';
 import { ValidatorsService } from '../../shared/services/validators.service';
+import { UserService } from '../../shared/services/user.service';
 
 @Component({
   selector: 'app-meta',
@@ -14,7 +14,7 @@ import { ValidatorsService } from '../../shared/services/validators.service';
 })
 export class MetaComponent {
   constructor(private router: Router, private activatedRoute: ActivatedRoute,
-    private postService: PostService, private validatorService: ValidatorsService) { }
+    private userService: UserService, private validatorService: ValidatorsService) { }
 
   form = new FormGroup({
     image: new FormControl('', {
@@ -28,7 +28,7 @@ export class MetaComponent {
     if (this.form.valid) {
       const title = this.form.get('title')?.value || '';
       const image = this.form.get('image')?.value || '';
-      this.postService.createPost(title, image).subscribe({
+      this.userService.createPost(title, image).subscribe({
         next: (response) => {
           this.toEditor(response.postId)
         },
