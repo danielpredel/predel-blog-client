@@ -2,6 +2,7 @@ import { NgClass, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidatorsService } from '../../shared/services/validators.service';
+import { UserService } from '../../shared/services/user.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -12,7 +13,7 @@ import { ValidatorsService } from '../../shared/services/validators.service';
 })
 export class SignUpComponent {
 
-  constructor(private validatorService: ValidatorsService) { }
+  constructor(private validatorService: ValidatorsService, private userService: UserService) { }
 
   form = new FormGroup({
     name: new FormControl('', {
@@ -51,6 +52,26 @@ export class SignUpComponent {
 
   onSubmit() {
     if (this.form.valid) {
+      const name = this.form.get('name')?.value || '';
+      const lastname = this.form.get('lastname')?.value || '';
+      const image = this.form.get('image')?.value || '';
+      const email = this.form.get('email')?.value || '';
+      const password = this.form.get('password')?.value || '';
+      const confirmPassword = this.form.get('confirmPassword')?.value || '';
+      this.userService.createUser(name, lastname, image, email, password, confirmPassword).subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Save token, image and verified in cookie
+          }
+          else {
+            alert(response.message)
+          }
+          // to home
+        },
+        error: (error) => {
+          alert('Error al crear el usuario:' + error);
+        }
+      });
     }
     else {
       this.form.markAllAsTouched();
