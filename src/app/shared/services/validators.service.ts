@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { catchError, map, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -101,6 +102,29 @@ export class ValidatorsService {
             { urlError: true };
         }),
         catchError(() => of({ urlError: true }))
+      );
+    };
+  }
+
+  availableEmail(): AsyncValidatorFn {
+    return (control: AbstractControl) => {
+      const value = control.value;
+
+      if (!value) {
+        return of(null);
+      }
+
+      const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+      const params = new HttpParams().set('email', value);
+
+      return this.http.get<any>(`${environment.baseUrl}/users/check-email`, { headers, params }).pipe(
+        map(response => {
+          if (response.success) {
+            return response.available ? null : { emailTaken: true };
+          }
+          return { emailError: true };
+        }),
+        catchError(() => of({ emailError: true }))
       );
     };
   }
