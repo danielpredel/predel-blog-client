@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../../shared/services/post.service';
+import { ValidatorsService } from '../../shared/services/validators.service';
 
 @Component({
   selector: 'app-meta',
@@ -12,21 +13,16 @@ import { PostService } from '../../shared/services/post.service';
   styleUrl: './meta.component.css'
 })
 export class MetaComponent {
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private postService: PostService) { }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute,
+    private postService: PostService, private validatorService: ValidatorsService) { }
 
   form = new FormGroup({
-    image: new FormControl('', { validators: [Validators.required, this.urlImageValidator], updateOn: 'change' }),
+    image: new FormControl('', {
+      validators: [Validators.required],
+      asyncValidators: [this.validatorService.imageUrl()], updateOn: 'blur'
+    }),
     title: new FormControl('', { validators: Validators.required, updateOn: 'change' })
   }, { updateOn: 'submit' });
-
-  // Form validation
-  urlImageValidator(control: FormControl): { [key: string]: any } | null {
-    const pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.(?:jpg|jpeg|png|gif|bmp|svg|webp)$/;
-    if (!pattern.test(control.value)) {
-      return { urlError: 'URL Error' };
-    }
-    return null;
-  }
 
   onSubmit() {
     if (this.form.valid) {

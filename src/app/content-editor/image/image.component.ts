@@ -1,6 +1,7 @@
 import { NgClass, NgIf } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ValidatorsService } from '../../shared/services/validators.service';
 
 @Component({
   selector: 'app-image',
@@ -17,8 +18,13 @@ export class ImageComponent {
   id: string = '';
   componentBefore: string = 'NONE';
 
+  constructor(private validatorService: ValidatorsService) { }
+
   srcForm = new FormGroup({
-    src: new FormControl('', { validators: [Validators.required, this.urlImageValidator], updateOn: 'change' })
+    src: new FormControl('', {
+      validators: [Validators.required],
+      asyncValidators: [this.validatorService.imageUrl()], updateOn: 'blur'
+    })
   });
 
   altForm = new FormGroup({
@@ -59,14 +65,5 @@ export class ImageComponent {
   getData() {
     let caption = this.capptionElement?.nativeElement.textContent || '';
     return { src: this.src, alt: this.alt, caption };
-  }
-
-  // Form validation
-  urlImageValidator(control: FormControl): { [key: string]: any } | null {
-    const pattern = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)\.(?:jpg|jpeg|png|gif|bmp|svg|webp)$/;
-    if (!pattern.test(control.value)) {
-      return { urlError: 'URL Error' };
-    }
-    return null;
   }
 }
