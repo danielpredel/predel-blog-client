@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidatorsService } from '../../shared/services/validators.service';
 import { UserService } from '../../shared/services/user.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -13,7 +15,8 @@ import { UserService } from '../../shared/services/user.service';
 })
 export class SignUpComponent {
 
-  constructor(private validatorService: ValidatorsService, private userService: UserService) { }
+  constructor(private validatorService: ValidatorsService, private userService: UserService,
+    private authService: AuthService, private router: Router) { }
 
   form = new FormGroup({
     name: new FormControl('', {
@@ -61,12 +64,12 @@ export class SignUpComponent {
       this.userService.createUser(name, lastname, image, email, password, confirmPassword).subscribe({
         next: (response) => {
           if (response.success) {
-            // Save token, image and verified in cookie
+            this.setSession(response.user.token, response.user.image, response.user.verified)
+            this.toHome()
           }
           else {
-            alert(response.message)
+            console.log(response)
           }
-          // to home
         },
         error: (error) => {
           alert('Error al crear el usuario:' + error);
@@ -76,5 +79,13 @@ export class SignUpComponent {
     else {
       this.form.markAllAsTouched();
     }
+  }
+
+  setSession(token: string, profileImageUrl: string, verified: boolean) {
+    this.authService.setSession(token, profileImageUrl, verified);
+  }
+
+  toHome() {
+    this.router.navigate(['/']);
   }
 }
