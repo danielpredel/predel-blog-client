@@ -1,6 +1,6 @@
 <nav class="uk-navbar-container">
   <div class="uk-container">
-    <div uk-navbar>
+    <div uk-navbar="mode: click">
       <div class="uk-navbar-left">
         <a
           [routerLink]="['']"
@@ -15,17 +15,16 @@
             <a [routerLink]="['editor/new']">
               <span
                 class="uk-icon uk-margin-small-right"
-                uk-icon="icon: file-edit"
+                uk-icon="icon: file-edit; ratio: 1.5"
               ></span>
-              Write
             </a>
           </li>
           <!-- If user is not logged this icon will be displayed -->
-          <li>
-            <a href="#">
+          <li *ngIf="!isLogged()">
+            <a>
               <span
                 class="uk-icon uk-margin-small-right"
-                uk-icon="icon: user"
+                uk-icon="icon: user; ratio: 1.5"
               ></span>
             </a>
             <div class="uk-navbar-dropdown">
@@ -34,7 +33,7 @@
                   <a [routerLink]="['user/sign-up']">
                     <span
                       class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: user"
+                      uk-icon="icon: user; ratio: 1.5"
                     ></span
                     >Sign Up</a
                   >
@@ -43,8 +42,7 @@
                   <a [routerLink]="['user/login']">
                     <span
                       class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: sign-in
-                      "
+                      uk-icon="icon: sign-in; ratio: 1.5"
                     ></span
                     >Log In</a
                   >
@@ -53,61 +51,47 @@
             </div>
           </li>
           <!-- Otherwise if the user is logged, a profile image or icon will be displayed instead -->
-          <li>
-            <div class="uk-navbar-item">
-              <img
-                class="uk-border-circle"
-                src="https://i.pinimg.com/originals/61/81/82/61818281abfbfbe67eefb6b59a87941e.jpg"
-                width="50"
-                height="50"
-                alt="Border circle"
-              />
-            </div>
-            <div class="uk-navbar-dropdown">
-              <ul class="uk-nav uk-navbar-dropdown-nav">
-                <li>
-                  <a href="#">
-                    <span
-                      class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: user"
-                    ></span
-                    >Profile</a
-                  >
-                </li>
-                <!-- <li>
-                  <a href="#">
-                    <span
-                      class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: bookmark
-                      "
-                    ></span
-                    >Saved</a
-                  >
-                </li> -->
-                <li>
-                  <a href="#">
-                    <span
-                      class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: album
-                      "
-                    ></span
-                    >Library</a
-                  >
-                </li>
-                <li class="uk-nav-divider"></li>
-                <li>
-                  <a href="#">
-                    <span
-                      class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: sign-out
-                      "
-                    ></span
-                    >Log Out</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </li>
+          <ng-container *ngIf="isLogged()">
+            <li>
+              <div class="uk-navbar-item">
+                <div class="image-container">
+                  <img [src]="getProfileImageUrl()" alt="Profile Image" />
+                </div>
+              </div>
+              <div class="uk-navbar-dropdown">
+                <ul class="uk-nav uk-navbar-dropdown-nav">
+                  <li>
+                    <a>
+                      <span
+                        class="uk-icon uk-margin-small-right"
+                        uk-icon="icon: user; ratio: 1.5"
+                      ></span
+                      >Profile</a
+                    >
+                  </li>
+                  <li>
+                    <a>
+                      <span
+                        class="uk-icon uk-margin-small-right"
+                        uk-icon="icon: album; ratio: 1.5"
+                      ></span
+                      >Library</a
+                    >
+                  </li>
+                  <li class="uk-nav-divider"></li>
+                  <li (click)="logout()">
+                    <a>
+                      <span
+                        class="uk-icon uk-margin-small-right"
+                        uk-icon="icon: sign-out; ratio: 1.5"
+                      ></span
+                      >Log Out</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ng-container>
         </ul>
       </div>
     </div>
