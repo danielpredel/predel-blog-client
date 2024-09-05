@@ -11,45 +11,59 @@
       </div>
       <div class="uk-navbar-right">
         <ul class="uk-navbar-nav">
-          <li>
-            <a [routerLink]="['editor/new']">
-              <span
-                class="uk-icon uk-margin-small-right"
-                uk-icon="icon: file-edit; ratio: 1.5"
-              ></span>
-            </a>
-          </li>
+          <ng-container  *ngIf="!isLogged()">
+            <li>
+              <a [routerLink]="['editor/trial-mode']">
+                <span
+                  class="uk-icon uk-margin-small-right"
+                  uk-icon="icon: file-edit; ratio: 1.5"
+                ></span>
+              </a>
+            </li>
+          </ng-container>
+          <ng-container *ngIf="isLogged()">
+            <li>
+              <a [routerLink]="['editor/new']">
+                <span
+                  class="uk-icon uk-margin-small-right"
+                  uk-icon="icon: file-edit; ratio: 1.5"
+                ></span>
+              </a>
+            </li>
+          </ng-container>
           <!-- If user is not logged this icon will be displayed -->
-          <li *ngIf="!isLogged()">
-            <a>
-              <span
-                class="uk-icon uk-margin-small-right"
-                uk-icon="icon: user; ratio: 1.5"
-              ></span>
-            </a>
-            <div class="uk-navbar-dropdown">
-              <ul class="uk-nav uk-navbar-dropdown-nav">
-                <li>
-                  <a [routerLink]="['user/sign-up']">
-                    <span
-                      class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: user; ratio: 1.5"
-                    ></span
-                    >Sign Up</a
-                  >
-                </li>
-                <li>
-                  <a [routerLink]="['user/login']">
-                    <span
-                      class="uk-icon uk-margin-small-right"
-                      uk-icon="icon: sign-in; ratio: 1.5"
-                    ></span
-                    >Log In</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </li>
+          <ng-container *ngIf="!isLogged()">
+            <li>
+              <a>
+                <span
+                  class="uk-icon uk-margin-small-right"
+                  uk-icon="icon: user; ratio: 1.5"
+                ></span>
+              </a>
+              <div class="uk-navbar-dropdown">
+                <ul class="uk-nav uk-navbar-dropdown-nav">
+                  <li>
+                    <a [routerLink]="['user/sign-up']">
+                      <span
+                        class="uk-icon uk-margin-small-right"
+                        uk-icon="icon: user; ratio: 1.5"
+                      ></span
+                      >Sign Up</a
+                    >
+                  </li>
+                  <li>
+                    <a [routerLink]="['user/login']">
+                      <span
+                        class="uk-icon uk-margin-small-right"
+                        uk-icon="icon: sign-in; ratio: 1.5"
+                      ></span
+                      >Log In</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ng-container>
           <!-- Otherwise if the user is logged, a profile image or icon will be displayed instead -->
           <ng-container *ngIf="isLogged()">
             <li>
