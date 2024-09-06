@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './shared/services/auth.service';
 import { NgIf } from '@angular/common';
 
@@ -11,17 +11,22 @@ import { NgIf } from '@angular/common';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
-  isLogged(){
+  isLogged() {
     return this.authService.isLogged();
   }
 
-  getProfileImageUrl(){
+  getProfileImageUrl() {
     return this.authService.getProfileImageUrl();
   }
 
-  logout(){
+  logout() {
     this.authService.clearSession();
+    this.toHome();
+  }
+
+  toHome() {
+    this.router.navigate(['/']);
   }
 }
