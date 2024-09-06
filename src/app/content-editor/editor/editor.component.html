@@ -3,14 +3,36 @@
   <div
     class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
   >
+    <ng-container *ngIf="!isLogged()">
+      <div class="uk-alert-warning" uk-alert>
+        <a href class="uk-alert-close" uk-close></a>
+        <p>
+          The editor is currently in trial mode. Please register to publish your posts
+        </p>
+      </div>
+    </ng-container>
     <article id="editor-container" class="uk-article editor">
       <ng-container #container></ng-container>
     </article>
-    <div class="uk-clearfix">
-      <div class="uk-float-right">
-        <button class="uk-button uk-button-secondary" (click)="saveAsDraft()">Save as Draft</button>
-        <button class="uk-button uk-button-primary" (click)="publish()">Publish</button>
+    <ng-container *ngIf="isLogged()">
+      <div class="uk-clearfix">
+        <div class="uk-float-right">
+          <!-- <button class="uk-button uk-button-secondary" (click)="saveAsDraft()">
+            Save as Draft
+          </button> -->
+          <button class="uk-button uk-button-primary" (click)="publish()">
+            Publish
+          </button>
+        </div>
       </div>
-    </div>
+    </ng-container>
+
+    <ng-container *ngIf="!isLogged()">
+      <div class="uk-clearfix">
+        <div class="uk-float-right">
+          <button class="uk-button uk-button-primary">Join Now</button>
+        </div>
+      </div>
+    </ng-container>
   </div>
 </div>

@@ -6,6 +6,8 @@ import { TextComponent } from "../text/text.component";
 import { ListComponent } from '../list/list.component';
 import { ImageComponent } from "../image/image.component";
 import { CodeSnippetComponent } from '../code-snippet/code-snippet.component';
+import { AuthService } from '../../shared/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-editor',
@@ -24,14 +26,26 @@ export class EditorComponent {
   private componentsIds: Array<string> = [];
   private lastFocusedComponent: number = 0;
 
-  constructor(private idService: StaticIdService) { }
+  postId: string = '';
+
+  constructor(private idService: StaticIdService, private authService: AuthService,
+    private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     // Get the post id
+    this.activatedRoute.paramMap.subscribe(params => {
+      this.postId = params.get('id') || '';
+    });
+    if(this.postId !== 'trial-mode'){
+      // make request
+    }
     // Depending on the requests answer:
+    // + 
     // + New:   body will be empty  -> newPostRender()
     // + Edit:  body will have data -> editPostRender()
-    // + 403:   forbiden go to main page or not found
+    // + 401:   unauthorized go to main page
+    // + 403:   forbiden go to main page
+    // + 404:   not found go to main page
     this.renderNewPost();
   }
 
@@ -189,6 +203,10 @@ export class EditorComponent {
   publish() {
     let data = this.getData();
     console.log(data);
+  }
+
+  isLogged() {
+    return this.authService.isLogged();
   }
 
   // Text Component Functions
