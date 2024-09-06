@@ -1,1 +1,96 @@
-<p>login works!</p>
+<div
+  class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
+>
+  <ng-container *ngIf="loginStatus == 'INVALID'">
+    <div class="uk-alert-danger alert" uk-alert>
+      <p>Invalid email or password. Please try again</p>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="loginStatus == 'ERROR'">
+    <div class="uk-alert-danger alert" uk-alert>
+      <p>An error has ocurred. Please try again later</p>
+    </div>
+  </ng-container>
+  <form
+    [formGroup]="form"
+    class="uk-form-stacked form-login"
+    (ngSubmit)="onSubmit()"
+  >
+    <fieldset class="uk-fieldset">
+      <legend class="uk-legend">Log In</legend>
+      <!-- email -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="email">Email</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="email"
+            class="uk-input"
+            [ngClass]="{
+              'uk-form-danger':
+                !form.get('email')?.valid && form.get('email')?.touched,
+              'uk-form-success':
+                form.get('email')?.valid && form.get('email')?.touched
+            }"
+            id="email"
+            type="email"
+            placeholder="myemail@example.com"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('required') &&
+            form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The email is required
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('email') && form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          Please enter a valid email address
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('emailDomainError') &&
+            form.get('email')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          Only google.com and outlook.com domains are allowed
+        </div>
+      </div>
+      <!-- password -->
+      <div class="uk-margin">
+        <label class="uk-form-label" for="password">Password</label>
+        <div class="uk-form-controls">
+          <input
+            formControlName="password"
+            class="uk-input"
+            id="password"
+            type="password"
+          />
+        </div>
+        <div
+          *ngIf="
+            form.get('password')?.hasError('required') &&
+            form.get('password')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The password is required
+        </div>
+      </div>
+    </fieldset>
+    <div class="uk-clearfix">
+      <div class="uk-float-right">
+        <button class="uk-button uk-button-primary" type="submit">
+          Log In
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
