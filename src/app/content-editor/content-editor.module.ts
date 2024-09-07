@@ -8,7 +8,7 @@ import { MetaComponent } from './meta/meta.component';
 const routes: Routes = [
   { path: '', redirectTo: '/', pathMatch: 'full' }, // redirect to root 
   { path: 'new', title: 'New Post', component: MetaComponent },
-  { path: ':post-id', title: 'Editor', component: EditorComponent }
+  { path: ':id', title: 'Editor', component: EditorComponent }
 ];
 
 @NgModule({
