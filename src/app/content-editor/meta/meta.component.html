@@ -1,6 +1,13 @@
 <div
   class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
 >
+  <ng-container *ngIf="sessionEnded">
+    <div class="uk-alert-danger alert" uk-alert>
+      <p>
+        Your session has expired. You will be redirected to the login page
+      </p>
+    </div>
+  </ng-container>
   <form
     [formGroup]="form"
     class="uk-form-stacked form-new"
