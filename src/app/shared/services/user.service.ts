@@ -33,6 +33,20 @@ export class UserService {
     const body = new HttpParams()
       .set('title', title)
       .set('image', image);
-    return this.http.post<any>(this.url + '/posts', body, { headers });
+    return this.http.post<any>(`${this.url}/posts`, body, { headers });
+  }
+
+  getPost(id: string) {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    });
+    return this.http.get<any>(`${this.url}/posts/${id}`, { headers });
+  }
+
+  updatePost(id: string, body: Array<any>, hidden: boolean) {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    });
+    return this.http.patch<any>(`${this.url}/posts/${id}`, { body, hidden }, { headers });
   }
 }
