@@ -3,9 +3,12 @@
 >
   <ng-container *ngIf="sessionEnded">
     <div class="uk-alert-danger alert" uk-alert>
-      <p>
-        Your session has expired. You will be redirected to the login page
-      </p>
+      <p>Your session has expired. You will be redirected to the login page</p>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="serverError">
+    <div class="uk-alert-danger alert" uk-alert>
+      <p>Something went wrong. Please try again later</p>
     </div>
   </ng-container>
   <form

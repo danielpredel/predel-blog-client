@@ -15,6 +15,7 @@ import { AuthService } from '../../shared/services/auth.service';
 })
 export class MetaComponent {
   sessionEnded: boolean = false;
+  serverError: boolean = false;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute,
     private userService: UserService, private validatorService: ValidatorsService,
@@ -41,9 +42,22 @@ export class MetaComponent {
           this.toEditor(response.postId);
         },
         error: (error) => {
-          this.sessionEnded = true;
-          this.authService.clearSession();
-          setTimeout(() => this.toLogin(), 5000);
+          switch (error.status) {
+            case 400:
+              this.toHome();
+              break;
+            case 401:
+              this.sessionEnded = true;
+              this.authService.clearSession();
+              setTimeout(() => this.toLogin(), 5000);
+              break;
+            case 404:
+              this.toHome();
+              break;
+            case 500:
+              this.serverError = true;
+              break;
+          }
         }
       });
     }
@@ -58,5 +72,9 @@ export class MetaComponent {
 
   toLogin() {
     this.router.navigate(['/user/login']);
+  }
+
+  toHome() {
+    this.router.navigate(['/']);
   }
 }
