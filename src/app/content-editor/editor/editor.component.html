@@ -7,13 +7,28 @@
       <div class="uk-alert-warning" uk-alert>
         <a href class="uk-alert-close" uk-close></a>
         <p>
-          The editor is currently in trial mode. Please register to publish your posts
+          The editor is currently in trial mode. Please register to publish your
+          posts
         </p>
       </div>
     </ng-container>
     <article id="editor-container" class="uk-article editor">
+      <!-- Title -->
+      <h1 class="title">{{ postTitle }}</h1>
       <ng-container #container></ng-container>
     </article>
+    <ng-container *ngIf="publishStatus == 'SUCCESS'">
+      <div class="uk-alert-success" uk-alert>
+        <a href class="uk-alert-close" uk-close></a>
+        <p>Your post has been successfully updated. Let's take you home</p>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="publishStatus == 'ERROR'">
+      <div class="uk-alert-danger" uk-alert>
+        <a href class="uk-alert-close" uk-close></a>
+        <p>Something went wrong. Please try again later</p>
+      </div>
+    </ng-container>
     <ng-container *ngIf="isLogged()">
       <div class="uk-clearfix">
         <div class="uk-float-right">

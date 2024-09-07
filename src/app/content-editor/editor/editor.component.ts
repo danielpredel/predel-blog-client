@@ -7,7 +7,8 @@ import { ListComponent } from '../list/list.component';
 import { ImageComponent } from "../image/image.component";
 import { CodeSnippetComponent } from '../code-snippet/code-snippet.component';
 import { AuthService } from '../../shared/services/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from '../../shared/services/user.service';
 
 @Component({
   selector: 'app-editor',
@@ -27,26 +28,43 @@ export class EditorComponent {
   private lastFocusedComponent: number = 0;
 
   postId: string = '';
+  postTitle: string = '';
+  postHidden: boolean = true;
+  publishStatus: string = '';
 
   constructor(private idService: StaticIdService, private authService: AuthService,
-    private activatedRoute: ActivatedRoute) { }
+    private router: Router, private activatedRoute: ActivatedRoute, private userService: UserService) { }
 
   ngOnInit() {
     // Get the post id
     this.activatedRoute.paramMap.subscribe(params => {
       this.postId = params.get('id') || '';
+      if (this.postId !== 'trial-mode') {
+        this.userService.getPost(this.postId).subscribe({
+          next: (response) => {
+            if (response.success) {
+              const post = response.post;
+              this.postTitle = post.title;
+              this.postHidden = post.hidden;
+              const data = post.body as Array<any>;
+              if (data.length > 0) {
+                this.setData(data);
+              }
+              else {
+                this.renderNewPost();
+              }
+            }
+          },
+          error: (error) => {
+            setTimeout(() => this.toHome(), 3000);
+          }
+        });
+      }
+      else {
+        this.postTitle = 'Trial Mode'
+        this.renderNewPost();
+      }
     });
-    if(this.postId !== 'trial-mode'){
-      // make request
-    }
-    // Depending on the requests answer:
-    // + 
-    // + New:   body will be empty  -> newPostRender()
-    // + Edit:  body will have data -> editPostRender()
-    // + 401:   unauthorized go to main page
-    // + 403:   forbiden go to main page
-    // + 404:   not found go to main page
-    this.renderNewPost();
   }
 
   // Event Functions
@@ -98,6 +116,34 @@ export class EditorComponent {
         }
       }
     });
+  }
+
+  setData(data: Array<any>) {
+    data.forEach((element, index) => {
+      switch (element.type) {
+        case 'TITLE':
+          this.addTextComponent(index, element.data, element.type);
+          break;
+        case 'SUBTITLE':
+          this.addTextComponent(index, element.data, element.type);
+          break;
+        case 'PARAGRAPH':
+          this.addTextComponent(index, element.data, element.type);
+          break;
+        case 'OL':
+          this.addListComponent(index, element.type, element.data, true);
+          break;
+        case 'UL':
+          this.addListComponent(index, element.type, element.data, true);
+          break;
+        case 'IMAGE':
+          this.addImageComponent(index, element.data);
+          break;
+        case 'CODE-SNIPPET':
+          this.addCodeSnippetComponent(index, element.data);
+          break;
+      }
+    })
   }
 
   // Getters
@@ -193,7 +239,7 @@ export class EditorComponent {
   }
 
   renderNewPost() {
-    this.addTextComponent(0, [], 'TITLE');
+    this.addTextComponent(0, []);
   }
 
   saveAsDraft() {
@@ -202,11 +248,29 @@ export class EditorComponent {
 
   publish() {
     let data = this.getData();
-    console.log(data);
+    this.userService.updatePost(this.postId, data, false).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.publishStatus = 'SUCCESS';
+          this.toHome();
+        }
+        else {
+          this.publishStatus = 'ERROR';
+        }
+      },
+      error: (error) => {
+        this.publishStatus = 'ERROR';
+      }
+    });
+
   }
 
   isLogged() {
     return this.authService.isLogged();
+  }
+
+  toHome() {
+    this.router.navigate(['/']);
   }
 
   // Text Component Functions
