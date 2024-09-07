@@ -34,6 +34,33 @@
         >
           The Title is required
         </div>
+        <div
+          *ngIf="
+            form.get('title')?.hasError('whitespaceError') &&
+            form.get('title')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The title cannot contain only whitespace characters
+        </div>
+        <div
+          *ngIf="
+            form.get('title')?.hasError('minlength') &&
+            form.get('title')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The title must be at least 5 characters long
+        </div>
+        <div
+          *ngIf="
+            form.get('title')?.hasError('maxlength') &&
+            form.get('title')?.touched
+          "
+          class="uk-text-meta uk-text-danger"
+        >
+          The title cannot exceed 100 characters
+        </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="image">Cover Image URL</label>
@@ -68,7 +95,8 @@
           "
           class="uk-text-meta uk-text-danger"
         >
-          The provided URL does not point to a valid image or the image is protected
+          The provided URL does not point to a valid image or the image is
+          protected
         </div>
       </div>
     </fieldset>

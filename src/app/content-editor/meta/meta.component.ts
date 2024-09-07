@@ -17,11 +17,14 @@ export class MetaComponent {
     private userService: UserService, private validatorService: ValidatorsService) { }
 
   form = new FormGroup({
+    title: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(5),
+      Validators.maxLength(100), this.validatorService.noWhitespace], updateOn: 'change'
+    }),
     image: new FormControl('', {
       validators: [Validators.required],
       asyncValidators: [this.validatorService.imageUrl()], updateOn: 'blur'
-    }),
-    title: new FormControl('', { validators: Validators.required, updateOn: 'change' })
+    })
   }, { updateOn: 'submit' });
 
   onSubmit() {
