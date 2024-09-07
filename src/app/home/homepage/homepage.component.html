@@ -1,4 +1,47 @@
-<p>homepage works!</p>
-<app-blog-entry></app-blog-entry>
-<app-blog-entry></app-blog-entry>
-<app-blog-entry></app-blog-entry>
+<div class="home-container">
+  <div
+    class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
+  >
+    @for (post of posts; track $index) {
+    <div
+      class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin"
+      uk-grid
+    >
+      <div
+        [ngClass]="{
+          'uk-card-media-left': $index % 2 === 0,
+          'uk-flex-last@s uk-card-media-right': $index % 2 !== 0
+        }"
+        class="uk-cover-container"
+      >
+        <img [src]="post.image" alt="" loading="lazy" uk-cover />
+        <canvas width="600" height="400"></canvas>
+      </div>
+      <div>
+        <div class="uk-card-body">
+          <div class="uk-grid-small uk-flex-middle" uk-grid>
+            <div class="uk-width-auto">
+              <img
+                class="uk-border-circle"
+                width="40"
+                height="40"
+                [src]="post.authorsImage"
+                alt="Avatar"
+                loading="lazy"
+              />
+            </div>
+            <div class="uk-width-expand">
+              <p>
+                {{ post.author }}
+              </p>
+            </div>
+          </div>
+          <h3 class="uk-card-title uk-margin-remove-bottom">
+            {{ post.title }}
+          </h3>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
