@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class UserService {
 
   url = environment.baseUrl + '/users'
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   createUser(name: string, lastname: string, image: string,
     email: string, password: string, confirmPassword: string) {
@@ -25,7 +26,10 @@ export class UserService {
   }
 
   createPost(title: string, image: string) {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    });
     const body = new HttpParams()
       .set('title', title)
       .set('image', image);
