@@ -12,32 +12,39 @@
         </p>
       </div>
     </ng-container>
+    <ng-container *ngIf="sessionEnded">
+      <div class="uk-alert-danger alert" uk-alert>
+        <p>
+          Your session has expired. You will be redirected to the login page
+        </p>
+      </div>
+    </ng-container>
     <article id="editor-container" class="uk-article editor">
       <!-- Title -->
       <h1 class="title">{{ postTitle }}</h1>
       <ng-container #container></ng-container>
     </article>
-    <ng-container *ngIf="publishStatus == 'SUCCESS'">
+    <ng-container *ngIf="publishSuccess">
       <div class="uk-alert-success" uk-alert>
-        <a href class="uk-alert-close" uk-close></a>
-        <p>Your post has been successfully updated. Let's take you home</p>
+        <p>Your post has been successfully updated</p>
       </div>
     </ng-container>
-    <ng-container *ngIf="publishStatus == 'ERROR'">
+    <ng-container *ngIf="serverError">
       <div class="uk-alert-danger" uk-alert>
-        <a href class="uk-alert-close" uk-close></a>
         <p>Something went wrong. Please try again later</p>
       </div>
     </ng-container>
     <ng-container *ngIf="isLogged()">
       <div class="uk-clearfix">
         <div class="uk-float-right">
-          <!-- <button class="uk-button uk-button-secondary" (click)="saveAsDraft()">
-            Save as Draft
-          </button> -->
-          <button class="uk-button uk-button-primary" (click)="publish()">
-            Publish
+          <button class="uk-button uk-button-secondary" (click)="save()">
+            Save
           </button>
+          <ng-container *ngIf="postHidden">
+            <button class="uk-button uk-button-primary" (click)="save(false)">
+              Publish
+            </button>
+          </ng-container>
         </div>
       </div>
     </ng-container>
@@ -45,7 +52,9 @@
     <ng-container *ngIf="!isLogged()">
       <div class="uk-clearfix">
         <div class="uk-float-right">
-          <button class="uk-button uk-button-primary">Join Now</button>
+          <button class="uk-button uk-button-primary" (click)="toSignUp()">
+            Join Now
+          </button>
         </div>
       </div>
     </ng-container>

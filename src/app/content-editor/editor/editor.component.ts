@@ -30,7 +30,9 @@ export class EditorComponent {
   postId: string = '';
   postTitle: string = '';
   postHidden: boolean = true;
-  publishStatus: string = '';
+  sessionEnded: boolean = false;
+  serverError: boolean = false;
+  publishSuccess: boolean = false;
 
   constructor(private idService: StaticIdService, private authService: AuthService,
     private router: Router, private activatedRoute: ActivatedRoute, private userService: UserService) { }
@@ -40,25 +42,47 @@ export class EditorComponent {
     this.activatedRoute.paramMap.subscribe(params => {
       this.postId = params.get('id') || '';
       if (this.postId !== 'trial-mode') {
-        this.userService.getPost(this.postId).subscribe({
-          next: (response) => {
-            if (response.success) {
-              const post = response.post;
-              this.postTitle = post.title;
-              this.postHidden = post.hidden;
-              const data = post.body as Array<any>;
-              if (data.length > 0) {
-                this.setData(data);
+        if (this.isLogged()) {
+          this.userService.getPost(this.postId).subscribe({
+            next: (response) => {
+              if (response.success) {
+                const post = response.post;
+                this.postTitle = post.title;
+                this.postHidden = post.hidden;
+                const data = post.body as Array<any>;
+                if (data.length > 0) {
+                  this.setData(data);
+                }
+                else {
+                  this.renderNewPost();
+                }
               }
-              else {
-                this.renderNewPost();
+            },
+            error: (error) => {
+              switch (error.status) {
+                case 400:
+                  this.toHome();
+                  break;
+                case 401:
+                  this.sessionEnded = true;
+                  setTimeout(() => {
+                    this.authService.clearSession();
+                    this.toLogin()
+                  }, 5000);
+                  break;
+                case 404:
+                  this.toHome();
+                  break;
+                case 500:
+                  this.serverError = true;
+                  break;
               }
             }
-          },
-          error: (error) => {
-            setTimeout(() => this.toHome(), 3000);
-          }
-        });
+          });
+        }
+        else {
+          this.toHome();
+        }
       }
       else {
         this.postTitle = 'Trial Mode'
@@ -242,27 +266,37 @@ export class EditorComponent {
     this.addTextComponent(0, []);
   }
 
-  saveAsDraft() {
+  save(hidden: boolean = this.postHidden) {
     let data = this.getData();
-  }
-
-  publish() {
-    let data = this.getData();
-    this.userService.updatePost(this.postId, data, false).subscribe({
+    this.userService.updatePost(this.postId, data, hidden).subscribe({
       next: (response) => {
-        if (response.success) {
-          this.publishStatus = 'SUCCESS';
-          this.toHome();
-        }
-        else {
-          this.publishStatus = 'ERROR';
-        }
+        this.postHidden = hidden;
+        this.publishSuccess = true;
+        setTimeout(() => {
+          this.publishSuccess = false
+        }, 5000);
       },
       error: (error) => {
-        this.publishStatus = 'ERROR';
+        switch (error.status) {
+          case 400:
+            this.toHome();
+            break;
+          case 401:
+            this.sessionEnded = true;
+            setTimeout(() => {
+              this.authService.clearSession();
+              this.toLogin()
+            }, 5000);
+            break;
+          case 404:
+            this.toHome();
+            break;
+          case 500:
+            this.serverError = true;
+            break;
+        }
       }
     });
-
   }
 
   isLogged() {
@@ -271,6 +305,14 @@ export class EditorComponent {
 
   toHome() {
     this.router.navigate(['/']);
+  }
+
+  toLogin() {
+    this.router.navigate(['/user/login']);
+  }
+
+  toSignUp() {
+    this.router.navigate(['/user/sign-up']);
   }
 
   // Text Component Functions

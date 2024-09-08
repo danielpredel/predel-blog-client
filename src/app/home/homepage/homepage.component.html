@@ -2,6 +2,21 @@
   <div
     class="uk-container uk-container-small uk-margin-auto uk-margin-auto-vertical uk-width-4-5@s uk-width-3-5@m"
   >
+    <ng-container *ngIf="loading">
+      <div class="uk-alert-primary" uk-alert>
+        <p>Loading posts. Please wait</p>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="error">
+      <div class="uk-alert-danger" uk-alert>
+        <p>Something went wrong. Please try again later"</p>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="posts?.length == 0 && !loading">
+      <div class="uk-alert-primary" uk-alert>
+        <p>No posts available at the moment</p>
+      </div>
+    </ng-container>
     @for (post of posts; track $index) {
     <div
       class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin"
@@ -21,14 +36,13 @@
         <div class="uk-card-body">
           <div class="uk-grid-small uk-flex-middle" uk-grid>
             <div class="uk-width-auto">
-              <img
-                class="uk-border-circle"
-                width="40"
-                height="40"
-                [src]="post.authorsImage"
-                alt="Avatar"
-                loading="lazy"
-              />
+              <div class="image-container">
+                <img
+                  [src]="post.authorImage"
+                  alt="Profile Image"
+                  loading="lazy"
+                />
+              </div>
             </div>
             <div class="uk-width-expand">
               <p>
@@ -37,7 +51,12 @@
             </div>
           </div>
           <h3 class="uk-card-title uk-margin-remove-bottom">
-            {{ post.title }}
+            <a
+              class="uk-link-text"
+              (click)="toPost(post._id)"
+            >
+              {{ post.title }}</a
+            >
           </h3>
         </div>
       </div>
