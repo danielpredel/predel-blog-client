@@ -3,6 +3,7 @@ import { PostService } from '../../shared/services/post.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TextComponent } from '../text/text.component';
 import { ListComponent } from '../list/list.component';
+import { ImageComponent } from '../image/image.component';
 
 @Component({
   selector: 'app-blog-entry',
@@ -82,9 +83,9 @@ export class BlogEntryComponent {
         case 'UL':
           this.addListComponent(index, element.type, element.data, true);
           break;
-        // case 'IMAGE':
-        //   this.addImageComponent(index, element.data);
-        //   break;
+        case 'IMAGE':
+          this.addImageComponent(index, element.data);
+          break;
         // case 'CODE-SNIPPET':
         //   this.addCodeSnippetComponent(index, element.data);
         //   break;
@@ -104,7 +105,6 @@ export class BlogEntryComponent {
     }, 0);
   }
 
-
   addListComponent(index: number, type: string, data: Array<any> = [], renderMode: boolean = false) {
     const componentRef = this.container.createComponent(ListComponent, { index });
 
@@ -119,5 +119,12 @@ export class BlogEntryComponent {
     }, 0);
   }
 
+  addImageComponent(index: number, data: any) {
+    const componentRef = this.container.createComponent(ImageComponent, { index });
 
+    // Send the init data in case there's any
+    setTimeout(() => {
+      componentRef.instance.setData(data);
+    }, 0);
+  }
 }
