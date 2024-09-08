@@ -2,6 +2,7 @@ import { Component, ViewChild, ViewContainerRef } from '@angular/core';
 import { PostService } from '../../shared/services/post.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TextComponent } from '../text/text.component';
+import { ListComponent } from '../list/list.component';
 
 @Component({
   selector: 'app-blog-entry',
@@ -75,12 +76,12 @@ export class BlogEntryComponent {
         case 'PARAGRAPH':
           this.addTextComponent(index, element.data, element.type);
           break;
-        // case 'OL':
-        //   this.addListComponent(index, element.type, element.data, true);
-        //   break;
-        // case 'UL':
-        //   this.addListComponent(index, element.type, element.data, true);
-        //   break;
+        case 'OL':
+          this.addListComponent(index, element.type, element.data, true);
+          break;
+        case 'UL':
+          this.addListComponent(index, element.type, element.data, true);
+          break;
         // case 'IMAGE':
         //   this.addImageComponent(index, element.data);
         //   break;
@@ -102,5 +103,21 @@ export class BlogEntryComponent {
       componentRef.instance.setData(data);
     }, 0);
   }
+
+
+  addListComponent(index: number, type: string, data: Array<any> = [], renderMode: boolean = false) {
+    const componentRef = this.container.createComponent(ListComponent, { index });
+
+    // Send the init data in case there's any
+    setTimeout(() => {
+      if (type == 'OL') {
+        componentRef.instance.changeTypeToOrdered();
+      }
+      if (data.length > 0) {
+        componentRef.instance.setData(data);
+      }
+    }, 0);
+  }
+
 
 }
