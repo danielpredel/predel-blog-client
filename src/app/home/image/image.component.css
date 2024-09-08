@@ -1,0 +1,11 @@
+.image-container {
+  position: relative;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.figure img {
+  max-width: 100%;
+  padding: 0px;
+  margin-bottom: 10px;
+}

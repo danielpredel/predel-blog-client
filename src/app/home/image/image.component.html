@@ -1,1 +1,13 @@
-<p>image works!</p>
+<div class="image-container">
+  <figure class="uk-container figure">
+    <img
+      [src]="src"
+      [alt]="alt"
+      class="uk-width-1-1 uk-align-center"
+      loading="lazy"
+    />
+    <figcaption class="uk-text-meta uk-text-center image-caption">
+      {{ caption }}
+    </figcaption>
+  </figure>
+</div>

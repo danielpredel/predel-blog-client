@@ -8,5 +8,13 @@ import { Component } from '@angular/core';
   styleUrl: './image.component.css'
 })
 export class ImageComponent {
+  src: string = '';
+  alt: string = '';
+  caption: string = '';
 
+  setData(data: any) {
+    this.src = data.src;
+    this.alt = data.alt;
+    this.caption = data.caption;
+  }
 }
