@@ -10,4 +10,8 @@ export class PostService {
   url = environment.baseUrl + '/posts'
 
   constructor(private http: HttpClient) { }
+
+  getPosts() {
+    return this.http.get<any>(this.url);
+  }
 }
