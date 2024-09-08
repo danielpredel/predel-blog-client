@@ -14,4 +14,8 @@ export class PostService {
   getPosts() {
     return this.http.get<any>(this.url);
   }
+
+  getPost(id: string) {
+    return this.http.get<any>(`${this.url}/${id}`);
+  }
 }
