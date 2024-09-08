@@ -1,1 +1,19 @@
-<p>text works!</p>
+<div class="editable-element-container">
+  <div [ngSwitch]="elementType">
+    <h1
+      *ngSwitchCase="'TITLE'"
+      #title
+      class="title"
+    ></h1>
+    <h3
+      *ngSwitchCase="'SUBTITLE'"
+      #subtitle
+      class="subtitle"
+    ></h3>
+    <p
+      *ngSwitchDefault
+      #paragraph
+      class="paragraph"
+    ></p>
+  </div>
+</div>
