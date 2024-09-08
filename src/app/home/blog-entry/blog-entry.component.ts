@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TextComponent } from '../text/text.component';
 import { ListComponent } from '../list/list.component';
 import { ImageComponent } from '../image/image.component';
+import { CodeSnippetComponent } from '../code-snippet/code-snippet.component';
 
 @Component({
   selector: 'app-blog-entry',
@@ -86,9 +87,9 @@ export class BlogEntryComponent {
         case 'IMAGE':
           this.addImageComponent(index, element.data);
           break;
-        // case 'CODE-SNIPPET':
-        //   this.addCodeSnippetComponent(index, element.data);
-        //   break;
+        case 'CODE-SNIPPET':
+          this.addCodeSnippetComponent(index, element.data);
+          break;
       }
     })
   }
@@ -125,6 +126,16 @@ export class BlogEntryComponent {
     // Send the init data in case there's any
     setTimeout(() => {
       componentRef.instance.setData(data);
+    }, 0);
+  }
+
+  addCodeSnippetComponent(index: number, data: any = null) {
+    const componentRef = this.container.createComponent(CodeSnippetComponent, { index });
+    // Send the init data in case there's any
+    setTimeout(() => {
+      if (data) {
+        componentRef.instance.setData(data);
+      }
     }, 0);
   }
 }
