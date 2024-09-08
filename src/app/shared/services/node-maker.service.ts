@@ -14,6 +14,7 @@ export class NodeMakerService {
 
   createLinkNode(text: string, url: string, id: string = '') {
     const node = document.createElement('a');
+    node.target = '_blank';
     node.href = url;
     if (id != '') {
       node.id = id;
