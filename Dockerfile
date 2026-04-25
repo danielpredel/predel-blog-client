@@ -14,7 +14,7 @@ RUN npm ci
 COPY . .
 
 # Build the Angular app (production)
-RUN npm run build
+RUN npm run build -- --configuration=development
 
 # ---------- Stage 2: Serve with Nginx ----------
 FROM nginx:alpine
@@ -33,3 +33,4 @@ EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
+<
