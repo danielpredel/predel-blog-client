@@ -1,27 +1,96 @@
-# PredelBlogClient
+# PreDel Blogging Platform Client
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.2.0.
+## Overview
 
-## Development server
+Personal project (Jun 2024 - Sep 2024) consisting of a frontend application for a blogging platform.
+Built with Angular, the client consumes a REST API to provide user authentication, content creation, and blog post visualization through a responsive interface.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+This application is part of a distributed setup and is not intended to be executed independently.
 
-## Code scaffolding
+For full application execution (API + client + database), refer to the Docker Compose project:
+[PreDel Blogging Platform](https://github.com/danielpredel/predel-blog.git)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Features
 
-## Build
+* User authentication (login and registration)
+* Blog post creation and editing
+* WYSIWYG editor for content writing
+* Post listing and detailed view
+* Responsive UI design using UIkit
+* Component-based architecture with reusable UI elements
+* API-driven state management via Angular services
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Project Structure
 
-## Running unit tests
+```
+src/
+├── app/
+│   ├── content-editor/            # Module for post creation/editing
+│   │   ├── code-snippet/
+│   │   ├── editor/                # Main editor page
+│   │   ├── image/
+│   │   ├── list/
+│   │   ├── list-item/
+│   │   ├── meta/
+│   │   ├── speed-dial/
+│   │   ├── text/
+│   │   ├── tooltip/
+│   │   ├── content-editor.module.ts
+│   │   ├── node-maker.service.ts
+│   │   └── static-id.service.ts
+│   │
+│   ├── home/                      # Public content rendering
+│   │   ├── blog-entry/            # Post detail view
+│   │   ├── code-snippet/
+│   │   ├── homepage/              # Landing page
+│   │   ├── image/
+│   │   ├── list/
+│   │   ├── list-item/
+│   │   ├── text/
+│   │   └── home.module.ts
+│   │
+│   ├── shared/                    # Shared logic
+│   │   ├── services/              # API communication
+│   │   └── shared.module.ts
+│   │
+│   ├── user/                      # Authentication module
+│   │   ├── login/
+│   │   ├── sign-up/
+│   │   ├── match.password.validator.ts
+│   │   └── user.module.ts
+│
+├── assets/
+└── environments/
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Application Overview
 
-## Running end-to-end tests
+### Authentication
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+* Login view connected to `/auth/login`
+* Registration flow integrated with user creation and email validation
 
-## Further help
+### Posts
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+* Post listing page consuming `/posts`
+* Post detail view consuming `/posts/:id`
+
+### User Content
+
+* Post creation via `/users/posts`
+* Post editing via `/users/posts/:id`
+
+## Notes
+
+* Follows a component-based architecture with separation of concerns
+* Uses Angular services as an abstraction layer over HTTP communication
+* Reactive programming patterns implemented with RxJS
+* UI designed with responsiveness and component reuse in mind
+* Tight coupling with backend API structure (user-scoped post endpoints)
+* Partial implementation: some UI flows and edge cases were not fully completed
+* Error handling and state management are basic and not centralized
+
+## Project Status
+
+Archived – no active development.
+Maintained as a portfolio project.
